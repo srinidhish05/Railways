@@ -1,0 +1,1015 @@
+/* Railway Safety System Design System */
+
+:root {
+  /* Primary Railway Colors */
+  --railway-primary: #1e40af; /* Deep Blue - Trust, Reliability */
+  --railway-primary-light: #3b82f6; /* Lighter Blue */
+  --railway-primary-dark: #1e3a8a; /* Darker Blue */
+
+  /* Secondary Colors */
+  --railway-secondary: #059669; /* Green - Safety, Go */
+  --railway-secondary-light: #10b981;
+  --railway-secondary-dark: #047857;
+
+  /* Status Colors */
+  --railway-success: #10b981; /* Green - Success, On-time */
+  --railway-warning: #f59e0b; /* Amber - Warning, Delayed */
+  --railway-danger: #ef4444; /* Red - Danger, Critical */
+  --railway-info: #3b82f6; /* Blue - Information */
+
+  /* Neutral Colors */
+  --railway-neutral: #6b7280; /* Gray - Neutral states */
+  --railway-neutral-light: #9ca3af;
+  --railway-neutral-dark: #4b5563;
+
+  /* Background Colors */
+  --railway-bg-primary: #ffffff; /* White */
+  --railway-bg-secondary: #f8fafc; /* Light Gray */
+  --railway-bg-tertiary: #f1f5f9; /* Lighter Gray */
+  --railway-bg-dark: #0f172a; /* Dark Blue */
+
+  /* Text Colors */
+  --railway-text-primary: #1e293b; /* Dark Gray */
+  --railway-text-secondary: #64748b; /* Medium Gray */
+  --railway-text-tertiary: #94a3b8; /* Light Gray */
+  --railway-text-inverse: #ffffff; /* White */
+
+  /* Border Colors */
+  --railway-border-light: #e2e8f0; /* Light Border */
+  --railway-border-medium: #cbd5e1; /* Medium Border */
+  --railway-border-dark: #94a3b8; /* Dark Border */
+
+  /* Special Colors */
+  --railway-overlay: rgba(15, 23, 42, 0.8); /* Dark overlay */
+  --railway-map-bg: #f0f9ff; /* Map background */
+
+  /* Typography */
+  --railway-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --railway-font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+
+  /* Spacing Scale */
+  --railway-space-xs: 0.25rem; /* 4px */
+  --railway-space-sm: 0.5rem; /* 8px */
+  --railway-space-md: 1rem; /* 16px */
+  --railway-space-lg: 1.5rem; /* 24px */
+  --railway-space-xl: 2rem; /* 32px */
+  --railway-space-2xl: 3rem; /* 48px */
+
+  /* Border Radius */
+  --railway-radius-sm: 0.375rem; /* 6px */
+  --railway-radius-md: 0.5rem; /* 8px */
+  --railway-radius-lg: 0.75rem; /* 12px */
+  --railway-radius-xl: 1rem; /* 16px */
+
+  /* Shadows */
+  --railway-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --railway-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --railway-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --railway-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Base Typography */
+body {
+  font-family: var(--railway-font-family);
+  color: var(--railway-text-primary);
+  line-height: 1.6;
+}
+
+/* Railway Card Components */
+.railway-card {
+  background: var(--railway-bg-primary);
+  border: 1px solid var(--railway-border-light);
+  border-radius: var(--railway-radius-lg);
+  box-shadow: var(--railway-shadow-md);
+  transition: all 0.2s ease;
+}
+
+.railway-card:hover {
+  box-shadow: var(--railway-shadow-lg);
+  border-color: var(--railway-border-medium);
+}
+
+.railway-card-header {
+  padding: var(--railway-space-lg);
+  border-bottom: 1px solid var(--railway-border-light);
+  background: var(--railway-bg-secondary);
+  border-radius: var(--railway-radius-lg) var(--railway-radius-lg) 0 0;
+}
+
+.railway-card-content {
+  padding: var(--railway-space-lg);
+}
+
+/* Typography Components */
+.railway-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--railway-text-primary);
+  margin: 0;
+}
+
+.railway-description {
+  font-size: 0.875rem;
+  color: var(--railway-text-secondary);
+  margin-top: var(--railway-space-xs);
+}
+
+.railway-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--railway-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+  margin-bottom: var(--railway-space-md);
+}
+
+/* Button Components */
+.railway-button-primary {
+  background: var(--railway-primary);
+  color: var(--railway-text-inverse);
+  border: 1px solid var(--railway-primary);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+}
+
+.railway-button-primary:hover {
+  background: var(--railway-primary-dark);
+  border-color: var(--railway-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--railway-shadow-md);
+}
+
+.railway-button-secondary {
+  background: var(--railway-bg-primary);
+  color: var(--railway-text-primary);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+}
+
+.railway-button-secondary:hover {
+  background: var(--railway-bg-secondary);
+  border-color: var(--railway-border-dark);
+}
+
+.railway-button-warning {
+  background: var(--railway-warning);
+  color: var(--railway-text-inverse);
+  border: 1px solid var(--railway-warning);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+}
+
+.railway-button-warning:hover {
+  background: #d97706;
+  border-color: #d97706;
+  transform: translateY(-1px);
+  box-shadow: var(--railway-shadow-md);
+}
+
+.railway-button-ghost {
+  background: transparent;
+  color: var(--railway-text-secondary);
+  border: none;
+  padding: var(--railway-space-sm);
+  border-radius: var(--railway-radius-md);
+  transition: all 0.2s ease;
+}
+
+.railway-button-ghost:hover {
+  background: var(--railway-bg-secondary);
+  color: var(--railway-text-primary);
+}
+
+.railway-button-emergency {
+  background: var(--railway-bg-primary);
+  color: var(--railway-danger);
+  border: 1px solid var(--railway-danger);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+}
+
+.railway-button-emergency:hover {
+  background: var(--railway-danger);
+  color: var(--railway-text-inverse);
+}
+
+/* Form Components */
+.railway-form-group {
+  margin-bottom: var(--railway-space-md);
+}
+
+.railway-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--railway-text-primary);
+  margin-bottom: var(--railway-space-xs);
+  display: block;
+}
+
+.railway-input {
+  width: 100%;
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-md);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: var(--railway-bg-primary);
+}
+
+.railway-input:focus {
+  outline: none;
+  border-color: var(--railway-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.railway-textarea {
+  width: 100%;
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-md);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: var(--railway-bg-primary);
+  resize: vertical;
+  min-height: 80px;
+}
+
+.railway-textarea:focus {
+  outline: none;
+  border-color: var(--railway-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.railway-select {
+  width: 100%;
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-md);
+  font-size: 0.875rem;
+  background: var(--railway-bg-primary);
+}
+
+.railway-select-content {
+  background: var(--railway-bg-primary);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-md);
+  box-shadow: var(--railway-shadow-lg);
+}
+
+.railway-select-item {
+  padding: var(--railway-space-sm) var(--railway-space-md);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.railway-select-item:hover {
+  background: var(--railway-bg-secondary);
+}
+
+/* Badge Components */
+.railway-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--railway-space-xs) var(--railway-space-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--railway-radius-sm);
+  border: 1px solid var(--railway-border-medium);
+  background: var(--railway-bg-secondary);
+  color: var(--railway-text-secondary);
+}
+
+.railway-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--railway-space-xs);
+  padding: var(--railway-space-xs) var(--railway-space-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--railway-radius-sm);
+}
+
+.railway-chart-badge {
+  background: var(--railway-success);
+  color: var(--railway-text-inverse);
+  border: none;
+}
+
+.railway-cache-badge {
+  background: var(--railway-info);
+  color: var(--railway-text-inverse);
+  border: none;
+}
+
+/* Alert Components */
+.railway-alert {
+  padding: var(--railway-space-md);
+  border-radius: var(--railway-radius-md);
+  border: 1px solid var(--railway-border-medium);
+  background: var(--railway-bg-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--railway-space-sm);
+}
+
+.railway-alert-success {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--railway-success);
+  color: var(--railway-success);
+}
+
+/* Map Components */
+.railway-map-bg {
+  background: var(--railway-map-bg);
+  position: relative;
+}
+
+.railway-map-pattern {
+  color: var(--railway-neutral-light);
+}
+
+.railway-train-marker {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.railway-train-marker:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+  z-index: 20;
+}
+
+.railway-train-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: var(--railway-shadow-md);
+  position: relative;
+  animation: pulse 2s infinite;
+}
+
+.railway-train-dot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.railway-train-trail {
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, currentColor);
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+}
+
+.railway-speed-indicator {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--railway-bg-primary);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-sm);
+  padding: 2px 6px;
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--railway-text-primary);
+  white-space: nowrap;
+  box-shadow: var(--railway-shadow-sm);
+}
+
+.railway-station {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.railway-station:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  z-index: 15;
+}
+
+.railway-station-label {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--railway-bg-primary);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-sm);
+  padding: 2px 6px;
+  font-size: 0.625rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--railway-shadow-sm);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.railway-station:hover .railway-station-label {
+  opacity: 1;
+}
+
+.railway-station-code {
+  color: var(--railway-text-primary);
+  font-weight: 600;
+}
+
+/* Train Info Panel */
+.railway-train-info-panel {
+  background: var(--railway-bg-primary);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-lg);
+  padding: var(--railway-space-md);
+  box-shadow: var(--railway-shadow-lg);
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.railway-train-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--railway-space-md);
+}
+
+.railway-train-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--railway-text-primary);
+  margin: 0;
+}
+
+.railway-train-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--railway-space-sm);
+  margin-bottom: var(--railway-space-md);
+}
+
+.railway-metric {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+  font-size: 0.875rem;
+  color: var(--railway-text-secondary);
+}
+
+.railway-coordinates {
+  padding-top: var(--railway-space-sm);
+  border-top: 1px solid var(--railway-border-light);
+  font-size: 0.75rem;
+  color: var(--railway-text-tertiary);
+}
+
+.railway-coord-label {
+  font-weight: 500;
+  margin-right: var(--railway-space-sm);
+}
+
+.railway-coord-value {
+  font-family: var(--railway-font-mono);
+}
+
+/* Map Legend */
+.railway-map-legend {
+  background: var(--railway-bg-primary);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-sm);
+  box-shadow: var(--railway-shadow-md);
+}
+
+.railway-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+  margin-bottom: var(--railway-space-xs);
+}
+
+.railway-legend-item:last-child {
+  margin-bottom: 0;
+}
+
+/* PNR Status Components */
+.railway-search-form {
+  margin-bottom: var(--railway-space-lg);
+  padding-bottom: var(--railway-space-lg);
+  border-bottom: 1px solid var(--railway-border-light);
+}
+
+.railway-pnr-content {
+  space-y: var(--railway-space-lg);
+}
+
+.railway-train-info {
+  background: var(--railway-bg-secondary);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-md);
+  margin-bottom: var(--railway-space-lg);
+}
+
+.railway-train-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--railway-space-md);
+}
+
+.railway-train-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--railway-text-primary);
+  margin: 0;
+}
+
+.railway-journey-info {
+  margin-top: var(--railway-space-md);
+}
+
+.railway-route {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-md);
+  margin-bottom: var(--railway-space-md);
+}
+
+.railway-station {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+}
+
+.railway-station-code {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--railway-text-primary);
+}
+
+.railway-station-name {
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+}
+
+.railway-route-line {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--railway-space-sm);
+  position: relative;
+}
+
+.railway-route-line::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--railway-border-medium);
+  z-index: 1;
+}
+
+.railway-distance {
+  background: var(--railway-bg-primary);
+  padding: 2px 6px;
+  border-radius: var(--railway-radius-sm);
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+  z-index: 2;
+  position: relative;
+}
+
+.railway-journey-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--railway-space-sm);
+}
+
+.railway-detail-item {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-xs);
+  font-size: 0.875rem;
+  color: var(--railway-text-secondary);
+}
+
+/* Passenger Components */
+.railway-passengers-section {
+  margin-bottom: var(--railway-space-lg);
+}
+
+.railway-passengers-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--railway-space-md);
+}
+
+.railway-passenger-card {
+  background: var(--railway-bg-secondary);
+  border: 1px solid var(--railway-border-light);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-md);
+}
+
+.railway-passenger-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--railway-space-sm);
+}
+
+.railway-passenger-info {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+}
+
+.railway-passenger-number {
+  background: var(--railway-primary);
+  color: var(--railway-text-inverse);
+  padding: 2px 6px;
+  border-radius: var(--railway-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.railway-passenger-name {
+  font-weight: 500;
+  color: var(--railway-text-primary);
+}
+
+.railway-passenger-details {
+  font-size: 0.875rem;
+  color: var(--railway-text-secondary);
+}
+
+.railway-seat-info {
+  display: flex;
+  gap: var(--railway-space-lg);
+  margin-top: var(--railway-space-sm);
+}
+
+.railway-seat-detail {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-xs);
+}
+
+.railway-seat-label {
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+}
+
+.railway-seat-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--railway-text-primary);
+  font-family: var(--railway-font-mono);
+}
+
+.railway-status-change {
+  margin-top: var(--railway-space-sm);
+  padding-top: var(--railway-space-sm);
+  border-top: 1px solid var(--railway-border-light);
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+}
+
+.railway-status-label {
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+}
+
+.railway-status-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--railway-text-primary);
+}
+
+/* Additional Info Components */
+.railway-additional-info {
+  background: var(--railway-bg-tertiary);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-md);
+  margin-bottom: var(--railway-space-lg);
+}
+
+.railway-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--railway-space-md);
+}
+
+.railway-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--railway-space-xs);
+}
+
+.railway-info-label {
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+  font-weight: 500;
+}
+
+.railway-info-value {
+  font-size: 0.875rem;
+  color: var(--railway-text-primary);
+  font-weight: 500;
+}
+
+/* Footer Components */
+.railway-footer-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--railway-space-md);
+  border-top: 1px solid var(--railway-border-light);
+  margin-bottom: var(--railway-space-md);
+}
+
+.railway-update-info {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+}
+
+.railway-update-label {
+  font-weight: 500;
+}
+
+.railway-update-time {
+  font-family: var(--railway-font-mono);
+}
+
+.railway-response-time {
+  font-size: 0.75rem;
+  color: var(--railway-text-tertiary);
+  font-family: var(--railway-font-mono);
+}
+
+.railway-emergency-contact {
+  text-align: center;
+}
+
+/* GPS and Delay Report Components */
+.railway-gps-section {
+  margin-top: var(--railway-space-sm);
+}
+
+.railway-location-display {
+  background: var(--railway-bg-secondary);
+  border: 1px solid var(--railway-border-light);
+  border-radius: var(--railway-radius-md);
+  padding: var(--railway-space-md);
+}
+
+.railway-coordinates {
+  display: flex;
+  align-items: center;
+  gap: var(--railway-space-sm);
+  font-size: 0.75rem;
+  color: var(--railway-text-secondary);
+}
+
+.railway-coord-text {
+  font-family: var(--railway-font-mono);
+  color: var(--railway-text-primary);
+}
+
+.railway-text-success {
+  color: var(--railway-success);
+  font-weight: 500;
+}
+
+/* Modal Components */
+.railway-modal {
+  background: var(--railway-bg-primary);
+  border: 1px solid var(--railway-border-medium);
+  border-radius: var(--railway-radius-xl);
+  box-shadow: var(--railway-shadow-xl);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Loading Components */
+.railway-loading {
+  text-align: center;
+  color: var(--railway-text-secondary);
+}
+
+.railway-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--railway-border-light);
+  border-top: 3px solid var(--railway-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.railway-loading-content {
+  padding: var(--railway-space-lg);
+}
+
+.railway-skeleton {
+  background: var(--railway-bg-secondary);
+  border-radius: var(--railway-radius-sm);
+  animation: pulse 2s infinite;
+}
+
+/* Status Color Classes */
+.bg-railway-success {
+  background-color: var(--railway-success);
+}
+
+.bg-railway-warning {
+  background-color: var(--railway-warning);
+}
+
+.bg-railway-danger {
+  background-color: var(--railway-danger);
+}
+
+.bg-railway-info {
+  background-color: var(--railway-info);
+}
+
+.bg-railway-primary {
+  background-color: var(--railway-primary);
+}
+
+.bg-railway-secondary {
+  background-color: var(--railway-secondary);
+}
+
+.bg-railway-neutral {
+  background-color: var(--railway-neutral);
+}
+
+/* Text Color Classes */
+.text-railway-primary {
+  color: var(--railway-primary);
+}
+
+.text-railway-success {
+  color: var(--railway-success);
+}
+
+.text-railway-warning {
+  color: var(--railway-warning);
+}
+
+.text-railway-danger {
+  color: var(--railway-danger);
+}
+
+.text-railway-text-secondary {
+  color: var(--railway-text-secondary);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .railway-card-header,
+  .railway-card-content {
+    padding: var(--railway-space-md);
+  }
+
+  .railway-train-info-panel {
+    position: static;
+    margin-top: var(--railway-space-md);
+    width: 100%;
+    max-width: none;
+  }
+
+  .railway-journey-details {
+    grid-template-columns: 1fr;
+  }
+
+  .railway-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .railway-route {
+    flex-direction: column;
+    gap: var(--railway-space-sm);
+  }
+
+  .railway-route-line {
+    width: 2px;
+    height: 30px;
+    flex-direction: column;
+  }
+
+  .railway-route-line::before {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+
+  .railway-footer-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--railway-space-sm);
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --railway-bg-primary: #0f172a;
+    --railway-bg-secondary: #1e293b;
+    --railway-bg-tertiary: #334155;
+    --railway-text-primary: #f1f5f9;
+    --railway-text-secondary: #cbd5e1;
+    --railway-text-tertiary: #94a3b8;
+    --railway-border-light: #334155;
+    --railway-border-medium: #475569;
+    --railway-border-dark: #64748b;
+    --railway-map-bg: #1e293b;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .railway-card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  .railway-button-primary,
+  .railway-button-secondary,
+  .railway-button-warning {
+    background: transparent !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+
+  .railway-train-marker,
+  .railway-station {
+    position: static !important;
+    transform: none !important;
+  }
+}
