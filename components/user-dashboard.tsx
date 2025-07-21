@@ -3,12 +3,13 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Train, MapPin, Ticket, ArrowLeft } from "lucide-react"
+import { Train, MapPin, Ticket, ArrowLeft, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { LiveTrainMap } from "@/components/live-train-map"
-import { EnhancedBookingForm } from "@/components/enhanced-booking-form"
+import { EnhancedTrainBooking } from "@/components/enhanced-train-booking"
 import { PNRStatusCard } from "@/components/pnr-status-card"
+import { SmartTicketCappingDemo } from "@/components/smart-ticket-capping-demo"
 
 export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState("booking")
@@ -44,7 +45,7 @@ export default function UserDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="booking" className="flex items-center">
               <Ticket className="h-4 w-4 mr-2" />
               Ticket Booking
@@ -57,6 +58,10 @@ export default function UserDashboard() {
               <Train className="h-4 w-4 mr-2" />
               PNR Status
             </TabsTrigger>
+            <TabsTrigger value="smart-capping" className="flex items-center">
+              <Shield className="h-4 w-4 mr-2" />
+              Smart Capping
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="booking" className="mt-6">
@@ -64,11 +69,12 @@ export default function UserDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Ticket className="h-5 w-5 mr-2 text-blue-600" />
-                  Book Your Train Tickets
+                  Karnataka Train Booking
                 </CardTitle>
+                <p className="text-sm text-gray-600 mt-2">Search trains, select seats, and complete booking on IRCTC</p>
               </CardHeader>
               <CardContent>
-                <EnhancedBookingForm />
+                <EnhancedTrainBooking />
               </CardContent>
             </Card>
           </TabsContent>
@@ -89,6 +95,10 @@ export default function UserDashboard() {
 
           <TabsContent value="pnr-status" className="mt-6">
             <PNRStatusCard />
+          </TabsContent>
+
+          <TabsContent value="smart-capping" className="mt-6">
+            <SmartTicketCappingDemo />
           </TabsContent>
         </Tabs>
       </div>

@@ -10,8 +10,13 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { MapPin, Users, CreditCard, CheckCircle, AlertCircle } from "lucide-react"
+import { MapPin, Users, CreditCard, CheckCircle, AlertCircle, Search, Clock, Train as TrainIcon, Calendar, IndianRupee } from "lucide-react"
 import { useFirebase } from "@/hooks/use-firebase"
+import { karnatakaStations, searchStations, type Station } from "@/data/karnataka-stations"
+import { karnatakaTrains, searchTrains, searchTrainsBetweenStations, type TrainSchedule } from "@/data/karnataka-trains"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import { format } from "date-fns"
 
 interface Train {
   id: string
@@ -31,68 +36,142 @@ interface BookingData {
   passengerEmail: string
   seatCount: number
   travelDate: string
+  fromStation: string
+  toStation: string
+  selectedClass: string
 }
 
 export function BookingForm() {
+  // Station and train search states
+  const [fromStation, setFromStation] = useState("")
+  const [toStation, setToStation] = useState("")
+  const [travelDate, setTravelDate] = useState<Date>()
+  const [fromStationQuery, setFromStationQuery] = useState("")
+  const [toStationQuery, setToStationQuery] = useState("")
+  const [filteredFromStations, setFilteredFromStations] = useState<Station[]>(karnatakaStations)
+  const [filteredToStations, setFilteredToStations] = useState<Station[]>(karnatakaStations)
+  const [availableTrains, setAvailableTrains] = useState<TrainSchedule[]>([])
+  const [showTrainResults, setShowTrainResults] = useState(false)
+  
   const [trains, setTrains] = useState<Train[]>([])
-  const [selectedTrain, setSelectedTrain] = useState<Train | null>(null)
+  const [selectedTrain, setSelectedTrain] = useState<TrainSchedule | null>(null)
+  const [selectedClass, setSelectedClass] = useState("")
   const [bookingData, setBookingData] = useState<BookingData>({
     trainId: "",
     passengerName: "",
     passengerEmail: "",
     seatCount: 1,
     travelDate: "",
+    fromStation: "",
+    toStation: "",
+    selectedClass: ""
+  })
+export function BookingForm() {
+  // Station and train search states
+  const [fromStation, setFromStation] = useState("")
+  const [toStation, setToStation] = useState("")
+  const [travelDate, setTravelDate] = useState<Date>()
+  const [fromStationQuery, setFromStationQuery] = useState("")
+  const [toStationQuery, setToStationQuery] = useState("")
+  const [filteredFromStations, setFilteredFromStations] = useState<Station[]>(karnatakaStations.slice(0, 20))
+  const [filteredToStations, setFilteredToStations] = useState<Station[]>(karnatakaStations.slice(0, 20))
+  const [availableTrains, setAvailableTrains] = useState<TrainSchedule[]>([])
+  const [showTrainResults, setShowTrainResults] = useState(false)
+  
+  const [selectedTrain, setSelectedTrain] = useState<TrainSchedule | null>(null)
+  const [selectedClass, setSelectedClass] = useState("")
+  const [bookingData, setBookingData] = useState<BookingData>({
+    trainId: "",
+    passengerName: "",
+    passengerEmail: "",
+    seatCount: 1,
+    travelDate: "",
+    fromStation: "",
+    toStation: "",
+    selectedClass: ""
   })
   const [isLoading, setIsLoading] = useState(false)
   const [bookingStatus, setBookingStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
 
-  const { bookTicket, getTrains, subscribeToTrainUpdates } = useFirebase()
+  const { bookTicket } = useFirebase()
 
-  useEffect(() => {
-    loadTrains()
-
-    // Subscribe to real-time train updates
-    const unsubscribe = subscribeToTrainUpdates((updatedTrains) => {
-      setTrains(updatedTrains)
-
-      // Update selected train if it's in the updated list
-      if (selectedTrain) {
-        const updatedSelectedTrain = updatedTrains.find((t) => t.id === selectedTrain.id)
-        if (updatedSelectedTrain) {
-          setSelectedTrain(updatedSelectedTrain)
-        }
-      }
-    })
-
-    return () => unsubscribe()
-  }, [])
-
-  const loadTrains = async () => {
-    try {
-      const trainsData = await getTrains()
-      setTrains(trainsData)
-    } catch (error) {
-      console.error("Error loading trains:", error)
+  // Search functions
+  const handleFromStationSearch = (query: string) => {
+    setFromStationQuery(query)
+    if (query.length >= 2) {
+      const filtered = searchStations(query).slice(0, 10)
+      setFilteredFromStations(filtered)
+    } else {
+      setFilteredFromStations(karnatakaStations.slice(0, 20))
     }
   }
 
-  const handleTrainSelect = (trainId: string) => {
-    const train = trains.find((t) => t.id === trainId)
-    setSelectedTrain(train || null)
-    setBookingData((prev) => ({ ...prev, trainId }))
+  const handleToStationSearch = (query: string) => {
+    setToStationQuery(query)
+    if (query.length >= 2) {
+      const filtered = searchStations(query).slice(0, 10)
+      setFilteredToStations(filtered)
+    } else {
+      setFilteredToStations(karnatakaStations.slice(0, 20))
+    }
+  }
+
+  const handleTrainSearch = () => {
+    if (!fromStation || !toStation || !travelDate) {
+      setErrorMessage("Please select from station, to station, and travel date")
+      return
+    }
+
+    setIsLoading(true)
+    setShowTrainResults(false)
+
+    // Search trains between selected stations
+    setTimeout(() => {
+      const trains = searchTrainsBetweenStations(fromStation, toStation)
+      setAvailableTrains(trains)
+      setShowTrainResults(true)
+      setIsLoading(false)
+      
+      if (trains.length === 0) {
+        setErrorMessage("No trains found between selected stations")
+      } else {
+        setErrorMessage("")
+      }
+    }, 1000)
+  }
+
+  const handleTrainSelect = (train: TrainSchedule) => {
+    setSelectedTrain(train)
+    setBookingData(prev => ({ 
+      ...prev, 
+      trainId: train.trainNumber,
+      fromStation,
+      toStation 
+    }))
+  }
+
+  const handleClassSelect = (classCode: string) => {
+    setSelectedClass(classCode)
+    setBookingData(prev => ({ ...prev, selectedClass: classCode }))
+  }
+
+  const getSelectedClassInfo = () => {
+    if (!selectedTrain || !selectedClass) return null
+    return selectedTrain.classes.find(c => c.class === selectedClass)
   }
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!selectedTrain) {
-      setErrorMessage("Please select a train")
+    if (!selectedTrain || !selectedClass) {
+      setErrorMessage("Please select a train and class")
       return
     }
 
-    if (selectedTrain.availableSeats < bookingData.seatCount) {
-      setErrorMessage("Not enough seats available")
+    const classInfo = getSelectedClassInfo()
+    if (!classInfo || classInfo.availableSeats < bookingData.seatCount) {
+      setErrorMessage("Not enough seats available in selected class")
       setBookingStatus("error")
       return
     }
@@ -104,10 +183,11 @@ export function BookingForm() {
     try {
       const bookingResult = await bookTicket({
         ...bookingData,
-        trainName: selectedTrain.name,
-        route: selectedTrain.route,
-        price: selectedTrain.price * bookingData.seatCount,
+        trainName: selectedTrain.trainName,
+        route: `${selectedTrain.fromName} → ${selectedTrain.toName}`,
+        price: classInfo.currentPrice * bookingData.seatCount,
         bookingDate: new Date().toISOString(),
+        className: classInfo.className
       })
 
       if (bookingResult.success) {
@@ -119,8 +199,16 @@ export function BookingForm() {
           passengerEmail: "",
           seatCount: 1,
           travelDate: "",
+          fromStation: "",
+          toStation: "",
+          selectedClass: ""
         })
         setSelectedTrain(null)
+        setSelectedClass("")
+        setFromStation("")
+        setToStation("")
+        setTravelDate(undefined)
+        setShowTrainResults(false)
       } else {
         setBookingStatus("error")
         setErrorMessage(bookingResult.error || "Booking failed")

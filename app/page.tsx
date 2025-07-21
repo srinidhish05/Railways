@@ -12,7 +12,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Train className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">Railway Safety System</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Railway Management System</h1>
             </div>
             <div className="flex space-x-4">
               <Link href="/user">
@@ -50,7 +50,7 @@ export default function HomePage() {
             <Link href="/admin">
               <Button size="lg" variant="outline">
                 <BarChart3 className="h-5 w-5 mr-2" />
-                View Analytics
+                Admin Dashboard
               </Button>
             </Link>
           </div>
