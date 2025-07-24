@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,23 +9,47 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { MapPin, CreditCard, CheckCircle, AlertCircle, Search, Clock, Train as TrainIcon, Calendar, IndianRupee, ExternalLink } from "lucide-react"
+import { MapPin, CreditCard, CheckCircle, AlertCircle, Search, Clock, Train as TrainIcon, Calendar, IndianRupee, ExternalLink, Star, Bookmark, Filter, Users, Route, Phone } from "lucide-react"
 import { karnatakaStations, type Station } from "@/data/karnataka-stations"
 import { karnatakaTrains, searchTrainsBetweenStations, type TrainSchedule } from "@/data/karnataka-trains"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import { format } from "date-fns"
+import { format, addDays } from "date-fns"
 
 interface BookingData {
   trainId: string
   passengerName: string
   passengerEmail: string
+  passengerPhone: string
   seatCount: number
   travelDate: string
   fromStation: string
   toStation: string
   selectedClass: string
+  preferences: {
+    mealPreference: string
+    berthPreference: string
+    coachPreference: string
+  }
 }
+
+interface QuickRoute {
+  from: string
+  to: string
+  label: string
+  popular: boolean
+}
+
+const popularRoutes: QuickRoute[] = [
+  { from: "SBC", to: "MYS", label: "Bengaluru → Mysuru", popular: true },
+  { from: "SBC", to: "UBL", label: "Bengaluru → Hubballi", popular: true },
+  { from: "SBC", to: "MAJN", label: "Bengaluru → Mangaluru", popular: true },
+  { from: "MYS", to: "SBC", label: "Mysuru → Bengaluru", popular: true },
+  { from: "UBL", to: "SBC", label: "Hubballi → Bengaluru", popular: false },
+  { from: "MAJN", to: "SBC", label: "Mangaluru → Bengaluru", popular: false },
+  { from: "YPR", to: "MYS", label: "Yesvantpur → Mysuru", popular: false },
+  { from: "DWR", to: "UBL", label: "Dharwad → Hubballi", popular: false },
+]
 
 export function EnhancedTrainBooking() {
   // Station and train search states
@@ -49,16 +73,63 @@ export function EnhancedTrainBooking() {
     trainId: "",
     passengerName: "",
     passengerEmail: "",
+    passengerPhone: "",
     seatCount: 1,
     travelDate: "",
     fromStation: "",
     toStation: "",
-    selectedClass: ""
+    selectedClass: "",
+    preferences: {
+      mealPreference: "veg",
+      berthPreference: "no-preference",
+      coachPreference: "no-preference"
+    }
   })
   const [isLoading, setIsLoading] = useState(false)
   const [bookingStatus, setBookingStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
   const [bookedTicketDetails, setBookedTicketDetails] = useState<any>(null)
+  const [recentSearches, setRecentSearches] = useState<QuickRoute[]>([])
+  const [showQuickDates, setShowQuickDates] = useState(false)
+
+  // Load recent searches on component mount
+  useEffect(() => {
+    const saved = localStorage.getItem('recentTrainSearches')
+    if (saved) {
+      setRecentSearches(JSON.parse(saved))
+    }
+  }, [])
+
+  const saveRecentSearch = (from: string, to: string) => {
+    const newSearch: QuickRoute = {
+      from,
+      to,
+      label: `${getStationName(from).split('(')[0].trim()} → ${getStationName(to).split('(')[0].trim()}`,
+      popular: false
+    }
+    
+    const updated = [newSearch, ...recentSearches.filter(s => !(s.from === from && s.to === to))].slice(0, 5)
+    setRecentSearches(updated)
+    localStorage.setItem('recentTrainSearches', JSON.stringify(updated))
+  }
+
+  const selectQuickRoute = (route: QuickRoute) => {
+    setFromStation(route.from)
+    setToStation(route.to)
+    setFromSearch(getStationName(route.from))
+    setToSearch(getStationName(route.to))
+  }
+
+  const getQuickDates = () => {
+    const today = new Date()
+    return [
+      { date: today, label: "Today" },
+      { date: addDays(today, 1), label: "Tomorrow" },
+      { date: addDays(today, 2), label: format(addDays(today, 2), "EEE, MMM d") },
+      { date: addDays(today, 3), label: format(addDays(today, 3), "EEE, MMM d") },
+      { date: addDays(today, 7), label: "Next Week" },
+    ]
+  }
 
   const getRouteDisplay = (train: TrainSchedule) => {
     if ((train.from === fromStation && train.to === toStation) || 
@@ -92,6 +163,9 @@ export function EnhancedTrainBooking() {
     setIsLoading(true)
     setShowTrainResults(false)
     setErrorMessage("")
+
+    // Save this search
+    saveRecentSearch(fromStation, toStation)
 
     setTimeout(() => {
       let trains = searchTrainsBetweenStations(fromStation, toStation)
@@ -147,11 +221,14 @@ export function EnhancedTrainBooking() {
     const irctcUrl = `https://www.irctc.co.in/nget/train-search?fromStation=${fromStation}&toStation=${toStation}&travelDate=${travelDate?.toISOString().split('T')[0]}&trainNumber=${selectedTrain.trainNumber}`
     
     const confirmRedirect = window.confirm(
-      `This will redirect you to IRCTC (Official Indian Railways) for real ticket booking.\n\n` +
+      `🚂 OFFICIAL IRCTC BOOKING\n\n` +
       `Train: ${selectedTrain.trainName} (${selectedTrain.trainNumber})\n` +
       `Route: ${getStationName(fromStation)} → ${getStationName(toStation)}\n` +
-      `Class: ${classInfo.className}\n\n` +
-      `Click OK to proceed to IRCTC.co.in for real booking, or Cancel to stay here.`
+      `Class: ${classInfo.className}\n` +
+      `Passengers: ${bookingData.seatCount}\n` +
+      `Total: ₹${classInfo.currentPrice * bookingData.seatCount}\n\n` +
+      `This will redirect you to IRCTC (Official Indian Railways) for secure ticket booking and payment.\n\n` +
+      `Click OK to proceed to IRCTC.co.in for real booking.`
     )
     
     if (confirmRedirect) {
@@ -169,8 +246,11 @@ export function EnhancedTrainBooking() {
         travelDate: travelDate ? travelDate.toDateString() : '',
         departureTime: selectedTrain.departureTime,
         duration: selectedTrain.duration,
+        passengerCount: bookingData.seatCount,
+        totalAmount: classInfo.currentPrice * bookingData.seatCount,
         redirectTime: new Date().toLocaleString(),
-        irctcUrl
+        irctcUrl,
+        preferences: bookingData.preferences
       }
       setBookedTicketDetails(redirectDetails)
     }
@@ -183,11 +263,17 @@ export function EnhancedTrainBooking() {
       trainId: "",
       passengerName: "",
       passengerEmail: "",
+      passengerPhone: "",
       seatCount: 1,
       travelDate: "",
       fromStation: "",
       toStation: "",
-      selectedClass: ""
+      selectedClass: "",
+      preferences: {
+        mealPreference: "veg",
+        berthPreference: "no-preference",
+        coachPreference: "no-preference"
+      }
     })
     setSelectedTrain(null)
     setSelectedClass("")
@@ -200,6 +286,16 @@ export function EnhancedTrainBooking() {
     setErrorMessage("")
     setShowFromDropdown(false)
     setShowToDropdown(false)
+  }
+
+  const swapStations = () => {
+    const tempStation = fromStation
+    const tempSearch = fromSearch
+    
+    setFromStation(toStation)
+    setFromSearch(toSearch)
+    setToStation(tempStation)
+    setToSearch(tempSearch)
   }
 
   const handleFromSearchChange = (value: string) => {
@@ -263,15 +359,18 @@ export function EnhancedTrainBooking() {
           <CardHeader className="bg-green-500 text-white">
             <CardTitle className="flex items-center gap-2 text-xl">
               <CheckCircle className="h-6 w-6" />
-              IRCTC Redirect Successful!
+              🎉 IRCTC Redirect Successful!
             </CardTitle>
             <CardDescription className="text-green-100">
-              You have been redirected to IRCTC for real ticket booking
+              You have been redirected to IRCTC for secure ticket booking and payment
             </CardDescription>
           </CardHeader>
           <CardContent className="bg-white space-y-4">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-800 mb-3">Journey Details</h4>
+              <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                <TrainIcon className="h-4 w-4" />
+                Journey Details
+              </h4>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <span className="font-medium text-gray-700">Train:</span>
@@ -289,9 +388,20 @@ export function EnhancedTrainBooking() {
                   <span className="font-medium text-gray-700">Class:</span>
                   <p className="text-gray-900">{bookedTicketDetails.className}</p>
                 </div>
+                <div>
+                  <span className="font-medium text-gray-700">Passengers:</span>
+                  <p className="text-gray-900">{bookedTicketDetails.passengerCount}</p>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">Total Amount:</span>
+                  <p className="text-orange-600 font-semibold flex items-center">
+                    <IndianRupee className="h-3 w-3" />
+                    {bookedTicketDetails.totalAmount}
+                  </p>
+                </div>
               </div>
               
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex gap-3 flex-wrap">
                 <Button 
                   onClick={() => window.open('https://www.irctc.co.in/', '_blank')}
                   size="sm"
@@ -301,14 +411,30 @@ export function EnhancedTrainBooking() {
                   Open IRCTC
                 </Button>
                 <Button 
+                  onClick={() => window.open('https://www.irctc.co.in/nget/profile/user-registration', '_blank')}
+                  variant="outline" 
+                  size="sm"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Create IRCTC Account
+                </Button>
+                <Button 
                   variant="outline" 
                   size="sm"
                   onClick={handleNewBooking}
                 >
+                  <Search className="w-4 h-4 mr-2" />
                   Search Again
                 </Button>
               </div>
             </div>
+
+            <Alert className="border-orange-200 bg-orange-50">
+              <Star className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-800">
+                <strong>Next Steps:</strong> Complete your booking on IRCTC with your login credentials. If you don't have an IRCTC account, create one first using the link above.
+              </AlertDescription>
+            </Alert>
           </CardContent>
         </Card>
       )}
@@ -316,6 +442,25 @@ export function EnhancedTrainBooking() {
       {/* Show booking form only if not successful */}
       {bookingStatus !== "success" && (
         <>
+          {/* Header with Karnataka Railway Info */}
+          <Card className="bg-gradient-to-r from-blue-50 to-orange-50 border-orange-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">🚂 Karnataka Railway Booking</h1>
+                  <p className="text-gray-600">Book train tickets across Karnataka with real IRCTC integration</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-gray-600">
+                    <div><strong>{karnatakaStations.length}</strong> Stations</div>
+                    <div><strong>{karnatakaTrains.length}</strong> Trains</div>
+                    <div className="text-green-600 font-medium">✓ IRCTC Integration</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Progress Indicator */}
           <div className="flex items-center justify-center space-x-4 mb-6">
             <div className="flex items-center">
@@ -350,9 +495,61 @@ export function EnhancedTrainBooking() {
               }`}>
                 3
               </div>
-              <span className="ml-2 text-sm font-medium">Redirect to IRCTC</span>
+              <span className="ml-2 text-sm font-medium">Book on IRCTC</span>
             </div>
           </div>
+
+          {/* Quick Routes */}
+          {(popularRoutes.length > 0 || recentSearches.length > 0) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Bookmark className="h-4 w-4" />
+                  Quick Routes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {recentSearches.length > 0 && (
+                    <div>
+                      <p className="text-xs text-gray-500 mb-2">Recent Searches</p>
+                      <div className="flex gap-2 flex-wrap">
+                        {recentSearches.map((route, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => selectQuickRoute(route)}
+                            className="text-xs"
+                          >
+                            {route.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <p className="text-xs text-gray-500 mb-2">Popular Routes</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {popularRoutes.filter(r => r.popular).map((route, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => selectQuickRoute(route)}
+                          className="text-xs"
+                        >
+                          <Star className="h-3 w-3 mr-1" />
+                          {route.label}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Station Selection */}
           <Card>
@@ -424,8 +621,23 @@ export function EnhancedTrainBooking() {
                   )}
                 </div>
 
+                {/* Swap Button */}
+                <div className="flex items-end justify-center md:col-span-2 md:-my-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={swapStations}
+                    disabled={!fromStation || !toStation}
+                    className="bg-white hover:bg-gray-50"
+                  >
+                    <Route className="h-4 w-4 mr-1" />
+                    Swap
+                  </Button>
+                </div>
+
                 {/* To Station */}
-                <div className="relative">
+                <div className="relative md:-mt-8">
                   <Label htmlFor="to-station">To Station</Label>
                   <div className="relative">
                     <Input
@@ -485,29 +697,58 @@ export function EnhancedTrainBooking() {
               {/* Travel Date */}
               <div>
                 <Label>Travel Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {travelDate ? format(travelDate, "PPP") : "Select travel date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <CalendarComponent
-                      mode="single"
-                      selected={travelDate}
-                      onSelect={setTravelDate}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <div className="flex gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="flex-1 justify-start text-left font-normal bg-white">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {travelDate ? format(travelDate, "PPP") : "Select travel date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <CalendarComponent
+                        mode="single"
+                        selected={travelDate}
+                        onSelect={setTravelDate}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowQuickDates(!showQuickDates)}
+                  >
+                    Quick
+                  </Button>
+                </div>
+                
+                {showQuickDates && (
+                  <div className="mt-2 flex gap-2 flex-wrap">
+                    {getQuickDates().map((quickDate, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setTravelDate(quickDate.date)
+                          setShowQuickDates(false)
+                        }}
+                        className="text-xs"
+                      >
+                        {quickDate.label}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Button 
                 onClick={handleTrainSearch} 
                 disabled={isLoading || !fromStation || !toStation || !travelDate} 
-                className="w-full" 
+                className="w-full bg-blue-600 hover:bg-blue-700" 
                 size="lg"
               >
                 {isLoading ? "Searching..." : `Search Trains (${karnatakaTrains.length} Available)`}
@@ -533,7 +774,7 @@ export function EnhancedTrainBooking() {
                   Available Trains ({availableTrains.length} found)
                 </CardTitle>
                 <CardDescription>
-                  Route: {getStationName(fromStation)} → {getStationName(toStation)}
+                  Route: {getStationName(fromStation)} → {getStationName(toStation)} on {travelDate ? format(travelDate, "PPP") : ""}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -662,7 +903,7 @@ export function EnhancedTrainBooking() {
             </Card>
           )}
 
-          {/* Booking Form */}
+          {/* Enhanced Booking Form */}
           {selectedTrain && selectedClass && (
             <Card className="border-2 border-orange-200 bg-orange-50">
               <CardHeader className="bg-orange-100">
@@ -680,22 +921,38 @@ export function EnhancedTrainBooking() {
                   <Alert className="border-blue-200 bg-blue-50">
                     <ExternalLink className="h-4 w-4 text-blue-600" />
                     <AlertDescription className="text-blue-800">
-                      <strong>Real IRCTC Booking:</strong> This will redirect you to the official IRCTC website for actual ticket booking and payment.
+                      <strong>Official IRCTC Booking:</strong> This will redirect you to the official IRCTC website for secure ticket booking and payment processing.
                     </AlertDescription>
                   </Alert>
 
-                  <div>
-                    <Label htmlFor="passenger-name">Passenger Name (as per ID proof)</Label>
-                    <Input
-                      id="passenger-name"
-                      type="text"
-                      placeholder="Enter full name as per government ID"
-                      value={bookingData.passengerName}
-                      onChange={(e) =>
-                        setBookingData((prev) => ({ ...prev, passengerName: e.target.value }))
-                      }
-                      required
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="passenger-name">Passenger Name (as per ID proof)</Label>
+                      <Input
+                        id="passenger-name"
+                        type="text"
+                        placeholder="Enter full name as per government ID"
+                        value={bookingData.passengerName}
+                        onChange={(e) =>
+                          setBookingData((prev) => ({ ...prev, passengerName: e.target.value }))
+                        }
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="passenger-phone">Mobile Number</Label>
+                      <Input
+                        id="passenger-phone"
+                        type="tel"
+                        placeholder="Enter 10-digit mobile number"
+                        value={bookingData.passengerPhone}
+                        onChange={(e) =>
+                          setBookingData((prev) => ({ ...prev, passengerPhone: e.target.value }))
+                        }
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -733,7 +990,80 @@ export function EnhancedTrainBooking() {
                     </Select>
                   </div>
 
-                  {/* Booking Summary */}
+                  {/* Preferences */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label>Meal Preference</Label>
+                      <Select
+                        value={bookingData.preferences.mealPreference}
+                        onValueChange={(value) =>
+                          setBookingData((prev) => ({ 
+                            ...prev, 
+                            preferences: { ...prev.preferences, mealPreference: value }
+                          }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="veg">Vegetarian</SelectItem>
+                          <SelectItem value="non-veg">Non-Vegetarian</SelectItem>
+                          <SelectItem value="jain">Jain Vegetarian</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label>Berth Preference</Label>
+                      <Select
+                        value={bookingData.preferences.berthPreference}
+                        onValueChange={(value) =>
+                          setBookingData((prev) => ({ 
+                            ...prev, 
+                            preferences: { ...prev.preferences, berthPreference: value }
+                          }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="no-preference">No Preference</SelectItem>
+                          <SelectItem value="lower">Lower Berth</SelectItem>
+                          <SelectItem value="middle">Middle Berth</SelectItem>
+                          <SelectItem value="upper">Upper Berth</SelectItem>
+                          <SelectItem value="side-lower">Side Lower</SelectItem>
+                          <SelectItem value="side-upper">Side Upper</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label>Coach Preference</Label>
+                      <Select
+                        value={bookingData.preferences.coachPreference}
+                        onValueChange={(value) =>
+                          setBookingData((prev) => ({ 
+                            ...prev, 
+                            preferences: { ...prev.preferences, coachPreference: value }
+                          }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="no-preference">No Preference</SelectItem>
+                          <SelectItem value="ladies-only">Ladies Only</SelectItem>
+                          <SelectItem value="handicapped">Handicapped Friendly</SelectItem>
+                          <SelectItem value="senior-citizen">Senior Citizen</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Enhanced Booking Summary */}
                   <div className="p-4 bg-gray-50 rounded-lg border">
                     <h4 className="font-semibold mb-3 flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
@@ -749,6 +1079,10 @@ export function EnhancedTrainBooking() {
                         <span>{getStationName(fromStation)} → {getStationName(toStation)}</span>
                       </div>
                       <div className="flex justify-between">
+                        <span>Departure:</span>
+                        <span>{selectedTrain.departureTime} | Duration: {selectedTrain.duration}</span>
+                      </div>
+                      <div className="flex justify-between">
                         <span>Class:</span>
                         <span>{getSelectedClassInfo()?.className} ({selectedClass})</span>
                       </div>
@@ -759,6 +1093,10 @@ export function EnhancedTrainBooking() {
                       <div className="flex justify-between">
                         <span>Travel Date:</span>
                         <span>{travelDate ? format(travelDate, "PPP") : "Not selected"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Meal Preference:</span>
+                        <span className="capitalize">{bookingData.preferences.mealPreference}</span>
                       </div>
                       <div className="flex justify-between font-semibold text-lg border-t pt-2 mt-2">
                         <span>Total Amount:</span>
@@ -774,10 +1112,10 @@ export function EnhancedTrainBooking() {
                     type="submit"
                     className="w-full bg-orange-600 hover:bg-orange-700"
                     size="lg"
-                    disabled={!selectedTrain || isLoading || !getSelectedClassInfo() || !bookingData.passengerName || !bookingData.passengerEmail}
+                    disabled={!selectedTrain || isLoading || !getSelectedClassInfo() || !bookingData.passengerName || !bookingData.passengerEmail || !bookingData.passengerPhone}
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    Book Real Ticket on IRCTC
+                    Book Real Ticket on IRCTC - ₹{getSelectedClassInfo() ? getSelectedClassInfo()!.currentPrice * bookingData.seatCount : 0}
                   </Button>
                 </form>
               </CardContent>
@@ -791,18 +1129,18 @@ export function EnhancedTrainBooking() {
                 <TrainIcon className="h-16 w-16 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-xl font-medium text-gray-900 mb-2">No Trains Found</h3>
                 <p className="text-gray-500 mb-4">
-                  No direct trains are available between the selected stations on the chosen date.
+                  No direct trains are available between the selected stations.
                 </p>
                 <div className="text-sm text-gray-600 max-w-md mx-auto">
                   <p className="mb-2"><strong>Suggestions:</strong></p>
                   <ul className="list-disc list-inside space-y-1">
                     <li>Try different travel dates</li>
-                    <li>Check connecting routes via major junctions</li>
+                    <li>Check connecting routes via major junctions like Bengaluru</li>
                     <li>Consider nearby stations</li>
                     <li>Book tickets directly from IRCTC for more options</li>
                   </ul>
                 </div>
-                <div className="mt-6">
+                <div className="mt-6 flex gap-3 justify-center">
                   <Button 
                     onClick={() => window.open('https://www.irctc.co.in/', '_blank')}
                     variant="outline"
@@ -810,19 +1148,17 @@ export function EnhancedTrainBooking() {
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Open IRCTC Website
                   </Button>
+                  <Button 
+                    onClick={handleNewBooking}
+                    variant="outline"
+                  >
+                    <Search className="h-4 w-4 mr-2" />
+                    Try Different Route
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           )}
-
-          {/* Stats Footer */}
-          <div className="bg-blue-50 rounded-lg p-4 text-center text-sm text-blue-800">
-            <p>
-              <strong>{karnatakaStations.length} Stations</strong> | 
-              <strong>{karnatakaTrains.length} Trains</strong> | 
-              Real IRCTC Booking Available
-            </p>
-          </div>
         </>
       )}
     </div>
