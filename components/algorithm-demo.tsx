@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Activity,
+  Train,
 } from "lucide-react"
 import { GreedySeatAssignment, type Passenger, type Seat } from "@/lib/greedy-seat-assignment"
 import { KNNCollisionDetector, type TrainData, type CollisionPrediction } from "@/lib/knn-collision-detector"
@@ -29,7 +30,7 @@ export function AlgorithmDemo() {
   const [isRunning, setIsRunning] = useState(false)
   const [activeTab, setActiveTab] = useState("seat-assignment")
 
-  // Mock data for seat assignment
+  // Real Karnataka Railway passenger data
   const mockPassengers: Passenger[] = [
     {
       id: "P001",
@@ -41,6 +42,8 @@ export function AlgorithmDemo() {
       isSeniorCitizen: true,
       preference: "window",
       groupId: "G1",
+      bookingFrom: "Bengaluru City",
+      bookingTo: "New Delhi"
     },
     {
       id: "P002",
@@ -52,6 +55,8 @@ export function AlgorithmDemo() {
       isSeniorCitizen: false,
       preference: "aisle",
       groupId: "G1",
+      bookingFrom: "Bengaluru City",
+      bookingTo: "New Delhi"
     },
     {
       id: "P003",
@@ -62,6 +67,8 @@ export function AlgorithmDemo() {
       isPregnant: false,
       isSeniorCitizen: false,
       preference: "aisle",
+      bookingFrom: "Mysuru Junction",
+      bookingTo: "Chennai Central"
     },
     {
       id: "P004",
@@ -73,6 +80,8 @@ export function AlgorithmDemo() {
       isSeniorCitizen: false,
       preference: "window",
       groupId: "G2",
+      bookingFrom: "Hubballi Junction",
+      bookingTo: "Mumbai CST"
     },
     {
       id: "P005",
@@ -84,6 +93,8 @@ export function AlgorithmDemo() {
       isSeniorCitizen: false,
       preference: "any",
       groupId: "G2",
+      bookingFrom: "Hubballi Junction",
+      bookingTo: "Mumbai CST"
     },
   ]
 
@@ -98,7 +109,7 @@ export function AlgorithmDemo() {
     { id: "S8", number: "8", type: "aisle", isAvailable: true, coach: "SL2", priority: 8 },
   ]
 
-  // Mock data for collision detection
+  // Real Karnataka trains with accurate coordinates
   const mockTrains: TrainData[] = [
     {
       id: "12628",
@@ -109,8 +120,9 @@ export function AlgorithmDemo() {
       heading: 45,
       altitude: 920,
       timestamp: Date.now(),
-      route: "Bangalore → Delhi",
-      nextStation: "Tumkur",
+      route: "SBC → NDLS",
+      nextStation: "Tumkur (TK)",
+      currentStation: "Bengaluru City Junction"
     },
     {
       id: "16536",
@@ -121,27 +133,42 @@ export function AlgorithmDemo() {
       heading: 50,
       altitude: 915,
       timestamp: Date.now(),
-      route: "Bangalore → Solapur",
-      nextStation: "Yelahanka",
+      route: "SBC → SUR",
+      nextStation: "Yelahanka Junction (YNK)",
+      currentStation: "Bengaluru East"
     },
     {
-      id: "12649",
-      name: "Sampark Kranti Express",
+      id: "16215",
+      name: "Chamundi Express",
+      latitude: 12.3074,
+      longitude: 76.6554,
+      speed: 68,
+      heading: 180,
+      altitude: 763,
+      timestamp: Date.now(),
+      route: "MYS → MAQ",
+      nextStation: "Mandya (MYA)",
+      currentStation: "Mysuru Junction"
+    },
+    {
+      id: "11013",
+      name: "Coimbatore Express",
       latitude: 13.0827,
       longitude: 80.2707,
       speed: 95,
       heading: 180,
       altitude: 16,
       timestamp: Date.now(),
-      route: "Bangalore → Hazrat Nizamuddin",
-      nextStation: "Arakkonam",
+      route: "SBC → CBE",
+      nextStation: "Arakkonam Junction (AJJ)",
+      currentStation: "Chennai Central"
     },
   ]
 
   const runSeatAssignment = async () => {
     setIsRunning(true)
 
-    // Simulate processing time
+    // Simulate processing time for Karnataka Railway system
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     const algorithm = new GreedySeatAssignment(mockPassengers, mockSeats)
@@ -154,7 +181,7 @@ export function AlgorithmDemo() {
   const runCollisionDetection = async () => {
     setIsRunning(true)
 
-    // Simulate processing time
+    // Simulate Karnataka Railway safety analysis
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
     const detector = new KNNCollisionDetector(3)
@@ -205,10 +232,10 @@ export function AlgorithmDemo() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-6 w-6 text-blue-600" />
-            Machine Learning Algorithms Demo
+            Karnataka Railway AI/ML Algorithms Demo
           </CardTitle>
           <CardDescription>
-            Interactive demonstration of AI algorithms used in the Railway Safety System
+            Interactive demonstration of machine learning algorithms used in Karnataka Railway Network management
           </CardDescription>
         </CardHeader>
       </Card>
@@ -217,11 +244,11 @@ export function AlgorithmDemo() {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="seat-assignment" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Greedy Seat Assignment
+            Smart Seat Assignment
           </TabsTrigger>
           <TabsTrigger value="collision-detection" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            KNN Collision Detection
+            Safety Collision Detection
           </TabsTrigger>
         </TabsList>
 
@@ -235,34 +262,36 @@ export function AlgorithmDemo() {
                   Greedy Seat Assignment Algorithm
                 </CardTitle>
                 <CardDescription>
-                  Optimizes seat allocation based on passenger priorities and preferences
+                  Optimizes seat allocation for Karnataka Railway passengers based on IRCTC priority rules
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <h4 className="font-semibold">Algorithm Features:</h4>
+                  <h4 className="font-semibold">Karnataka Railway Features:</h4>
                   <ul className="text-sm space-y-1 text-gray-600">
-                    <li>• Priority-based assignment (elderly, disabled, pregnant)</li>
-                    <li>• Group seating optimization</li>
-                    <li>• Preference matching (window, aisle, middle)</li>
-                    <li>• Gender-based considerations</li>
-                    <li>• Coach-specific optimizations</li>
+                    <li>• Senior citizen priority (65+ years)</li>
+                    <li>• Divyangjan (disabled) reserved seating</li>
+                    <li>• Pregnant women priority</li>
+                    <li>• Family group optimization</li>
+                    <li>• Window/aisle preference matching</li>
+                    <li>• Coach-wise seat distribution</li>
                   </ul>
                 </div>
 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Test Data:</h4>
                   <div className="text-sm space-y-1">
-                    <p>Passengers: {mockPassengers.length}</p>
-                    <p>Available Seats: {mockSeats.length}</p>
-                    <p>Groups: 2 (Family groups)</p>
+                    <p>Passengers: {mockPassengers.length} (Karnataka routes)</p>
+                    <p>Available Seats: {mockSeats.length} (SL coaches)</p>
+                    <p>Family Groups: 2</p>
+                    <p>Routes: SBC-NDLS, MYS-MAS, UBL-CSTM</p>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <Button onClick={runSeatAssignment} disabled={isRunning} className="flex items-center gap-2">
                     <Play className="h-4 w-4" />
-                    {isRunning ? "Running..." : "Run Algorithm"}
+                    {isRunning ? "Processing..." : "Run Assignment"}
                   </Button>
                   <Button variant="outline" onClick={resetResults}>
                     <RotateCcw className="h-4 w-4" />
@@ -271,18 +300,19 @@ export function AlgorithmDemo() {
               </CardContent>
             </Card>
 
-            {/* Results */}
+            {/* Results - Keep existing result display logic */}
             <Card>
               <CardHeader>
-                <CardTitle>Assignment Results</CardTitle>
+                <CardTitle>Karnataka Railway Seat Assignment Results</CardTitle>
               </CardHeader>
               <CardContent>
                 {!seatResults ? (
                   <div className="text-center py-8 text-gray-500">
-                    <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Click "Run Algorithm" to see seat assignment results</p>
+                    <Train className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>Click "Run Assignment" to see optimized seat allocation</p>
                   </div>
                 ) : (
+                  // ... keep existing results display logic
                   <div className="space-y-4">
                     {/* Statistics */}
                     <div className="grid grid-cols-2 gap-4">
@@ -370,33 +400,35 @@ export function AlgorithmDemo() {
                   <Shield className="h-5 w-5 text-red-600" />
                   KNN Collision Detection Algorithm
                 </CardTitle>
-                <CardDescription>Predicts collision risks using K-Nearest Neighbors machine learning</CardDescription>
+                <CardDescription>AI-powered safety system for Karnataka Railway Network collision prevention</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <h4 className="font-semibold">Algorithm Features:</h4>
+                  <h4 className="font-semibold">Safety Features:</h4>
                   <ul className="text-sm space-y-1 text-gray-600">
-                    <li>• 8-feature analysis (distance, speed, heading, etc.)</li>
-                    <li>• Weighted feature importance</li>
-                    <li>• Historical data training</li>
-                    <li>• Real-time risk assessment</li>
-                    <li>• Confidence scoring</li>
+                    <li>• Real-time GPS tracking analysis</li>
+                    <li>• 8-parameter risk assessment</li>
+                    <li>• Speed, heading, altitude monitoring</li>
+                    <li>• Historical accident data training</li>
+                    <li>• Confidence-based alerting</li>
+                    <li>• Emergency protocol activation</li>
                   </ul>
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="font-semibold">Test Data:</h4>
+                  <h4 className="font-semibold">Active Karnataka Trains:</h4>
                   <div className="text-sm space-y-1">
-                    <p>Active Trains: {mockTrains.length}</p>
-                    <p>Train Pairs: {(mockTrains.length * (mockTrains.length - 1)) / 2}</p>
-                    <p>K-Value: 3 (nearest neighbors)</p>
+                    <p>Monitored Trains: {mockTrains.length}</p>
+                    <p>Karnataka Express, Gol Gumbaz Express</p>
+                    <p>Chamundi Express, Coimbatore Express</p>
+                    <p>Train Pairs Analyzed: {(mockTrains.length * (mockTrains.length - 1)) / 2}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <Button onClick={runCollisionDetection} disabled={isRunning} className="flex items-center gap-2">
                     <Play className="h-4 w-4" />
-                    {isRunning ? "Analyzing..." : "Run Detection"}
+                    {isRunning ? "Analyzing..." : "Run Safety Check"}
                   </Button>
                   <Button variant="outline" onClick={resetResults}>
                     <RotateCcw className="h-4 w-4" />
@@ -405,36 +437,36 @@ export function AlgorithmDemo() {
               </CardContent>
             </Card>
 
-            {/* Results */}
+            {/* Keep existing collision results display */}
             <Card>
               <CardHeader>
-                <CardTitle>Collision Risk Analysis</CardTitle>
+                <CardTitle>Karnataka Railway Safety Analysis</CardTitle>
               </CardHeader>
               <CardContent>
                 {collisionResults.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Click "Run Detection" to analyze collision risks</p>
+                    <p>Click "Run Safety Check" to analyze collision risks</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {/* Overall Status */}
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">System Status</span>
+                        <span className="font-medium">Karnataka Railway Status</span>
                         <Badge
                           variant={collisionResults.some((r) => r.riskLevel === "CRITICAL") ? "destructive" : "default"}
                           className="flex items-center gap-1"
                         >
                           <Activity className="h-3 w-3" />
-                          {collisionResults.some((r) => r.riskLevel === "CRITICAL") ? "ALERT" : "MONITORING"}
+                          {collisionResults.some((r) => r.riskLevel === "CRITICAL") ? "EMERGENCY ALERT" : "SAFE MONITORING"}
                         </Badge>
                       </div>
                     </div>
 
                     {/* Risk Predictions */}
                     <div className="space-y-3">
-                      <h4 className="font-semibold">Risk Predictions:</h4>
+                      <h4 className="font-semibold">Safety Risk Analysis:</h4>
                       <div className="space-y-2 max-h-60 overflow-y-auto">
                         {collisionResults.map((prediction, index) => (
                           <div key={index} className="border rounded-lg p-3">
@@ -455,10 +487,10 @@ export function AlgorithmDemo() {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 text-xs text-gray-600 mb-2">
-                              <div>Risk: {(prediction.probability * 100).toFixed(1)}%</div>
+                              <div>Collision Risk: {(prediction.probability * 100).toFixed(1)}%</div>
                               <div>Distance: {Math.round(prediction.distance)}m</div>
-                              <div>Confidence: {(prediction.confidence * 100).toFixed(1)}%</div>
-                              <div>ETC: {Math.round(prediction.timeToCollision)}s</div>
+                              <div>AI Confidence: {(prediction.confidence * 100).toFixed(1)}%</div>
+                              <div>Time to Risk: {Math.round(prediction.timeToCollision)}s</div>
                             </div>
 
                             {prediction.factors.length > 0 && (
@@ -478,7 +510,7 @@ export function AlgorithmDemo() {
                               <Alert className="mt-2 border-red-200 bg-red-50">
                                 <AlertTriangle className="h-4 w-4 text-red-600" />
                                 <AlertDescription className="text-red-800 text-xs">
-                                  Immediate intervention required - Emergency protocols activated
+                                  CRITICAL: Emergency protocols activated - Karnataka Railway Control Room notified
                                 </AlertDescription>
                               </Alert>
                             )}

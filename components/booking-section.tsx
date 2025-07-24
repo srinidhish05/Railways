@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { MapPin, Users, CreditCard, CheckCircle, AlertCircle, ExternalLink, Train, Clock, Search, RefreshCw, Loader2 } from "lucide-react"
+import { MapPin, Users, CreditCard, CheckCircle, AlertCircle, ExternalLink, Train, Clock, Search, RefreshCw, Loader2, Star, Zap } from "lucide-react"
 
 // FULL API ACCESS - No limitations
 const RAPIDAPI_KEY = 'f65c271e00mshce64e8cb8563b11p128323jsn5857c27564f3'
@@ -141,30 +141,23 @@ const getTrainDetails = async (trainNumber: string) => {
   return null
 }
 
-// Get live train status
-const getLiveTrainStatus = async (trainNumber: string, date: string) => {
-  try {
-    const response = await fetch(
-      `https://indian-railway-irctc.p.rapidapi.com/api/trains/v1/train/status?departure_date=${date}&train_number=${trainNumber}`,
-      {
-        headers: {
-          'x-rapidapi-host': 'indian-railway-irctc.p.rapidapi.com',
-          'x-rapidapi-key': RAPIDAPI_KEY,
-          'x-rapid-api': 'rapid-api-database'
-        }
-      }
-    )
-    return await response.json()
-  } catch (error) {
-    console.error('Error fetching live status:', error)
-    return null
-  }
-}
-
-// Comprehensive train database with ALL major train types
+// Comprehensive train database with ALL major train types + Karnataka focus
 const getComprehensiveTrainDatabase = async () => {
-  // All major train categories
+  // All major train categories with Karnataka-specific trains highlighted
   const trainCategories = {
+    karnataka: [
+      // Major Karnataka trains
+      '12627', '12628', // Karnataka Express
+      '16536', '16535', // Gol Gumbaz Express
+      '17326', '17325', // Vishwamanava Express
+      '18047', '18048', // Amaravathi Express
+      '11013', '11014', // Coimbatore Express
+      '16209', '16210', // Mysuru Express
+      '22691', '22692', // Rajdhani Express (Bangalore)
+      '12430', '12429', // Rajdhani Express (Bangalore)
+      '16595', '16596', // Panchganga Express
+      '17301', '17302', // Dharwad Express
+    ],
     rajdhani: Array.from({length: 50}, (_, i) => `12${(301 + i).toString().padStart(3, '0')}`),
     shatabdi: Array.from({length: 60}, (_, i) => `12${(001 + i).toString().padStart(3, '0')}`),
     duronto: Array.from({length: 40}, (_, i) => `12${(213 + i).toString().padStart(3, '0')}`),
@@ -182,6 +175,7 @@ const getComprehensiveTrainDatabase = async () => {
   }
 
   const allTrainNumbers = [
+    ...trainCategories.karnataka,
     ...trainCategories.rajdhani,
     ...trainCategories.shatabdi,
     ...trainCategories.duronto,
@@ -192,7 +186,7 @@ const getComprehensiveTrainDatabase = async () => {
     ...trainCategories.popular
   ]
 
-  console.log(`Loading ${allTrainNumbers.length} trains from comprehensive database...`)
+  console.log(`🚂 Karnataka Railway: Loading ${allTrainNumbers.length} trains from comprehensive database...`)
 
   const batchSize = 25
   const allTrains = []
@@ -207,13 +201,20 @@ const getComprehensiveTrainDatabase = async () => {
       const batchResults = await Promise.allSettled(batchPromises)
       const validTrains = batchResults
         .filter(result => result.status === 'fulfilled' && result.value)
-        .map(result => (result as PromiseFulfilledResult<any>).value)
+        .map(result => {
+          const train = (result as PromiseFulfilledResult<any>).value
+          // Mark Karnataka trains
+          if (trainCategories.karnataka.includes(train.train_number)) {
+            train.isKarnatakaRoute = true
+          }
+          return train
+        })
       
       allTrains.push(...validTrains)
       
       // Progress update
       if (i % 100 === 0) {
-        console.log(`Loaded ${allTrains.length} trains so far...`)
+        console.log(`🌟 Loaded ${allTrains.length} trains so far...`)
       }
       
       // Small delay to be respectful to APIs
@@ -223,8 +224,27 @@ const getComprehensiveTrainDatabase = async () => {
     }
   }
 
-  console.log(`Successfully loaded ${allTrains.length} trains from comprehensive database`)
+  console.log(`✅ Successfully loaded ${allTrains.length} trains from comprehensive database`)
   return allTrains
+}
+
+// Check if train is Karnataka route
+const isKarnatakaRoute = (train: RealTrain) => {
+  const karnatakaKeywords = [
+    'karnataka', 'bengaluru', 'bangalore', 'mysuru', 'mysore', 'hubballi', 
+    'hubli', 'mangaluru', 'mangalore', 'dharwad', 'belagavi', 'belgaum',
+    'chamundi', 'hampi', 'gol gumbaz', 'vishwamanava'
+  ]
+  
+  const trainName = train.train_name?.toLowerCase() || ''
+  const fromStation = train.from_station_name?.toLowerCase() || ''
+  const toStation = train.to_station_name?.toLowerCase() || ''
+  
+  return karnatakaKeywords.some(keyword => 
+    trainName.includes(keyword) || 
+    fromStation.includes(keyword) || 
+    toStation.includes(keyword)
+  ) || train.isKarnatakaRoute
 }
 
 interface RealTrain {
@@ -239,6 +259,7 @@ interface RealTrain {
   train_type?: string
   status?: string
   running_days?: string[]
+  isKarnatakaRoute?: boolean
 }
 
 export function BookingSection() {
@@ -256,6 +277,7 @@ export function BookingSection() {
   const [bookingStatus, setBookingStatus] = useState<"idle" | "redirected" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
   const [displayCount, setDisplayCount] = useState(50)
+  const [showKarnatakaOnly, setShowKarnatakaOnly] = useState(false)
 
   // Load comprehensive train database
   useEffect(() => {
@@ -266,16 +288,23 @@ export function BookingSection() {
       try {
         // Simulate progress updates
         const progressInterval = setInterval(() => {
-          setLoadingProgress(prev => Math.min(prev + 10, 90))
-        }, 1000)
+          setLoadingProgress(prev => Math.min(prev + 8, 92))
+        }, 800)
 
         const trains = await getComprehensiveTrainDatabase()
         
         clearInterval(progressInterval)
         setLoadingProgress(100)
         
-        setAllTrains(trains)
-        setFilteredTrains(trains.slice(0, 50))
+        // Sort trains with Karnataka routes first
+        const sortedTrains = trains.sort((a, b) => {
+          if (isKarnatakaRoute(a) && !isKarnatakaRoute(b)) return -1
+          if (!isKarnatakaRoute(a) && isKarnatakaRoute(b)) return 1
+          return 0
+        })
+        
+        setAllTrains(sortedTrains)
+        setFilteredTrains(sortedTrains.slice(0, 50))
         
         setTimeout(() => setIsLoadingDatabase(false), 500)
       } catch (error) {
@@ -354,23 +383,26 @@ export function BookingSection() {
     }
   }
 
-  // Filter trains based on search query
+  // Filter trains based on search query and Karnataka filter
   useEffect(() => {
-    if (!searchQuery) {
-      setFilteredTrains(allTrains.slice(0, displayCount))
-      return
+    let filtered = allTrains
+
+    if (showKarnatakaOnly) {
+      filtered = filtered.filter(train => isKarnatakaRoute(train))
     }
 
-    const filtered = allTrains.filter(train => 
-      train.train_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      train.train_number?.includes(searchQuery) ||
-      train.from_station_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      train.to_station_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      train.train_type?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    if (searchQuery) {
+      filtered = filtered.filter(train => 
+        train.train_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        train.train_number?.includes(searchQuery) ||
+        train.from_station_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        train.to_station_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        train.train_type?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
     
     setFilteredTrains(filtered.slice(0, displayCount))
-  }, [searchQuery, allTrains, displayCount])
+  }, [searchQuery, allTrains, displayCount, showKarnatakaOnly])
 
   const loadMoreTrains = () => {
     setDisplayCount(prev => prev + 50)
@@ -395,11 +427,12 @@ export function BookingSection() {
     const irctcUrl = `https://www.irctc.co.in/nget/train-search?trainNumber=${selectedTrain.train_number}`
     
     const confirmRedirect = window.confirm(
-      `This will redirect you to IRCTC for real ticket booking.\n\n` +
+      `🚂 Karnataka Railway System - IRCTC Booking\n\n` +
       `Train: ${selectedTrain.train_name} (${selectedTrain.train_number})\n` +
       `Class: ${selectedClass}\n` +
       `Passengers: ${seatCount}\n\n` +
-      `Click OK to proceed to IRCTC.co.in for real booking.`
+      `✅ This will redirect you to IRCTC.co.in for secure ticket booking.\n` +
+      `Click OK to proceed with real booking.`
     )
     
     if (confirmRedirect) {
@@ -425,15 +458,31 @@ export function BookingSection() {
     setSearchQuery("")
   }
 
+  const karnatakaTrainsCount = allTrains.filter(train => isKarnatakaRoute(train)).length
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto p-4">
+      {/* Karnataka Railway Header */}
+      <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-red-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-orange-800">
+            <Train className="h-6 w-6" />
+            <Zap className="h-5 w-5 text-yellow-600" />
+            Karnataka Railway - Comprehensive Database
+          </CardTitle>
+          <CardDescription className="text-orange-700">
+            🌟 {karnatakaTrainsCount} Karnataka trains • {allTrains.length} total trains • All India coverage with real IRCTC integration
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
       {/* Database Loading Progress */}
       {isLoadingDatabase && (
         <Alert className="border-blue-200 bg-blue-50">
           <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
           <AlertDescription className="text-blue-800">
             <div className="space-y-2">
-              <div><strong>Loading Comprehensive Train Database...</strong></div>
+              <div><strong>🚂 Loading Comprehensive Train Database...</strong></div>
               <div className="w-full bg-blue-200 rounded-full h-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full transition-all duration-500" 
@@ -441,7 +490,7 @@ export function BookingSection() {
                 ></div>
               </div>
               <div className="text-sm">
-                Loading {loadingProgress < 50 ? 'Rajdhani & Shatabdi' : loadingProgress < 80 ? 'Express & Mail' : 'Regional & Popular'} trains... ({loadingProgress}%)
+                Loading {loadingProgress < 30 ? '🌟 Karnataka & Premium' : loadingProgress < 60 ? '🚄 Rajdhani & Shatabdi' : loadingProgress < 85 ? '🚂 Express & Mail' : '🚃 Regional & Popular'} trains... ({loadingProgress}%)
               </div>
             </div>
           </AlertDescription>
@@ -453,7 +502,7 @@ export function BookingSection() {
         <Alert className="border-green-200 bg-green-50">
           <CheckCircle className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-800">
-            <strong>Redirected to IRCTC!</strong> Complete your real ticket booking on the official website.
+            <strong>✅ Redirected to IRCTC!</strong> Complete your real ticket booking on the official website.
             <div className="mt-2">
               <Button onClick={handleNewSearch} size="sm" variant="outline" className="mr-2">
                 Search More Trains
@@ -475,13 +524,13 @@ export function BookingSection() {
             Search All Indian Trains ({allTrains.length} trains in database)
           </CardTitle>
           <CardDescription>
-            Comprehensive database: Rajdhani, Shatabdi, Duronto, Express, Mail, Passenger & Regional trains from across India
+            🌟 Comprehensive database: Rajdhani, Shatabdi, Duronto, Express, Mail, Passenger & Regional trains from across India
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
             <Input
-              placeholder="Search by train name, number, route, or type (e.g., 'Rajdhani', '12627', 'Mumbai Delhi', 'Express')"
+              placeholder="Search by train name, number, route, or type (e.g., 'Karnataka Express', '12627', 'Bangalore Mumbai', 'Rajdhani')"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleAdvancedSearch()}
@@ -502,10 +551,22 @@ export function BookingSection() {
           </div>
           
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>
-              Showing {filteredTrains.length} trains
-              {searchQuery && ` matching "${searchQuery}"`}
-            </span>
+            <div className="flex items-center gap-4">
+              <span>
+                Showing {filteredTrains.length} trains
+                {searchQuery && ` matching "${searchQuery}"`}
+                {showKarnatakaOnly && " (Karnataka routes only)"}
+              </span>
+              <Button
+                variant={showKarnatakaOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowKarnatakaOnly(!showKarnatakaOnly)}
+                className="text-xs"
+              >
+                <Star className="h-3 w-3 mr-1" />
+                Karnataka Only ({karnatakaTrainsCount})
+              </Button>
+            </div>
             {filteredTrains.length >= displayCount && (
               <Button variant="outline" size="sm" onClick={loadMoreTrains}>
                 Load More Trains
@@ -532,15 +593,15 @@ export function BookingSection() {
               All Available Trains ({filteredTrains.length})
             </CardTitle>
             <CardDescription>
-              {searchQuery ? `Search results for "${searchQuery}"` : "Complete Indian Railway database"}
+              {searchQuery ? `Search results for "${searchQuery}"` : showKarnatakaOnly ? "Karnataka railway routes" : "Complete Indian Railway database"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 max-h-96 overflow-y-auto">
             {isLoadingDatabase ? (
               <div className="text-center py-8">
-                <Train className="h-8 w-8 mx-auto mb-2 animate-pulse text-blue-600" />
+                <Train className="h-8 w-8 mx-auto mb-2 animate-pulse text-orange-600" />
                 <p className="text-gray-600">Loading comprehensive train database...</p>
-                <p className="text-sm text-gray-500">This includes all major Indian trains</p>
+                <p className="text-sm text-gray-500">🌟 This includes all major Indian trains with Karnataka priority</p>
               </div>
             ) : filteredTrains.length > 0 ? (
               filteredTrains.map((train, index) => (
@@ -550,14 +611,22 @@ export function BookingSection() {
                     selectedTrain?.train_number === train.train_number 
                       ? "border-blue-500 bg-blue-50 shadow-md" 
                       : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
-                  }`}
+                  } ${isKarnatakaRoute(train) ? 'ring-1 ring-orange-200' : ''}`}
                   onClick={() => handleTrainSelect(train)}
                 >
                   <div className="flex justify-between items-start mb-1">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-sm text-blue-900 leading-tight">
-                        {train.train_name} ({train.train_number})
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-sm text-blue-900 leading-tight">
+                          {train.train_name} ({train.train_number})
+                        </h3>
+                        {isKarnatakaRoute(train) && (
+                          <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-700 border-orange-200">
+                            <Star className="h-2 w-2 mr-1" />
+                            Karnataka
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-gray-600 text-xs mt-1">
                         {train.from_station_name && train.to_station_name 
                           ? `${train.from_station_name} → ${train.to_station_name}`
@@ -565,26 +634,26 @@ export function BookingSection() {
                         }
                       </p>
                     </div>
-                    <Badge variant="default" className="text-xs">Available</Badge>
+                    <Badge variant="default" className="text-xs bg-green-100 text-green-700 border-green-200">Available</Badge>
                   </div>
 
                   <div className="flex justify-between items-center text-xs text-gray-600 mb-2">
                     <div className="flex items-center gap-3">
-                      {train.departure_time && <span>Dep: {train.departure_time}</span>}
+                      {train.departure_time && <span>🕐 {train.departure_time}</span>}
                       {train.duration && (
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {train.duration}
                         </span>
                       )}
-                      {train.distance && <span>{train.distance}</span>}
+                      {train.distance && <span>📏 {train.distance}</span>}
                     </div>
                     {train.train_type && <span className="text-green-600 font-medium">{train.train_type}</span>}
                   </div>
 
                   {train.running_days && (
                     <div className="text-xs text-gray-500 mb-2">
-                      Runs: {Array.isArray(train.running_days) ? train.running_days.join(', ') : train.running_days}
+                      🗓️ Runs: {Array.isArray(train.running_days) ? train.running_days.join(', ') : train.running_days}
                     </div>
                   )}
 
@@ -592,21 +661,28 @@ export function BookingSection() {
                   {selectedTrain?.train_number === train.train_number && (
                     <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                       <Label className="text-xs font-semibold text-blue-900 mb-2 block">
-                        Select Class for Booking
+                        🎫 Select Class for Booking
                       </Label>
                       <div className="grid grid-cols-3 gap-1">
-                        {['1A', '2A', '3A', 'SL', 'CC', '2S'].map((classCode) => (
+                        {[
+                          { code: '1A', name: 'First AC' },
+                          { code: '2A', name: '2nd AC' },
+                          { code: '3A', name: '3rd AC' },
+                          { code: 'SL', name: 'Sleeper' },
+                          { code: 'CC', name: 'Chair Car' },
+                          { code: '2S', name: '2nd Sitting' }
+                        ].map((classInfo) => (
                           <Button
-                            key={classCode}
-                            variant={selectedClass === classCode ? "default" : "outline"}
+                            key={classInfo.code}
+                            variant={selectedClass === classInfo.code ? "default" : "outline"}
                             size="sm"
-                            className="text-xs h-7"
+                            className="text-xs h-7 flex flex-col py-1"
                             onClick={(e) => {
                               e.stopPropagation()
-                              setSelectedClass(classCode)
+                              setSelectedClass(classInfo.code)
                             }}
                           >
-                            {classCode}
+                            <span className="font-bold">{classInfo.code}</span>
                           </Button>
                         ))}
                       </div>
@@ -624,7 +700,7 @@ export function BookingSection() {
                   {searchQuery ? "Try different search terms" : "Please wait while we load the comprehensive database"}
                 </p>
                 <Button onClick={() => window.open('https://www.irctc.co.in/', '_blank')}>
-                  Browse IRCTC Directly
+                  🔍 Browse IRCTC Directly
                   <ExternalLink className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -633,13 +709,13 @@ export function BookingSection() {
         </Card>
 
         {/* Booking Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className={selectedTrain ? "border-green-200" : ""}>
+          <CardHeader className={selectedTrain ? "bg-gradient-to-r from-green-50 to-emerald-50" : ""}>
+            <CardTitle className={`flex items-center gap-2 ${selectedTrain ? "text-green-800" : ""}`}>
               <CreditCard className="h-5 w-5" />
-              Complete Booking on IRCTC
+              🎫 Complete Booking on IRCTC
             </CardTitle>
-            <CardDescription>
+            <CardDescription className={selectedTrain ? "text-green-700" : ""}>
               {selectedTrain 
                 ? `Booking ${selectedTrain.train_name} (${selectedTrain.train_number})`
                 : "Select a train to continue booking"
@@ -665,7 +741,7 @@ export function BookingSection() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter email address"
+                  placeholder="Enter email address for booking confirmation"
                   value={passengerEmail}
                   onChange={(e) => setPassengerEmail(e.target.value)}
                   required
@@ -689,34 +765,40 @@ export function BookingSection() {
 
               {selectedTrain && selectedClass && (
                 <div className="p-4 bg-gray-50 rounded-lg">
-                  <h4 className="font-semibold mb-2">Booking Summary</h4>
+                  <h4 className="font-semibold mb-2">📋 Booking Summary</h4>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span>Train:</span>
+                      <span>🚂 Train:</span>
                       <span className="font-medium">{selectedTrain.train_name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Number:</span>
+                      <span>🔢 Number:</span>
                       <span>{selectedTrain.train_number}</span>
                     </div>
                     {selectedTrain.from_station_name && selectedTrain.to_station_name && (
                       <div className="flex justify-between">
-                        <span>Route:</span>
+                        <span>🛤️ Route:</span>
                         <span>{selectedTrain.from_station_name} → {selectedTrain.to_station_name}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span>Class:</span>
+                      <span>🎫 Class:</span>
                       <span className="font-medium">{selectedClass}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Passengers:</span>
+                      <span>👥 Passengers:</span>
                       <span>{seatCount}</span>
                     </div>
                     {selectedTrain.train_type && (
                       <div className="flex justify-between">
-                        <span>Type:</span>
+                        <span>🚄 Type:</span>
                         <span className="text-green-600">{selectedTrain.train_type}</span>
+                      </div>
+                    )}
+                    {isKarnatakaRoute(selectedTrain) && (
+                      <div className="flex justify-between">
+                        <span>🌟 Special:</span>
+                        <span className="text-orange-600 font-medium">Karnataka Route</span>
                       </div>
                     )}
                   </div>
@@ -725,11 +807,11 @@ export function BookingSection() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className={`w-full ${selectedTrain && selectedClass ? 'bg-green-600 hover:bg-green-700' : ''}`}
                 disabled={!selectedTrain || !selectedClass || !passengerName || !passengerEmail}
               >
                 {selectedTrain && selectedClass 
-                  ? "Proceed to IRCTC for Real Booking" 
+                  ? "🎫 Proceed to IRCTC for Real Booking" 
                   : "Select Train & Class to Continue"
                 }
                 <ExternalLink className="ml-2 h-4 w-4" />
@@ -738,6 +820,12 @@ export function BookingSection() {
               {!selectedTrain && (
                 <p className="text-sm text-gray-500 text-center">
                   Please select a train from the comprehensive database above
+                </p>
+              )}
+              
+              {selectedTrain && selectedClass && (
+                <p className="text-xs text-green-600 text-center">
+                  ✅ Secure booking through official IRCTC website
                 </p>
               )}
             </form>

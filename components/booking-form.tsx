@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { MapPin, Users, CreditCard, CheckCircle, AlertCircle, Search, Clock, Train as TrainIcon, Calendar, IndianRupee, ExternalLink } from "lucide-react"
+import { MapPin, Users, CreditCard, CheckCircle, AlertCircle, Search, Clock, Train as TrainIcon, Calendar, IndianRupee, ExternalLink, Star } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -64,6 +64,18 @@ const getTrainSchedule = async (trainNumber: string) => {
     return null
   }
 }
+
+// Karnataka Railway popular stations
+const karnatakaStations = [
+  { code: "SBC", name: "Bengaluru City Junction", city: "Bengaluru" },
+  { code: "YPR", name: "Yesvantpur Junction", city: "Bengaluru" },
+  { code: "KJM", name: "Krishnarajapuram", city: "Bengaluru" },
+  { code: "MYS", name: "Mysuru Junction", city: "Mysuru" },
+  { code: "UBL", name: "Hubballi Junction", city: "Hubballi" },
+  { code: "BGM", name: "Belagavi", city: "Belagavi" },
+  { code: "MAJN", name: "Mangaluru Junction", city: "Mangaluru" },
+  { code: "DWR", name: "Dharwad", city: "Dharwad" },
+]
 
 interface Station {
   station_name: string
@@ -124,6 +136,19 @@ export function BookingForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [bookingStatus, setBookingStatus] = useState<"idle" | "redirected" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
+
+  // Quick select Karnataka stations
+  const handleQuickSelectFrom = (station: any) => {
+    setFromStation(station.code)
+    setFromStationQuery(`${station.name} (${station.code})`)
+    setShowFromDropdown(false)
+  }
+
+  const handleQuickSelectTo = (station: any) => {
+    setToStation(station.code)
+    setToStationQuery(`${station.name} (${station.code})`)
+    setShowToDropdown(false)
+  }
 
   // Search functions with real APIs
   const handleFromStationSearch = async (query: string) => {
@@ -224,6 +249,11 @@ export function BookingForm() {
     setBookingData(prev => ({ ...prev, selectedClass: classCode }))
   }
 
+  const isKarnatakaRoute = (trainName: string) => {
+    const karnatakaKeywords = ['karnataka', 'bengaluru', 'mysuru', 'hubballi', 'mangaluru', 'chamundi', 'hampi']
+    return karnatakaKeywords.some(keyword => trainName.toLowerCase().includes(keyword))
+  }
+
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -243,11 +273,13 @@ export function BookingForm() {
     const irctcUrl = `https://www.irctc.co.in/nget/train-search?fromStation=${fromStation}&toStation=${toStation}&travelDate=${travelDate ? formatDate(travelDate) : ''}&trainNumber=${selectedTrain.train_number}`
     
     const confirmRedirect = window.confirm(
-      `This will redirect you to IRCTC for real ticket booking.\n\n` +
+      `🚂 Karnataka Railway System - IRCTC Booking\n\n` +
       `Train: ${selectedTrain.train_name} (${selectedTrain.train_number})\n` +
       `Route: ${fromStationQuery} → ${toStationQuery}\n` +
-      `Class: ${selectedClass}\n\n` +
-      `Click OK to proceed to IRCTC.co.in`
+      `Class: ${selectedClass}\n` +
+      `Date: ${travelDate ? format(travelDate, "PPP") : "Not selected"}\n\n` +
+      `✅ This will redirect you to IRCTC.co.in for secure ticket booking.\n` +
+      `Click OK to proceed with real booking.`
     )
     
     if (confirmRedirect) {
@@ -281,12 +313,25 @@ export function BookingForm() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto p-4">
+      {/* Karnataka Railway Header */}
+      <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-blue-800">
+            <TrainIcon className="h-6 w-6" />
+            Karnataka Railway Booking System
+          </CardTitle>
+          <CardDescription className="text-blue-700">
+            Search and book train tickets across India • Powered by Real IRCTC Data
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
       {/* Success Message */}
       {bookingStatus === "redirected" && (
         <Alert className="border-green-200 bg-green-50">
           <CheckCircle className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-800">
-            <strong>Redirected to IRCTC!</strong> Complete your real ticket booking on the official website.
+            <strong>✅ Redirected to IRCTC!</strong> Complete your real ticket booking on the official website.
             <div className="mt-2">
               <Button onClick={handleNewSearch} size="sm" variant="outline" className="mr-2">
                 Search More Trains
@@ -307,9 +352,28 @@ export function BookingForm() {
             <Search className="h-5 w-5 text-blue-600" />
             Search Trains - All India Routes
           </CardTitle>
-          <CardDescription>Search trains between any stations in India</CardDescription>
+          <CardDescription>Search trains between any stations in India using real IRCTC data</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Karnataka Quick Select */}
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h4 className="font-semibold text-blue-900 mb-3">🌟 Popular Karnataka Stations</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {karnatakaStations.slice(0, 8).map((station) => (
+                <Button
+                  key={station.code}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-auto py-2 flex flex-col items-start"
+                  onClick={() => !fromStation ? handleQuickSelectFrom(station) : handleQuickSelectTo(station)}
+                >
+                  <span className="font-medium">{station.code}</span>
+                  <span className="text-gray-600 truncate w-full">{station.city}</span>
+                </Button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* From Station */}
             <div className="relative">
@@ -417,7 +481,7 @@ export function BookingForm() {
           </div>
 
           <Button onClick={handleTrainSearch} disabled={isLoading} className="w-full" size="lg">
-            {isLoading ? "Searching Real Train Data..." : "Search Trains"}
+            {isLoading ? "🔍 Searching Real Train Data..." : "🚂 Search Trains"}
             <Search className="ml-2 h-4 w-4" />
           </Button>
         </CardContent>
@@ -439,7 +503,7 @@ export function BookingForm() {
               <TrainIcon className="h-5 w-5 text-green-600" />
               Available Trains ({availableTrains.length} found)
             </CardTitle>
-            <CardDescription>Real-time data from Indian Railways</CardDescription>
+            <CardDescription>Real-time data from Indian Railways • Select train to proceed</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {availableTrains.map((train, index) => (
@@ -454,9 +518,17 @@ export function BookingForm() {
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-semibold text-lg text-blue-900">
-                      {train.train_name} ({train.train_number})
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-lg text-blue-900">
+                        {train.train_name} ({train.train_number})
+                      </h3>
+                      {isKarnatakaRoute(train.train_name) && (
+                        <Badge variant="secondary" className="bg-orange-100 text-orange-700 border-orange-200">
+                          <Star className="h-3 w-3 mr-1" />
+                          Karnataka Route
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-gray-600 text-sm">
                       {train.from_station_name} → {train.to_station_name}
                     </p>
@@ -467,30 +539,39 @@ export function BookingForm() {
                           {train.departure_time}
                         </span>
                       )}
-                      {train.duration && <span>{train.duration}</span>}
-                      {train.distance && <span>{train.distance}</span>}
+                      {train.duration && <span>⏱️ {train.duration}</span>}
+                      {train.distance && <span>📏 {train.distance}</span>}
                     </div>
                   </div>
-                  <Badge variant="default">Available</Badge>
+                  <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">Available</Badge>
                 </div>
 
                 {selectedTrain?.train_number === train.train_number && (
                   <div className="mt-4 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
                     <Label className="text-sm font-semibold text-blue-900 mb-3 block">
-                      Select Class for Booking
+                      🎫 Select Class for Booking
                     </Label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {['1A', '2A', '3A', 'SL', 'CC', '2S'].map((classCode) => (
+                    <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+                      {[
+                        { code: '1A', name: 'First AC' },
+                        { code: '2A', name: 'Second AC' },
+                        { code: '3A', name: 'Third AC' },
+                        { code: 'SL', name: 'Sleeper' },
+                        { code: 'CC', name: 'Chair Car' },
+                        { code: '2S', name: 'Second Sitting' }
+                      ].map((classInfo) => (
                         <Button
-                          key={classCode}
-                          variant={selectedClass === classCode ? "default" : "outline"}
+                          key={classInfo.code}
+                          variant={selectedClass === classInfo.code ? "default" : "outline"}
                           size="sm"
+                          className="flex flex-col h-auto py-2"
                           onClick={(e) => {
                             e.stopPropagation()
-                            handleClassSelect(classCode)
+                            handleClassSelect(classInfo.code)
                           }}
                         >
-                          {classCode}
+                          <span className="font-bold">{classInfo.code}</span>
+                          <span className="text-xs">{classInfo.name}</span>
                         </Button>
                       ))}
                     </div>
@@ -505,10 +586,10 @@ export function BookingForm() {
       {/* Booking Form */}
       {selectedTrain && selectedClass && (
         <Card className="border-2 border-green-200">
-          <CardHeader className="bg-green-50">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
             <CardTitle className="flex items-center gap-2 text-green-800">
               <CreditCard className="h-5 w-5" />
-              Complete Booking on IRCTC
+              🎫 Complete Booking on IRCTC
             </CardTitle>
             <CardDescription className="text-green-700">
               {selectedTrain.train_name} ({selectedTrain.train_number}) | {selectedClass} Class
@@ -532,7 +613,7 @@ export function BookingForm() {
                 <Input
                   id="passengerEmail"
                   type="email"
-                  placeholder="Enter email address"
+                  placeholder="Enter email address for booking confirmation"
                   value={bookingData.passengerEmail}
                   onChange={(e) => setBookingData(prev => ({ ...prev, passengerEmail: e.target.value }))}
                   required
@@ -559,35 +640,39 @@ export function BookingForm() {
               </div>
 
               <div className="p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-semibold mb-2">Booking Summary</h4>
+                <h4 className="font-semibold mb-2">📋 Booking Summary</h4>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Train:</span>
-                    <span>{selectedTrain.train_name}</span>
+                    <span>🚂 Train:</span>
+                    <span className="font-medium">{selectedTrain.train_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Route:</span>
+                    <span>🛤️ Route:</span>
                     <span>{fromStationQuery} → {toStationQuery}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Class:</span>
-                    <span>{selectedClass}</span>
+                    <span>🎫 Class:</span>
+                    <span className="font-medium">{selectedClass}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Passengers:</span>
+                    <span>👥 Passengers:</span>
                     <span>{bookingData.seatCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Date:</span>
+                    <span>📅 Date:</span>
                     <span>{travelDate ? format(travelDate, "PPP") : "Not selected"}</span>
                   </div>
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" size="lg">
-                Proceed to IRCTC for Real Booking
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" size="lg">
+                🎫 Proceed to IRCTC for Real Booking
                 <ExternalLink className="ml-2 h-4 w-4" />
               </Button>
+              
+              <p className="text-xs text-gray-600 text-center">
+                ✅ Secure booking through official IRCTC website • Your data is protected
+              </p>
             </form>
           </CardContent>
         </Card>
@@ -599,9 +684,9 @@ export function BookingForm() {
           <CardContent className="text-center py-8">
             <TrainIcon className="h-16 w-16 mx-auto mb-4 text-gray-400" />
             <h3 className="text-xl font-medium text-gray-900 mb-2">No Trains Found</h3>
-            <p className="text-gray-500 mb-4">No trains found between the selected stations.</p>
+            <p className="text-gray-500 mb-4">No trains found between the selected stations for your travel date.</p>
             <Button onClick={() => window.open('https://www.irctc.co.in/', '_blank')}>
-              Check IRCTC Directly
+              🔍 Check IRCTC Directly
               <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>
