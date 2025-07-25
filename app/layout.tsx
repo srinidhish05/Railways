@@ -11,6 +11,13 @@ const inter = Inter({
   variable: '--font-inter'
 })
 
+// 👇 Move viewport to its own export (not inside metadata)
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+}
+
 export const metadata: Metadata = {
   title: "Karnataka Railway Network | Live Train Tracking & Booking",
   description: "Complete Karnataka railway management system with live train tracking, PNR status, seat booking, and real-time updates for all Karnataka trains.",
@@ -77,11 +84,12 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
     creator: '@KarnatakaRailway',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
+  // 👇 REMOVE viewport from here!
+  // viewport: {
+  //   width: 'device-width',
+  //   initialScale: 1,
+  //   maximumScale: 1,
+  // },
   verification: {
     google: 'your-google-verification-code',
   },
