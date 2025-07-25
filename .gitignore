@@ -1,27 +1,393 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Railway Safety System - Git Ignore Configuration
+# Comprehensive ignore patterns for Next.js Railway PNR & Safety Application
 
-# dependencies
+# ===========================================
+# DEPENDENCIES & PACKAGE MANAGERS
+# ===========================================
 /node_modules
+/.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
 
-# next.js
+# Package manager lock files (keep only one)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ===========================================
+# NEXT.JS SPECIFIC
+# ===========================================
 /.next/
 /out/
+next-env.d.ts
+*.tsbuildinfo
 
-# production
-/build
+# Next.js build output
+.next
+out
+build
 
-# debug
+# ===========================================
+# ENVIRONMENT & CONFIGURATION
+# ===========================================
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+
+# Railway-specific config files
+config/database.json
+config/secrets.json
+config/api-keys.json
+
+# ===========================================
+# LOGS & DEBUGGING
+# ===========================================
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+lerna-debug.log*
 
-# env files
-.env*
+# Runtime logs
+logs
+*.log
+combined.log
+error.log
+access.log
 
-# vercel
+# Railway system logs
+railway-system.log
+pnr-queries.log
+train-tracking.log
+emergency-alerts.log
+
+# ===========================================
+# PRODUCTION & BUILD
+# ===========================================
+/build
+/dist
+/.vscode/settings.json
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+.nyc_output
+
+# ===========================================
+# DATABASE & CACHE
+# ===========================================
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Redis dump files
+dump.rdb
+
+# MongoDB data
+/data/db/
+
+# Cache directories
+.cache
+.parcel-cache
+.eslintcache
+
+# ===========================================
+# UPLOADS & USER CONTENT
+# ===========================================
+# User uploaded files
+/uploads/*
+!/uploads/.gitkeep
+
+# PNR documents
+/documents/pnr/*
+!/documents/pnr/.gitkeep
+
+# Train images and assets
+/assets/trains/*
+!/assets/trains/.gitkeep
+
+# User profile pictures
+/public/uploads/profiles/*
+!/public/uploads/profiles/.gitkeep
+
+# Temporary files
+/tmp/*
+!/tmp/.gitkeep
+
+# ===========================================
+# SECURITY & SECRETS
+# ===========================================
+# SSL certificates
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+
+# SSH keys
+id_rsa
+id_rsa.pub
+*.ppk
+
+# API keys and secrets
+secrets.json
+api-keys.txt
+railway-api-config.json
+
+# ===========================================
+# DEVELOPMENT TOOLS
+# ===========================================
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===========================================
+# TESTING
+# ===========================================
+# Test coverage
+/coverage
+/.nyc_output
+/test-results
+/playwright-report
+
+# Jest
+jest.config.local.js
+/tests/__snapshots__
+
+# E2E test artifacts
+/e2e/screenshots
+/e2e/videos
+/cypress/screenshots
+/cypress/videos
+
+# ===========================================
+# DEPLOYMENT & HOSTING
+# ===========================================
+# Vercel
 .vercel
+.vercel.json
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Netlify
+.netlify
+netlify.toml
+
+# AWS
+.aws/
+aws-config.json
+
+# Docker
+Dockerfile.local
+docker-compose.override.yml
+.dockerignore.local
+
+# ===========================================
+# BACKUP & TEMPORARY FILES
+# ===========================================
+# Backup files
+*.backup
+*.bak
+*.orig
+*.tmp
+*~
+
+# Database backups
+/backups/*.sql
+/backups/*.dump
+
+# Railway system backups
+railway-backup-*.tar.gz
+pnr-data-backup-*.json
+
+# ===========================================
+# DOCUMENTATION BUILD
+# ===========================================
+# Storybook build outputs
+/storybook-static
+
+# Documentation generators
+/docs/build
+/.docusaurus
+
+# ===========================================
+# MONITORING & ANALYTICS
+# ===========================================
+# Performance monitoring
+.lighthouseci/
+lighthouse-report.html
+
+# Bundle analyzer
+.bundle-analyzer/
+bundle-report.html
+
+# ===========================================
+# MOBILE & NATIVE
+# ===========================================
+# React Native
+.expo/
+.expo-shared/
+
+# iOS
+ios/build/
+*.ipa
+
+# Android
+android/app/build/
+*.apk
+*.aab
+
+# ===========================================
+# RAILWAY SPECIFIC IGNORES
+# ===========================================
+# PNR status cache files
+/cache/pnr-status/*
+!/cache/pnr-status/.gitkeep
+
+# Train schedule cache
+/cache/train-schedules/*
+!/cache/train-schedules/.gitkeep
+
+# Station data cache
+/cache/stations/*
+!/cache/stations/.gitkeep
+
+# Emergency response logs
+/logs/emergency/*
+!/logs/emergency/.gitkeep
+
+# GPS tracking data
+/data/gps-tracking/*
+!/data/gps-tracking/.gitkeep
+
+# Railway maps and routes
+/maps/generated/*
+!/maps/generated/.gitkeep
+
+# Passenger data (sensitive)
+/data/passengers/*
+!/data/passengers/.gitkeep
+
+# Ticket booking data
+/data/bookings/*
+!/data/bookings/.gitkeep
+
+# ===========================================
+# SECURITY SCANNING
+# ===========================================
+# Security scan results
+.snyk
+security-report.json
+vulnerability-scan.txt
+
+# ===========================================
+# PERFORMANCE & OPTIMIZATION
+# ===========================================
+# Bundle analysis
+bundle-analyzer-report.html
+webpack-bundle-analyzer.json
+
+# Lighthouse reports
+lighthouse-*.html
+lighthouse-*.json
+
+# ===========================================
+# LEGAL & COMPLIANCE
+# ===========================================
+# GDPR compliance files (if containing sensitive data)
+/compliance/gdpr-reports/*
+!/compliance/gdpr-reports/.gitkeep
+
+# Audit logs (keep structure, ignore content)
+/audit/logs/*
+!/audit/logs/.gitkeep
+
+# ===========================================
+# MISCELLANEOUS
+# ===========================================
+# Temporary editor files
+*.tmp
+*.temp
+.#*
+#*#
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# LibreOffice locks
+.~lock.*
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# ===========================================
+# KEEP THESE FILES (WHITELIST)
+# ===========================================
+# Keep important empty directories
+!.gitkeep
+!.gitignore
+
+# Keep example configuration files
+!config/example.json
+!.env.example
+!docker-compose.example.yml
+
+# Keep essential railway data structure files
+!data/stations/stations-list.json
+!data/trains/train-numbers.json
+!data/routes/railway-routes.json
+
+# Keep documentation assets
+!docs/assets/
+!docs/images/
