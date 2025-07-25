@@ -1,4 +1,4 @@
-/* Service Worker and PWA specific styles */
+/* Service Worker and PWA specific styles for Railway Management System */
 
 /* Network status indicator */
 .network-status {
@@ -24,6 +24,38 @@
   animation: pulse 2s infinite;
 }
 
+/* Railway-specific network status for trains */
+.train-connectivity {
+  position: fixed;
+  top: 50px;
+  right: 10px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.train-connectivity.gps-active {
+  background: #059669;
+  color: white;
+}
+
+.train-connectivity.gps-inactive {
+  background: #dc2626;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.train-connectivity::before {
+  content: "📍";
+  font-size: 0.8rem;
+}
+
 /* Offline indicator banner */
 .offline-indicator {
   position: fixed;
@@ -41,6 +73,31 @@
 
 .offline-indicator.show {
   display: block;
+}
+
+/* Railway emergency banner */
+.emergency-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #dc2626;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  font-weight: 600;
+  z-index: 1002;
+  display: none;
+  animation: pulse 1s infinite;
+}
+
+.emergency-banner.show {
+  display: block;
+}
+
+.emergency-banner::before {
+  content: "🚨 ";
+  margin-right: 8px;
 }
 
 /* Notification system */
@@ -75,6 +132,22 @@
 
 .notification-info {
   border-left: 4px solid #3b82f6;
+}
+
+/* Railway-specific notification types */
+.notification-collision {
+  border-left: 4px solid #dc2626;
+  background: #fef2f2;
+}
+
+.notification-booking {
+  border-left: 4px solid #059669;
+  background: #f0fdf4;
+}
+
+.notification-delay {
+  border-left: 4px solid #d97706;
+  background: #fffbeb;
 }
 
 .notification-content {
@@ -128,6 +201,71 @@
   background: #2563eb;
 }
 
+/* Train status indicators */
+.train-status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #e5e7eb;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 998;
+  font-size: 0.8rem;
+}
+
+.train-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.train-number {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.train-speed {
+  color: #059669;
+  font-weight: 500;
+}
+
+.train-location {
+  color: #6b7280;
+}
+
+/* Safety status indicators */
+.safety-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.safety-indicator.safe {
+  background: #10b981;
+}
+
+.safety-indicator.warning {
+  background: #f59e0b;
+  animation: pulse 2s infinite;
+}
+
+.safety-indicator.danger {
+  background: #ef4444;
+  animation: pulse 1s infinite;
+}
+
+.safety-indicator.critical {
+  background: #dc2626;
+  animation: pulse 0.5s infinite;
+}
+
 /* Offline mode indicators */
 .offline-badge {
   display: inline-flex;
@@ -144,6 +282,25 @@
 .offline-badge::before {
   content: "📱";
   font-size: 0.8rem;
+}
+
+/* Railway-specific offline badges */
+.cached-data-badge {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.cached-data-badge::before {
+  content: "💾";
+}
+
+.gps-offline-badge {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.gps-offline-badge::before {
+  content: "📍";
 }
 
 /* Cache status display */
@@ -183,6 +340,22 @@
   color: #374151;
 }
 
+/* Railway cache categories */
+.cache-trains {
+  border-left: 3px solid #059669;
+  padding-left: 8px;
+}
+
+.cache-routes {
+  border-left: 3px solid #0891b2;
+  padding-left: 8px;
+}
+
+.cache-bookings {
+  border-left: 3px solid #7c3aed;
+  padding-left: 8px;
+}
+
 /* Sync status indicators */
 .sync-status {
   display: flex;
@@ -210,6 +383,21 @@
 
 .sync-indicator.failed {
   background: #ef4444;
+}
+
+/* GPS sync indicator */
+.gps-sync-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d1d5db;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.gps-sync-indicator.active {
+  background: #059669;
+  animation: pulse 2s infinite;
 }
 
 /* PWA install prompt */
@@ -278,6 +466,63 @@
   background: #e5e7eb;
 }
 
+/* Railway-specific install prompt */
+.railway-install-prompt {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+}
+
+.railway-install-prompt h3 {
+  color: white;
+}
+
+.railway-install-prompt p {
+  color: #dbeafe;
+}
+
+.railway-install-prompt .install-btn.primary {
+  background: white;
+  color: #1e40af;
+}
+
+.railway-install-prompt .install-btn.primary:hover {
+  background: #f3f4f6;
+}
+
+/* Loading states for railway operations */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1003;
+  display: none;
+}
+
+.loading-overlay.show {
+  display: flex;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #ffffff33;
+  border-top: 3px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  color: white;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
 /* Animations */
 @keyframes slideIn {
   from {
@@ -311,6 +556,11 @@
   }
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .notifications {
@@ -327,6 +577,17 @@
 
   .cache-info {
     grid-template-columns: 1fr;
+  }
+
+  .train-status-bar {
+    padding: 8px 16px;
+    font-size: 0.7rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .train-info {
+    justify-content: center;
   }
 }
 
@@ -362,5 +623,38 @@
 
   .install-prompt p {
     color: #d1d5db;
+  }
+
+  .train-status-bar {
+    background: rgba(31, 41, 55, 0.95);
+    border-top-color: #374151;
+  }
+
+  .train-number {
+    color: white;
+  }
+
+  .train-location {
+    color: #d1d5db;
+  }
+}
+
+/* High contrast mode for accessibility */
+@media (prefers-contrast: high) {
+  .network-status.online {
+    background: #000000;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+  }
+
+  .network-status.offline {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+  }
+
+  .safety-indicator.danger,
+  .safety-indicator.critical {
+    border: 2px solid #000000;
   }
 }
