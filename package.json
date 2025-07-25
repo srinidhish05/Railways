@@ -71,7 +71,12 @@
     "use-sync-external-store": "latest",
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
-    "zustand": "latest"
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "firebase": "^10.14.1",
+    "helmet": "^8.0.0",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^22",
