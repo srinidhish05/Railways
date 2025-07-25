@@ -1,19 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 import type { GPSCoordinate } from "@/lib/gps-tracker"
+import { karnatakaTrains } from "@/data/karnataka-trains"
 
-// Karnataka Railway trains validation
-const KARNATAKA_TRAINS = {
-  '16515': 'Yesvantpur Karwar Express',
-  '16516': 'Karwar Yesvantpur Express', 
-  '12628': 'Karnataka Express',
-  '12627': 'Karnataka Express',
-  '16224': 'Mysuru Express',
-  '16223': 'Mysuru Express',
-  '17326': 'Vishwamanava Express',
-  '17325': 'Vishwamanava Express',
-  '56915': 'Bengaluru Mysuru Passenger',
-  '11035': 'Sharavati Express'
-}
+// Generate Karnataka trains validation from your complete dataset
+const KARNATAKA_TRAINS = karnatakaTrains.reduce((acc, train) => {
+  acc[train.trainNumber] = train.trainName
+  return acc
+}, {} as Record<string, string>)
 
 // Karnataka region bounds for validation
 const KARNATAKA_BOUNDS = {
@@ -80,7 +73,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ 
         error: "Invalid train number",
         message: "Train number not found in Karnataka railway network",
-        availableTrains: Object.keys(KARNATAKA_TRAINS)
+        availableTrains: Object.keys(KARNATAKA_TRAINS).slice(0, 10), // Show first 10 for brevity
+        totalTrains: Object.keys(KARNATAKA_TRAINS).length
       }, { status: 400 })
     }
 
@@ -400,7 +394,9 @@ export async function GET(request: NextRequest) {
     }))
 
     return NextResponse.json({
+      success: true,
       trackedTrains: summary.length,
+      totalAvailableTrains: Object.keys(KARNATAKA_TRAINS).length,
       trains: summary,
       timestamp: Date.now()
     })
@@ -409,16 +405,23 @@ export async function GET(request: NextRequest) {
   // Return specific train data
   const trainData = trainDataStore.get(trainNumber)
   if (!trainData) {
-    return NextResponse.json({ error: "No data available for this train" }, { status: 404 })
+    return NextResponse.json({ 
+      success: false,
+      error: "No data available for this train",
+      trainNumber,
+      trainName: KARNATAKA_TRAINS[trainNumber] || "Unknown"
+    }, { status: 404 })
   }
 
   return NextResponse.json({
+    success: true,
     trainNumber,
     trainName: KARNATAKA_TRAINS[trainNumber],
     contributors: trainData.contributors.size,
     qualityScore: trainData.qualityScore,
     positionCount: trainData.coordinates.length,
     lastUpdated: trainData.lastUpdated,
-    recentPositions: trainData.coordinates.slice(0, 10) // Last 10 positions
+    recentPositions: trainData.coordinates.slice(0, 10), // Last 10 positions
+    timestamp: Date.now()
   })
 }
