@@ -11,9 +11,12 @@ services:
       - IRCTC_API_KEY=${IRCTC_API_KEY}
       - CACHE_SALT=${CACHE_SALT}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - REDIS_URL=redis://redis:6379  # 👈 ADD THIS - Connect to Redis
     volumes:
       - ./logs:/usr/src/app/logs
     restart: unless-stopped
+    depends_on:  # 👈 ADD THIS - Start Redis first
+      - redis
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
       interval: 30s
@@ -37,11 +40,19 @@ services:
       - redis_data:/data
     restart: unless-stopped
     command: redis-server --appendonly yes
+    healthcheck:  # 👈 ADD THIS - Check if Redis is working
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
           memory: 256M
           cpus: '0.25'
+        reservations:  # 👈 ADD THIS - Minimum resources
+          memory: 128M
+          cpus: '0.125'
 
 volumes:
   redis_data:
