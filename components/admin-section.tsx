@@ -56,7 +56,6 @@ export function AdminSection() {
   const handleSaveSettings = async () => {
     setSaveStatus("saving")
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    
     try {
       // Save to Karnataka Railway backend
       console.log("Saving Karnataka Railway settings:", settings)
@@ -126,7 +125,6 @@ export function AdminSection() {
                     </div>
                     <Badge variant="default" className="bg-green-100 text-green-800">On Time</Badge>
                   </div>
-                  
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <h4 className="font-medium">16215 Chamundi Express</h4>
@@ -134,7 +132,6 @@ export function AdminSection() {
                     </div>
                     <Badge variant="secondary" className="bg-orange-100 text-orange-800">Delayed</Badge>
                   </div>
-                  
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <h4 className="font-medium">11013 Coimbatore Express</h4>
@@ -143,14 +140,12 @@ export function AdminSection() {
                     <Badge variant="default" className="bg-blue-100 text-blue-800">Running</Badge>
                   </div>
                 </div>
-                
                 <Button className="w-full" variant="outline">
                   <MapPin className="h-4 w-4 mr-2" />
                   View Live Train Map
                 </Button>
               </CardContent>
             </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -168,7 +163,6 @@ export function AdminSection() {
                       Operational
                     </Badge>
                   </div>
-                  
                   <div className="flex items-center justify-between">
                     <span>Mysuru Junction (MYS)</span>
                     <Badge variant="default" className="bg-green-100 text-green-800">
@@ -176,7 +170,6 @@ export function AdminSection() {
                       Operational
                     </Badge>
                   </div>
-                  
                   <div className="flex items-center justify-between">
                     <span>Hubballi Junction (UBL)</span>
                     <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
@@ -184,7 +177,6 @@ export function AdminSection() {
                       Maintenance
                     </Badge>
                   </div>
-                  
                   <div className="flex items-center justify-between">
                     <span>Davangere (DVG)</span>
                     <Badge variant="default" className="bg-green-100 text-green-800">
@@ -268,7 +260,6 @@ export function AdminSection() {
                       onCheckedChange={(checked) => handleSettingChange("liveTrackingEnabled", checked)}
                     />
                   </div>
-
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="pnrStatusSystem">PNR Status System</Label>
@@ -280,7 +271,6 @@ export function AdminSection() {
                       onCheckedChange={(checked) => handleSettingChange("pnrStatusSystem", checked)}
                     />
                   </div>
-
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="seatBookingEnabled">Online Seat Booking</Label>
@@ -293,7 +283,6 @@ export function AdminSection() {
                     />
                   </div>
                 </div>
-
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="emergencyResponseTime">Emergency Response Time (minutes)</Label>
@@ -304,7 +293,6 @@ export function AdminSection() {
                       onChange={(e) => handleSettingChange("emergencyResponseTime", Number(e.target.value))}
                     />
                   </div>
-
                   <div>
                     <Label htmlFor="maxDelayAlert">Delay Alert Threshold (minutes)</Label>
                     <Input
@@ -314,7 +302,6 @@ export function AdminSection() {
                       onChange={(e) => handleSettingChange("maxDelayAlert", Number(e.target.value))}
                     />
                   </div>
-
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="delayNotifications">Delay Notifications</Label>
@@ -365,7 +352,6 @@ export function AdminSection() {
                 </Button>
               </CardContent>
             </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle>System Health Status</CardTitle>
@@ -400,7 +386,6 @@ export function AdminSection() {
               </CardContent>
             </Card>
           </div>
-
           {/* Save Karnataka Railway Settings */}
           <Card>
             <CardContent className="p-6">
