@@ -1,14 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { 
-  Shield, 
-  TrendingDown, 
+import {
+  Shield,
+  TrendingDown,
   Calendar,
   CreditCard,
   Star,
@@ -25,11 +24,11 @@ interface Journey {
   distance: number
 }
 
-export function SmartTicketCappingDemo() {
-  const [monthlySpent, setMonthlySpent] = useState(1245)
+export default function UserDashboard() {
+  const [monthlySpent] = useState(1245)
   const [monthlyCap] = useState(2000)
-  const [savings, setSavings] = useState(755)
-  const [journeys, setJourneys] = useState<Journey[]>([
+  const [savings] = useState(755)
+  const [journeys] = useState<Journey[]>([
     { id: "1", from: "Bangalore", to: "Mysore", date: "2025-01-20", fare: 185, distance: 139 },
     { id: "2", from: "Mysore", to: "Bangalore", date: "2025-01-21", fare: 185, distance: 139 },
     { id: "3", from: "Bangalore", to: "Hubli", date: "2025-01-22", fare: 350, distance: 425 },
