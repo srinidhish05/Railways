@@ -45,8 +45,8 @@ A modern, full-stack web application for Indian Railways information, built with
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/imDarshanGK/railways-portal.git
-cd railways-portal
+git clone https://github.com/YourUsername/Railways.git
+cd Railways
 ```
 
 ### 2. Install Dependencies
