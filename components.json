@@ -6,7 +6,7 @@
   "tailwind": {
     "config": "tailwind.config.ts",
     "css": "app/globals.css",
-    "baseColor": "neutral",
+    "baseColor": "blue",
     "cssVariables": true,
     "prefix": ""
   },
@@ -15,7 +15,12 @@
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
-    "hooks": "@/hooks"
+    "hooks": "@/hooks",
+    "railway": "@/components/railway",
+    "types": "@/types",
+    "services": "@/services",
+    "stores": "@/stores",
+    "config": "@/config"
   },
   "iconLibrary": "lucide"
 }
