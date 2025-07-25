@@ -1,10 +1,16 @@
 // Service Worker Registration and Communication
-// This file should be included in your main HTML
+// Railway Management System Integration
 
-class ServiceWorkerManager {
+class RailwayServiceWorkerManager {
   constructor() {
     this.sw = null
     this.isOnline = navigator.onLine
+    this.railwayData = {
+      trainLocation: null,
+      lastGPSUpdate: null,
+      collisionAlerts: [],
+      bookingQueue: []
+    }
     this.setupEventListeners()
   }
 
@@ -15,14 +21,14 @@ class ServiceWorkerManager {
           scope: "/",
         })
 
-        console.log("Service Worker registered:", registration.scope)
+        console.log("Railway Service Worker registered:", registration.scope)
 
-        // Handle updates
+        // Handle updates with railway-specific messaging
         registration.addEventListener("updatefound", () => {
           const newWorker = registration.installing
           newWorker.addEventListener("statechange", () => {
             if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-              this.showUpdateAvailable()
+              this.showRailwayUpdateAvailable()
             }
           })
         })
@@ -30,49 +36,75 @@ class ServiceWorkerManager {
         // Get active service worker
         this.sw = registration.active || registration.waiting || registration.installing
 
-        // Setup message channel
+        // Setup message channel for railway operations
         if (navigator.serviceWorker.controller) {
-          this.setupMessageChannel()
+          this.setupRailwayMessageChannel()
         }
+
+        // Initialize railway-specific features
+        this.initializeRailwayFeatures()
 
         return registration
       } catch (error) {
-        console.error("Service Worker registration failed:", error)
+        console.error("Railway Service Worker registration failed:", error)
         throw error
       }
     } else {
-      throw new Error("Service Workers not supported")
+      throw new Error("Service Workers not supported - Railway features limited")
     }
   }
 
   setupEventListeners() {
-    // Online/offline detection
+    // Online/offline detection with railway context
     window.addEventListener("online", () => {
       this.isOnline = true
-      this.handleOnlineStatusChange(true)
+      this.handleRailwayOnlineStatusChange(true)
     })
 
     window.addEventListener("offline", () => {
       this.isOnline = false
-      this.handleOnlineStatusChange(false)
+      this.handleRailwayOnlineStatusChange(false)
     })
 
-    // Service Worker messages
+    // Service Worker messages for railway operations
     navigator.serviceWorker.addEventListener("message", (event) => {
-      this.handleServiceWorkerMessage(event.data)
+      this.handleRailwayServiceWorkerMessage(event.data)
     })
 
-    // Page visibility for background sync
+    // Page visibility for railway background sync
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden && this.isOnline) {
-        this.requestBackgroundSync("schedule-update")
+        this.requestRailwayBackgroundSync("train-position-update")
+        this.requestRailwayBackgroundSync("collision-check")
       }
     })
+
+    // Geolocation updates for train tracking
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(
+        (position) => this.handleGPSUpdate(position),
+        (error) => this.handleGPSError(error),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+      )
+    }
   }
 
-  setupMessageChannel() {
-    // Request offline status on load
-    this.sendMessage("GET_OFFLINE_STATUS")
+  setupRailwayMessageChannel() {
+    // Request railway-specific offline status
+    this.sendMessage("GET_RAILWAY_OFFLINE_STATUS")
+    this.sendMessage("GET_CACHED_TRAIN_DATA")
+    this.sendMessage("GET_COLLISION_ALERTS")
+  }
+
+  initializeRailwayFeatures() {
+    // Initialize emergency collision detection
+    this.setupCollisionMonitoring()
+    
+    // Initialize booking queue management
+    this.setupBookingQueueManagement()
+    
+    // Initialize train position tracking
+    this.setupTrainPositionTracking()
   }
 
   sendMessage(type, data = null) {
@@ -80,146 +112,292 @@ class ServiceWorkerManager {
       const messageChannel = new MessageChannel()
 
       messageChannel.port1.onmessage = (event) => {
-        this.handleServiceWorkerResponse(event.data)
+        this.handleRailwayServiceWorkerResponse(event.data)
       }
 
       navigator.serviceWorker.controller.postMessage({ type, data }, [messageChannel.port2])
     }
   }
 
-  handleServiceWorkerMessage(message) {
+  handleRailwayServiceWorkerMessage(message) {
     const { type, data } = message
 
     switch (type) {
       case "GPS_SYNC_COMPLETE":
-        this.showSyncNotification(`Synced ${data.synced} GPS reports`)
+        this.showRailwaySyncNotification(`Synced ${data.synced} train position reports`)
+        this.updateTrainLocationDisplay(data.lastLocation)
         break
-      case "SCHEDULES_UPDATED":
-        this.showUpdateNotification("Train schedules updated")
+        
+      case "TRAIN_SCHEDULES_UPDATED":
+        this.showRailwayUpdateNotification("Train schedules updated - checking your routes")
+        this.refreshTrainDisplays()
         break
+        
+      case "COLLISION_ALERT":
+        this.handleCriticalCollisionAlert(data)
+        break
+        
+      case "BOOKING_CONFIRMED":
+        this.handleBookingConfirmation(data)
+        break
+        
+      case "TRAIN_DELAY_NOTIFICATION":
+        this.handleTrainDelayNotification(data)
+        break
+        
+      case "EMERGENCY_BRAKE_SIGNAL":
+        this.handleEmergencyBrakeSignal(data)
+        break
+        
       default:
-        console.log("SW Message:", type, data)
+        console.log("Railway SW Message:", type, data)
     }
   }
 
-  handleServiceWorkerResponse(response) {
+  handleRailwayServiceWorkerResponse(response) {
     const { type, data } = response
 
     switch (type) {
-      case "OFFLINE_STATUS":
-        this.updateOfflineStatus(data)
+      case "RAILWAY_OFFLINE_STATUS":
+        this.updateRailwayOfflineStatus(data)
         break
-      case "SCHEDULE_UPDATED":
-        this.showUpdateNotification("Schedules updated successfully")
+        
+      case "CACHED_TRAIN_DATA":
+        this.displayCachedTrainData(data)
         break
+        
+      case "COLLISION_ALERTS":
+        this.displayCollisionAlerts(data)
+        break
+        
+      case "BOOKING_QUEUE_STATUS":
+        this.updateBookingQueueStatus(data)
+        break
+        
       default:
-        console.log("SW Response:", type, data)
+        console.log("Railway SW Response:", type, data)
     }
   }
 
-  handleOnlineStatusChange(isOnline) {
-    console.log("Network status changed:", isOnline ? "online" : "offline")
+  handleRailwayOnlineStatusChange(isOnline) {
+    console.log("Railway network status changed:", isOnline ? "online" : "offline")
 
-    // Update UI
-    this.updateNetworkStatus(isOnline)
+    // Update railway-specific UI
+    this.updateRailwayNetworkStatus(isOnline)
 
     if (isOnline) {
-      // Trigger background sync when coming online
-      this.requestBackgroundSync("gps-reports")
+      // Priority sync for safety-critical data
+      this.requestRailwayBackgroundSync("collision-data")
+      this.requestRailwayBackgroundSync("train-positions")
+      this.requestRailwayBackgroundSync("emergency-signals")
+      this.requestRailwayBackgroundSync("booking-confirmations")
+    } else {
+      this.showRailwayOfflineNotification("Using cached railway data - limited real-time updates")
     }
   }
 
-  // Queue GPS report for background sync
-  queueGPSReport(gpsData) {
-    this.sendMessage("QUEUE_GPS_REPORT", gpsData)
+  // Railway-specific GPS handling
+  handleGPSUpdate(position) {
+    const gpsData = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      accuracy: position.coords.accuracy,
+      speed: position.coords.speed,
+      heading: position.coords.heading,
+      timestamp: position.timestamp,
+      trainId: this.getTrainId() // Get from session/context
+    }
+
+    this.railwayData.trainLocation = gpsData
+    this.railwayData.lastGPSUpdate = Date.now()
+
+    // Queue for background sync
+    this.queueTrainGPSReport(gpsData)
+
+    // Update collision detection
+    this.checkCollisionRisk(gpsData)
+  }
+
+  handleGPSError(error) {
+    console.error("GPS Error:", error)
+    this.showRailwayErrorNotification(`GPS unavailable: ${error.message}`)
+    
+    // Fallback to schedule-based positioning
+    this.fallbackToScheduleBasedPositioning()
+  }
+
+  // Queue train GPS report for background sync
+  queueTrainGPSReport(gpsData) {
+    this.sendMessage("QUEUE_TRAIN_GPS_REPORT", gpsData)
 
     if (this.isOnline) {
-      this.requestBackgroundSync("gps-reports")
+      this.requestRailwayBackgroundSync("train-gps-reports")
     } else {
-      this.showOfflineNotification("GPS report queued for when online")
+      this.showRailwayOfflineNotification("Train position queued for sync")
     }
   }
 
-  // Request background sync
-  async requestBackgroundSync(tag) {
+  // Enhanced background sync for railway operations
+  async requestRailwayBackgroundSync(tag) {
     if ("serviceWorker" in navigator && "sync" in window.ServiceWorkerRegistration.prototype) {
       try {
         const registration = await navigator.serviceWorker.ready
         await registration.sync.register(tag)
-        console.log("Background sync registered:", tag)
+        console.log("Railway background sync registered:", tag)
       } catch (error) {
-        console.error("Background sync registration failed:", error)
+        console.error("Railway background sync failed:", error)
       }
     }
   }
 
-  // Force schedule update
-  forceScheduleUpdate() {
-    this.sendMessage("FORCE_SCHEDULE_UPDATE")
-    this.showLoadingNotification("Updating train schedules...")
+  // Railway-specific methods
+  setupCollisionMonitoring() {
+    setInterval(() => {
+      if (this.railwayData.trainLocation) {
+        this.sendMessage("CHECK_COLLISION_RISK", this.railwayData.trainLocation)
+      }
+    }, 5000) // Check every 5 seconds
   }
 
-  // UI update methods
-  updateNetworkStatus(isOnline) {
-    const statusElement = document.getElementById("network-status")
+  setupBookingQueueManagement() {
+    // Handle offline booking submissions
+    window.addEventListener('railway-booking-submit', (event) => {
+      this.queueBookingRequest(event.detail)
+    })
+  }
+
+  setupTrainPositionTracking() {
+    // Real-time train position updates
+    setInterval(() => {
+      this.sendMessage("REQUEST_NEARBY_TRAINS", this.railwayData.trainLocation)
+    }, 30000) // Every 30 seconds
+  }
+
+  handleCriticalCollisionAlert(data) {
+    // Emergency collision alert with highest priority
+    const emergencyNotification = this.createRailwayNotification(
+      "🚨 COLLISION RISK DETECTED",
+      `Potential collision with Train ${data.trainNumber} in ${data.timeToCollision}s. Distance: ${data.distance}m`,
+      "critical",
+      () => this.triggerEmergencyBraking(data)
+    )
+    
+    this.showEmergencyNotification(emergencyNotification)
+    
+    // Audio alert
+    this.playEmergencyAlert()
+    
+    // Vibration alert (mobile)
+    if (navigator.vibrate) {
+      navigator.vibrate([200, 100, 200, 100, 200])
+    }
+  }
+
+  handleBookingConfirmation(data) {
+    const notification = this.createRailwayNotification(
+      "🎫 Booking Confirmed",
+      `Train ${data.trainNumber}: ${data.coachId}, Seat ${data.seatNumber}`,
+      "booking",
+      () => this.showBookingDetails(data)
+    )
+    this.showNotification(notification)
+  }
+
+  handleTrainDelayNotification(data) {
+    const notification = this.createRailwayNotification(
+      "⏰ Train Delay Update",
+      `Train ${data.trainNumber} delayed by ${data.delayMinutes} minutes`,
+      "delay"
+    )
+    this.showNotification(notification)
+  }
+
+  // UI update methods for railway context
+  updateRailwayNetworkStatus(isOnline) {
+    const statusElement = document.getElementById("railway-network-status")
     if (statusElement) {
-      statusElement.className = isOnline ? "online" : "offline"
-      statusElement.textContent = isOnline ? "Online" : "Offline"
+      statusElement.className = `railway-status ${isOnline ? "online" : "offline"}`
+      statusElement.textContent = isOnline ? "🌐 Railway Network Connected" : "📱 Offline Mode"
     }
 
-    // Update offline indicator
-    const offlineIndicator = document.getElementById("offline-indicator")
-    if (offlineIndicator) {
-      offlineIndicator.style.display = isOnline ? "none" : "block"
+    // Update train connectivity indicator
+    const trainConnectivity = document.getElementById("train-connectivity")
+    if (trainConnectivity) {
+      trainConnectivity.className = `train-connectivity ${isOnline ? "gps-active" : "gps-inactive"}`
+      trainConnectivity.textContent = isOnline ? "GPS Active" : "GPS Offline"
     }
   }
 
-  updateOfflineStatus(status) {
-    console.log("Offline status:", status)
+  updateRailwayOfflineStatus(status) {
+    console.log("Railway offline status:", status)
 
-    const offlineInfo = document.getElementById("offline-info")
-    if (offlineInfo) {
-      offlineInfo.innerHTML = `
-        <div class="offline-status">
-          <p>Cached schedules: ${status.hasSchedules ? "Available" : "None"}</p>
-          <p>Queued GPS reports: ${status.queuedReports}</p>
-          <p>Cache version: ${status.cacheVersion}</p>
+    const railwayInfo = document.getElementById("railway-offline-info")
+    if (railwayInfo) {
+      railwayInfo.innerHTML = `
+        <div class="railway-offline-status">
+          <div class="cache-trains">
+            <span>Cached Trains:</span> <span>${status.cachedTrains}</span>
+          </div>
+          <div class="cache-routes">
+            <span>Cached Routes:</span> <span>${status.cachedRoutes}</span>
+          </div>
+          <div class="cache-bookings">
+            <span>Queued Bookings:</span> <span>${status.queuedBookings}</span>
+          </div>
+          <div class="cache-gps">
+            <span>Queued GPS Reports:</span> <span>${status.queuedGPSReports}</span>
+          </div>
         </div>
       `
     }
   }
 
-  showUpdateAvailable() {
-    const notification = this.createNotification(
-      "App Update Available",
-      "A new version is available. Refresh to update.",
+  updateTrainLocationDisplay(location) {
+    const locationDisplay = document.getElementById("train-location-display")
+    if (locationDisplay && location) {
+      locationDisplay.innerHTML = `
+        <div class="train-location">
+          <span class="location-icon">📍</span>
+          <span class="coordinates">${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}</span>
+          <span class="accuracy">±${location.accuracy}m</span>
+          <span class="timestamp">${new Date(location.timestamp).toLocaleTimeString()}</span>
+        </div>
+      `
+    }
+  }
+
+  // Railway-specific notification methods
+  showRailwayUpdateAvailable() {
+    const notification = this.createRailwayNotification(
+      "🚂 Railway App Update",
+      "New railway features available. Update now for enhanced safety.",
       "info",
-      () => window.location.reload(),
+      () => window.location.reload()
     )
     this.showNotification(notification)
   }
 
-  showSyncNotification(message) {
-    const notification = this.createNotification("Sync Complete", message, "success")
+  showRailwaySyncNotification(message) {
+    const notification = this.createRailwayNotification("📡 Railway Sync", message, "success")
     this.showNotification(notification)
   }
 
-  showUpdateNotification(message) {
-    const notification = this.createNotification("Update Complete", message, "success")
+  showRailwayUpdateNotification(message) {
+    const notification = this.createRailwayNotification("🔄 Railway Update", message, "success")
     this.showNotification(notification)
   }
 
-  showOfflineNotification(message) {
-    const notification = this.createNotification("Offline Mode", message, "warning")
+  showRailwayOfflineNotification(message) {
+    const notification = this.createRailwayNotification("🚂 Railway Offline", message, "warning")
     this.showNotification(notification)
   }
 
-  showLoadingNotification(message) {
-    const notification = this.createNotification("Loading", message, "info")
+  showRailwayErrorNotification(message) {
+    const notification = this.createRailwayNotification("⚠️ Railway Error", message, "error")
     this.showNotification(notification)
   }
 
-  createNotification(title, message, type, action = null) {
+  createRailwayNotification(title, message, type, action = null) {
     return {
       id: Date.now(),
       title,
@@ -227,13 +405,61 @@ class ServiceWorkerManager {
       type,
       action,
       timestamp: new Date(),
+      railway: true
     }
   }
 
+  showEmergencyNotification(notification) {
+    // Create emergency notification with highest priority
+    const emergencyEl = document.createElement("div")
+    emergencyEl.className = "notification notification-collision emergency-notification"
+    emergencyEl.innerHTML = `
+      <div class="notification-content">
+        <h4>${notification.title}</h4>
+        <p>${notification.message}</p>
+        ${notification.action ? '<button class="notification-action emergency-action">EMERGENCY BRAKE</button>' : ""}
+        <button class="notification-close">&times;</button>
+      </div>
+    `
+
+    // Priority positioning and styling
+    emergencyEl.style.zIndex = "9999"
+    emergencyEl.style.position = "fixed"
+    emergencyEl.style.top = "10px"
+    emergencyEl.style.left = "50%"
+    emergencyEl.style.transform = "translateX(-50%)"
+    emergencyEl.style.animation = "pulse 0.5s infinite"
+
+    // Event listeners
+    const closeBtn = emergencyEl.querySelector(".notification-close")
+    closeBtn.addEventListener("click", () => emergencyEl.remove())
+
+    if (notification.action) {
+      const actionBtn = emergencyEl.querySelector(".notification-action")
+      actionBtn.addEventListener("click", () => {
+        notification.action()
+        emergencyEl.remove()
+      })
+    }
+
+    document.body.appendChild(emergencyEl)
+
+    // Auto-remove after 10 seconds for emergency
+    setTimeout(() => {
+      if (emergencyEl.parentNode) {
+        emergencyEl.remove()
+      }
+    }, 10000)
+  }
+
   showNotification(notification) {
-    // Create notification element
+    // Enhanced notification system with railway context
     const notificationEl = document.createElement("div")
-    notificationEl.className = `notification notification-${notification.type}`
+    const notificationClass = notification.railway ? 
+      `notification notification-${notification.type} railway-notification` :
+      `notification notification-${notification.type}`
+      
+    notificationEl.className = notificationClass
     notificationEl.innerHTML = `
       <div class="notification-content">
         <h4>${notification.title}</h4>
@@ -243,11 +469,9 @@ class ServiceWorkerManager {
       </div>
     `
 
-    // Add event listeners
+    // Event listeners
     const closeBtn = notificationEl.querySelector(".notification-close")
-    closeBtn.addEventListener("click", () => {
-      notificationEl.remove()
-    })
+    closeBtn.addEventListener("click", () => notificationEl.remove())
 
     if (notification.action) {
       const actionBtn = notificationEl.querySelector(".notification-action")
@@ -257,19 +481,52 @@ class ServiceWorkerManager {
       })
     }
 
-    // Add to page
-    const container = document.getElementById("notifications") || document.body
+    // Add to notifications container
+    const container = document.getElementById("notifications") || 
+                     document.getElementById("railway-notifications") || 
+                     document.body
     container.appendChild(notificationEl)
 
-    // Auto-remove after 5 seconds
+    // Auto-remove timing based on type
+    const removeTimeout = notification.type === "critical" ? 15000 : 5000
     setTimeout(() => {
       if (notificationEl.parentNode) {
         notificationEl.remove()
       }
-    }, 5000)
+    }, removeTimeout)
   }
 
-  // Check if app is running in standalone mode (PWA)
+  // Railway utility methods
+  getTrainId() {
+    // Get train ID from session, localStorage, or context
+    return localStorage.getItem("trainId") || sessionStorage.getItem("currentTrain") || "UNKNOWN"
+  }
+
+  playEmergencyAlert() {
+    // Play emergency sound if available
+    try {
+      const audio = new Audio("/audio/emergency-alert.mp3")
+      audio.play().catch(e => console.log("Audio play failed:", e))
+    } catch (e) {
+      console.log("Emergency audio not available")
+    }
+  }
+
+  triggerEmergencyBraking(data) {
+    // Send emergency brake signal
+    this.sendMessage("TRIGGER_EMERGENCY_BRAKE", data)
+    this.showRailwayErrorNotification("Emergency braking signal sent!")
+  }
+
+  // Check if app is running as railway PWA
+  isRailwayPWA() {
+    return (
+      this.isStandalone() &&
+      (window.location.hostname.includes("railway") || 
+       document.title.includes("Railway"))
+    )
+  }
+
   isStandalone() {
     return (
       window.matchMedia("(display-mode: standalone)").matches ||
@@ -278,29 +535,39 @@ class ServiceWorkerManager {
     )
   }
 
-  // Get installation prompt
-  async getInstallPrompt() {
+  // Get railway app installation prompt
+  async getRailwayInstallPrompt() {
     return new Promise((resolve) => {
       window.addEventListener("beforeinstallprompt", (event) => {
         event.preventDefault()
+        // Customize for railway context
+        event.userChoice.then((result) => {
+          console.log("Railway PWA install result:", result)
+        })
         resolve(event)
       })
     })
   }
 }
 
-// Initialize Service Worker Manager
-const swManager = new ServiceWorkerManager()
+// Initialize Railway Service Worker Manager
+const railwaySwManager = new RailwayServiceWorkerManager()
 
 // Register service worker when page loads
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    await swManager.register()
-    console.log("Service Worker Manager initialized")
+    await railwaySwManager.register()
+    console.log("Railway Service Worker Manager initialized")
+    
+    // Initialize railway-specific features
+    if (railwaySwManager.isRailwayPWA()) {
+      console.log("Running as Railway PWA")
+    }
   } catch (error) {
-    console.error("Failed to initialize Service Worker:", error)
+    console.error("Failed to initialize Railway Service Worker:", error)
   }
 })
 
-// Export for use in other modules
-window.swManager = swManager
+// Export for use in railway modules
+window.railwaySwManager = railwaySwManager
+window.swManager = railwaySwManager // Backward compatibility
