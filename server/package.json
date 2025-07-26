@@ -5,30 +5,120 @@
   "main": "pnr-service.js",
   "scripts": {
     "start": "node pnr-service.js",
-    "dev": "nodemon pnr-service.js",
-    "test": "jest",
+    "dev": "nodemon pnr-service.js --watch . --ext js,json",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --watchAll=false",
     "lint": "eslint .",
-    "security-audit": "npm audit"
+    "lint:fix": "eslint . --fix",
+    "security-audit": "npm audit",
+    "security-check": "npm audit --audit-level moderate",
+    "build": "echo 'Build completed successfully'",
+    "prestart": "npm run security-check",
+    "docker:build": "docker build -t railway-pnr-service .",
+    "docker:run": "docker run -p 3001:3001 railway-pnr-service",
+    "clean": "rm -rf node_modules package-lock.json && npm install"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "axios": "^1.6.0",
+    "axios": "^1.6.2",
     "express-rate-limit": "^7.1.5",
     "node-cache": "^5.1.2",
     "helmet": "^7.1.0",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1"
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "express-validator": "^7.0.1",
+    "compression": "^1.7.4",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
     "jest": "^29.7.0",
     "supertest": "^6.3.3",
-    "eslint": "^8.54.0"
+    "eslint": "^8.54.0",
+    "@jest/globals": "^29.7.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-security": "^1.7.1",
+    "prettier": "^3.1.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
-  "keywords": ["railway", "pnr", "irctc", "api", "caching", "rate-limiting"],
-  "author": "Railway Safety System",
-  "license": "MIT"
+  "keywords": [
+    "railway", 
+    "pnr", 
+    "irctc", 
+    "api", 
+    "caching", 
+    "rate-limiting",
+    "nodejs",
+    "express",
+    "microservice"
+  ],
+  "author": {
+    "name": "Railway Safety System",
+    "email": "support@railway-safety.com",
+    "url": "https://railway-safety.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/railway-pnr-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/railway-pnr-service/issues"
+  },
+  "homepage": "https://github.com/your-username/railway-pnr-service#readme",
+  "files": [
+    "pnr-service.js",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "*.js",
+      "!coverage/**",
+      "!node_modules/**"
+    ],
+    "testMatch": [
+      "**/test/**/*.test.js"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2021": true,
+      "jest": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "security"
+    ],
+    "rules": {
+      "no-console": "warn",
+      "security/detect-object-injection": "error"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  }
 }

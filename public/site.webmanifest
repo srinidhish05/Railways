@@ -1,0 +1,8 @@
+{
+  "name": "Karnataka Railways",
+  "short_name": "Railways",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Karnataka Railway Network Portal"
+}

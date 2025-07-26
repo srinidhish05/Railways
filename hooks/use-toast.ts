@@ -8,14 +8,17 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+// Railway app optimized settings
+const TOAST_LIMIT = 3 // Allow multiple notifications (train updates, bookings, alerts)
+const TOAST_REMOVE_DELAY = 5000 // 5 seconds instead of 1000000 (16+ minutes!)
 
 type ToasterToast = ToastProps & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  variant?: "default" | "destructive" | "success" | "warning" | "info"
+  duration?: number
 }
 
 const actionTypes = {
@@ -58,18 +61,19 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
 
-const addToRemoveQueue = (toastId: string) => {
+const addToRemoveQueue = (toastId: string, customDelay?: number) => {
   if (toastTimeouts.has(toastId)) {
     return
   }
 
+  const delay = customDelay || TOAST_REMOVE_DELAY
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId)
     dispatch({
       type: "REMOVE_TOAST",
       toastId: toastId,
     })
-  }, TOAST_REMOVE_DELAY)
+  }, delay)
 
   toastTimeouts.set(toastId, timeout)
 }
@@ -93,13 +97,11 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
         state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id)
+          addToRemoveQueue(toast.id, toast.duration)
         })
       }
 
@@ -164,11 +166,75 @@ function toast({ ...props }: Toast) {
     },
   })
 
+  // Auto-dismiss after duration
+  if (props.duration !== 0) { // 0 means persistent
+    addToRemoveQueue(id, props.duration)
+  }
+
   return {
     id: id,
     dismiss,
     update,
   }
+}
+
+// Railway-specific toast helpers
+const railwayToast = {
+  success: (title: string, description?: string) => 
+    toast({
+      title,
+      description,
+      variant: "success",
+      duration: 4000,
+    }),
+
+  error: (title: string, description?: string) => 
+    toast({
+      title,
+      description,
+      variant: "destructive",
+      duration: 6000,
+    }),
+
+  warning: (title: string, description?: string) => 
+    toast({
+      title,
+      description,
+      variant: "warning",
+      duration: 5000,
+    }),
+
+  info: (title: string, description?: string) => 
+    toast({
+      title,
+      description,
+      variant: "info",
+      duration: 4000,
+    }),
+
+  booking: (message: string) => 
+    toast({
+      title: "🎫 Booking Update",
+      description: message,
+      variant: "success",
+      duration: 6000,
+    }),
+
+  trainAlert: (trainName: string, message: string) => 
+    toast({
+      title: `🚂 ${trainName}`,
+      description: message,
+      variant: "warning",
+      duration: 8000, // Longer for important train updates
+    }),
+
+  safetyAlert: (message: string) => 
+    toast({
+      title: "⚠️ Safety Alert",
+      description: message,
+      variant: "destructive",
+      duration: 0, // Persistent until manually dismissed
+    }),
 }
 
 function useToast() {
@@ -187,8 +253,9 @@ function useToast() {
   return {
     ...state,
     toast,
+    railwayToast, // Railway-specific helpers
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   }
 }
 
-export { useToast, toast }
+export { useToast, toast, railwayToast }

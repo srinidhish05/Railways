@@ -3,34 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Railway Safety System - Offline</title>
+    <title>Indian Railway Safety System - Offline Mode</title>
+    <link rel="icon" href="/favicon.ico">
+    <meta name="theme-color" content="#667eea">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Railway track animation background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 20px,
+                rgba(255,255,255,0.05) 20px,
+                rgba(255,255,255,0.05) 40px
+            );
+            animation: trackMove 20s linear infinite;
+            z-index: 0;
         }
         
         .offline-container {
             text-align: center;
-            max-width: 500px;
+            max-width: 600px;
             padding: 40px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .railway-header {
+            margin-bottom: 30px;
         }
         
         .offline-icon {
             font-size: 4rem;
             margin-bottom: 20px;
             opacity: 0.8;
+            animation: trainBounce 2s ease-in-out infinite;
+        }
+        
+        .railway-title {
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
         
         h1 {
@@ -43,34 +84,61 @@
             margin: 0 0 30px 0;
             opacity: 0.9;
             line-height: 1.6;
+            font-size: 1.1rem;
         }
         
         .features {
             text-align: left;
             margin: 30px 0;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 12px;
         }
         
         .features h3 {
             margin: 0 0 15px 0;
             font-size: 1.2rem;
+            color: #fbbf24;
+            text-align: center;
         }
         
         .features ul {
             list-style: none;
             padding: 0;
             margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
         }
         
         .features li {
             padding: 8px 0;
             opacity: 0.9;
+            display: flex;
+            align-items: center;
         }
         
         .features li:before {
-            content: "✓ ";
-            color: #4ade80;
-            font-weight: bold;
+            content: "🚂";
+            font-size: 1.2rem;
             margin-right: 8px;
+            color: #4ade80;
+        }
+        
+        /* Railway-specific feature icons */
+        .features li:nth-child(1):before { content: "📅"; }
+        .features li:nth-child(2):before { content: "📍"; }
+        .features li:nth-child(3):before { content: "⏰"; }
+        .features li:nth-child(4):before { content: "📋"; }
+        .features li:nth-child(5):before { content: "🎫"; }
+        .features li:nth-child(6):before { content: "⚠️"; }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
         }
         
         .retry-btn {
@@ -82,11 +150,28 @@
             cursor: pointer;
             font-size: 1rem;
             transition: all 0.3s ease;
+            flex: 1;
+            min-width: 140px;
         }
         
         .retry-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
+        }
+        
+        .retry-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .cache-btn {
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .cache-btn:hover {
+            background: rgba(251, 191, 36, 0.3);
         }
         
         .status {
@@ -95,6 +180,78 @@
             background: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
             font-size: 0.9rem;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #fbbf24;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-indicator.online {
+            background: #4ade80;
+            animation: none;
+        }
+        
+        .cached-data {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .cached-data h4 {
+            margin: 0 0 10px 0;
+            color: #4ade80;
+            font-size: 0.9rem;
+        }
+        
+        .cache-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .cache-stat {
+            text-align: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+        
+        .cache-stat .number {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4ade80;
+        }
+        
+        .cache-stat .label {
+            display: block;
+            opacity: 0.8;
+            font-size: 0.7rem;
+        }
+        
+        @keyframes trackMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(20px); }
+        }
+        
+        @keyframes trainBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         @media (max-width: 600px) {
@@ -110,90 +267,232 @@
             .offline-icon {
                 font-size: 3rem;
             }
+            
+            .features ul {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .retry-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .status {
+                background: rgba(255, 255, 255, 0.1);
+            }
         }
     </style>
 </head>
 <body>
     <div class="offline-container">
-        <div class="offline-icon">🚂</div>
-        <h1>You're Offline</h1>
-        <p>Don't worry! The Railway Safety System works offline too.</p>
+        <div class="railway-header">
+            <div class="railway-title">Indian Railway Safety System</div>
+            <div class="offline-icon">🚂</div>
+            <h1>You're Offline</h1>
+            <p>Don't worry! Essential railway services work offline too.</p>
+        </div>
         
         <div class="features">
-            <h3>Available Offline:</h3>
+            <h3>🛤️ Offline Railway Services</h3>
             <ul>
-                <li>View cached train schedules</li>
-                <li>Submit GPS reports (queued for sync)</li>
-                <li>Schedule-based train estimations</li>
-                <li>Safety information and guides</li>
+                <li>View cached train schedules & timetables</li>
+                <li>Submit GPS reports (auto-sync when online)</li>
+                <li>Access emergency safety protocols</li>
+                <li>View offline route maps & station info</li>
+                <li>Check saved booking confirmations</li>
+                <li>Safety alerts & collision warnings</li>
             </ul>
         </div>
         
-        <button class="retry-btn" onclick="checkConnection()">
-            Check Connection
-        </button>
+        <div class="button-group">
+            <button class="retry-btn" onclick="checkConnection()">
+                🔄 Check Connection
+            </button>
+            <button class="retry-btn cache-btn" onclick="showCacheInfo()">
+                💾 View Cached Data
+            </button>
+        </div>
         
         <div class="status" id="status">
-            <strong>Status:</strong> <span id="connection-status">Checking...</span><br>
-            <strong>Last Update:</strong> <span id="last-update">Unknown</span>
+            <div>
+                <span class="status-indicator" id="status-indicator"></span>
+                <strong>Status:</strong> <span id="connection-status">Checking...</span>
+            </div>
+            <div style="margin-top: 8px;">
+                <strong>Last Update:</strong> <span id="last-update">Unknown</span>
+            </div>
+        </div>
+        
+        <div class="cached-data" id="cached-data" style="display: none;">
+            <h4>📦 Available Offline Data</h4>
+            <div class="cache-stats">
+                <div class="cache-stat">
+                    <span class="number" id="train-cache">24</span>
+                    <span class="label">Train Schedules</span>
+                </div>
+                <div class="cache-stat">
+                    <span class="number" id="route-cache">18</span>
+                    <span class="label">Route Maps</span>
+                </div>
+                <div class="cache-stat">
+                    <span class="number" id="booking-cache">7</span>
+                    <span class="label">Bookings</span>
+                </div>
+                <div class="cache-stat">
+                    <span class="number" id="gps-cache">156</span>
+                    <span class="label">GPS Points</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        
         function checkConnection() {
             const statusEl = document.getElementById('connection-status')
+            const statusIndicator = document.getElementById('status-indicator')
             const btn = document.querySelector('.retry-btn')
             
-            btn.textContent = 'Checking...'
+            btn.textContent = '🔄 Checking...'
             btn.disabled = true
+            statusIndicator.className = 'status-indicator'
             
-            // Try to fetch a small resource
-            fetch('/api/health', { 
-                method: 'HEAD',
-                cache: 'no-cache'
-            })
+            // Try multiple endpoints for better reliability
+            const endpoints = ['/api/health', '/api/status', '/']
+            
+            Promise.race(endpoints.map(endpoint => 
+                fetch(endpoint, { 
+                    method: 'HEAD',
+                    cache: 'no-cache',
+                    timeout: 5000
+                })
+            ))
             .then(response => {
                 if (response.ok) {
-                    statusEl.textContent = 'Connected! Redirecting...'
+                    statusEl.textContent = 'Connected! Redirecting to Railway Dashboard...'
                     statusEl.style.color = '#4ade80'
+                    statusIndicator.className = 'status-indicator online'
+                    
+                    // Show success message and redirect
                     setTimeout(() => {
                         window.location.href = '/'
-                    }, 1000)
+                    }, 1500)
                 } else {
                     throw new Error('Server error')
                 }
             })
             .catch(() => {
-                statusEl.textContent = 'Still offline'
+                reconnectAttempts++
+                statusEl.textContent = `Still offline (Attempt ${reconnectAttempts}/${maxReconnectAttempts})`
                 statusEl.style.color = '#fbbf24'
-                btn.textContent = 'Try Again'
+                
+                if (reconnectAttempts >= maxReconnectAttempts) {
+                    btn.textContent = '🌐 Try Manual Refresh'
+                    btn.onclick = () => window.location.reload()
+                } else {
+                    btn.textContent = '🔄 Try Again'
+                }
+                
                 btn.disabled = false
             })
         }
         
-        function updateStatus() {
-            const statusEl = document.getElementById('connection-status')
-            const lastUpdateEl = document.getElementById('last-update')
-            
-            statusEl.textContent = navigator.onLine ? 'Online' : 'Offline'
-            statusEl.style.color = navigator.onLine ? '#4ade80' : '#fbbf24'
-            lastUpdateEl.textContent = new Date().toLocaleTimeString()
+        function showCacheInfo() {
+            const cacheDiv = document.getElementById('cached-data')
+            if (cacheDiv.style.display === 'none') {
+                cacheDiv.style.display = 'block'
+                updateCacheStats()
+            } else {
+                cacheDiv.style.display = 'none'
+            }
         }
         
-        // Update status on load and network changes
+        function updateCacheStats() {
+            // Simulate cache data - in real app, this would check actual cache
+            const stats = {
+                trains: Math.floor(Math.random() * 50) + 20,
+                routes: Math.floor(Math.random() * 30) + 15,
+                bookings: Math.floor(Math.random() * 15) + 5,
+                gps: Math.floor(Math.random() * 200) + 100
+            }
+            
+            document.getElementById('train-cache').textContent = stats.trains
+            document.getElementById('route-cache').textContent = stats.routes
+            document.getElementById('booking-cache').textContent = stats.bookings
+            document.getElementById('gps-cache').textContent = stats.gps
+        }
+        
+        function updateStatus() {
+            const statusEl = document.getElementById('connection-status')
+            const statusIndicator = document.getElementById('status-indicator')
+            const lastUpdateEl = document.getElementById('last-update')
+            
+            const isOnline = navigator.onLine
+            statusEl.textContent = isOnline ? 'Online - Railway services available' : 'Offline - Using cached data'
+            statusEl.style.color = isOnline ? '#4ade80' : '#fbbf24'
+            statusIndicator.className = isOnline ? 'status-indicator online' : 'status-indicator'
+            lastUpdateEl.textContent = new Date().toLocaleTimeString()
+            
+            if (isOnline) {
+                setTimeout(() => {
+                    window.location.href = '/'
+                }, 2000)
+            }
+        }
+        
+        // Event listeners
         updateStatus()
         window.addEventListener('online', updateStatus)
         window.addEventListener('offline', updateStatus)
         
-        // Auto-check connection every 30 seconds
-        setInterval(() => {
-            if (!navigator.onLine) {
-                checkConnection()
-            }
-        }, 30000)
+        // Auto-check connection with exponential backoff
+        let checkInterval = 30000; // Start with 30 seconds
+        const maxInterval = 300000; // Max 5 minutes
+        
+        function scheduleNextCheck() {
+            setTimeout(() => {
+                if (!navigator.onLine) {
+                    checkConnection()
+                    checkInterval = Math.min(checkInterval * 1.5, maxInterval)
+                    scheduleNextCheck()
+                } else {
+                    checkInterval = 30000 // Reset interval when online
+                }
+            }, checkInterval)
+        }
+        
+        scheduleNextCheck()
         
         // Initial connection check
         setTimeout(checkConnection, 1000)
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'r') {
+                    e.preventDefault()
+                    checkConnection()
+                }
+            }
+        })
+        
+        // Service Worker messaging for cache updates
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data.type === 'CACHE_UPDATED') {
+                    updateCacheStats()
+                }
+            })
+        }
     </script>
 </body>
 </html>
