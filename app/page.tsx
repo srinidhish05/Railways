@@ -5,16 +5,16 @@ import Link from "next/link"
 
 export default function HomePage() {
   return (
-     <div className="min-h-screen pt-24 bg-gradient-to-br from-blue-50 to-indigo-100">
+     <div className="min-h-screen pt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Header */}
-<header className={`fixed top-0 left-0 w-full z-50 transition-shadow backdrop-blur bg-white/70 shadow-md`}>
+<header className={`fixed top-0 left-0 w-full z-50 transition-shadow backdrop-blur bg-gray-900/90 border-b border-gray-800`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Train className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Karnataka Railway Network</h1>
-                <p className="text-sm text-gray-600">Live Train Tracking & Booking System</p>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NamaTrain AI </h1>
+                <p className="text-gray-300">Live Train Tracking & Booking System</p>
               </div>
             </div>
             <div className="flex space-x-4">
@@ -42,12 +42,10 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20">
+      <section className="bg-gray-900 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">Karnataka Railway Network</h2>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">AI-POWERED RAILWAY SAFETY AND SMART TICKETING SYSTEM FOR COLLISION PREVENTION AND PASSENGER PROTECTION</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Complete railway management system with live train tracking, PNR status, seat booking, 
-            and real-time updates for all Karnataka trains including Bengaluru, Mysuru, Hubballi routes.
           </p>
           <div className="flex justify-center space-x-4 flex-wrap gap-4">
             <Link href="/user">
@@ -73,11 +71,11 @@ export default function HomePage() {
       </section>
 
       {/* Quick Search Section */}
-      <section className="py-12 bg-white">
+      <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-2xl font-bold text-gray-900 mb-8">Quick Railway Services</h3>
+          <h3 className="text-2xl font-bold text-white-900 mb-8">Quick Railway Services</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardContent className="p-6 text-center">
                 <Search className="h-8 w-8 text-blue-600 mx-auto mb-4" />
                 <h4 className="font-semibold mb-2">PNR Status</h4>
@@ -85,7 +83,7 @@ export default function HomePage() {
                 <Button size="sm" variant="outline">Check Now</Button>
               </CardContent>
             </Card>
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardContent className="p-6 text-center">
                 <MapPin className="h-8 w-8 text-green-600 mx-auto mb-4" />
                 <h4 className="font-semibold mb-2">Live Tracking</h4>
@@ -93,7 +91,7 @@ export default function HomePage() {
                 <Button size="sm" variant="outline">Track Train</Button>
               </CardContent>
             </Card>
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardContent className="p-6 text-center">
                 <Train className="h-8 w-8 text-purple-600 mx-auto mb-4" />
                 <h4 className="font-semibold mb-2">Find Trains</h4>
@@ -106,11 +104,11 @@ export default function HomePage() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">System Features</h3>
+          <h3 className="text-3xl font-bold text-center text-white-900 mb-12">System Features</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card>
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MapPin className="h-6 w-6 text-green-600 mr-2" />
@@ -124,7 +122,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <CreditCard className="h-6 w-6 text-blue-600 mr-2" />
@@ -138,7 +136,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Search className="h-6 w-6 text-purple-600 mr-2" />
@@ -152,7 +150,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <BarChart3 className="h-6 w-6 text-orange-600 mr-2" />
@@ -166,7 +164,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Clock className="h-6 w-6 text-red-600 mr-2" />
@@ -180,7 +178,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <AlertTriangle className="h-6 w-6 text-yellow-600 mr-2" />
@@ -198,9 +196,9 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">Karnataka Railway Network Statistics</h3>
+          <h3 className="text-3xl font-bold text-center text-white-900 mb-12">Karnataka Railway Network Statistics</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-4xl font-bold text-blue-600 mb-2">200+</div>
