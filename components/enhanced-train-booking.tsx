@@ -91,6 +91,7 @@ export function EnhancedTrainBooking() {
   const [bookedTicketDetails, setBookedTicketDetails] = useState<any>(null)
   const [recentSearches, setRecentSearches] = useState<QuickRoute[]>([])
   const [showQuickDates, setShowQuickDates] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Load recent searches on component mount
   useEffect(() => {
@@ -355,8 +356,8 @@ export function EnhancedTrainBooking() {
     <div className="space-y-6 max-w-6xl mx-auto p-4">
       {/* Booking Success Page */}
       {bookingStatus === "success" && bookedTicketDetails && (
-        <Card className="border-2 border-green-500 bg-green-50">
-          <CardHeader className="bg-green-500 text-white">
+        <Card className="border-2 border-green-500 bg-green-50 dark:bg-gray-800 dark:border-green-600">
+          <CardHeader className="bg-green-500 text-white dark:bg-green-700">
             <CardTitle className="flex items-center gap-2 text-xl">
               <CheckCircle className="h-6 w-6" />
               🎉 IRCTC Redirect Successful!
@@ -407,13 +408,15 @@ export function EnhancedTrainBooking() {
                   size="sm"
                   className="bg-blue-600 hover:bg-blue-700"
                 >
-                  <ExternalLink className="w-4 h-4 mr-2" />
+                           <ExternalLink className="w-4 h-4 mr-2" />
                   Open IRCTC
                 </Button>
                 <Button 
                   onClick={() => window.open('https://www.irctc.co.in/nget/profile/user-registration', '_blank')}
                   variant="outline" 
                   size="sm"
+                  // Adjusted for dark mode: text becomes light, border dark gray, hover background lighter dark gray
+                  className="border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-50 dark:hover:bg-gray-700"
                 >
                   <Users className="w-4 h-4 mr-2" />
                   Create IRCTC Account
@@ -422,6 +425,8 @@ export function EnhancedTrainBooking() {
                   variant="outline" 
                   size="sm"
                   onClick={handleNewBooking}
+                  // Adjusted for dark mode: text becomes light, border dark gray, hover background lighter dark gray
+                  className="border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-50 dark:hover:bg-gray-700"
                 >
                   <Search className="w-4 h-4 mr-2" />
                   Search Again
@@ -442,24 +447,32 @@ export function EnhancedTrainBooking() {
       {/* Show booking form only if not successful */}
       {bookingStatus !== "success" && (
         <>
-          {/* Header with Karnataka Railway Info */}
-          <Card className="bg-gradient-to-r from-blue-50 to-orange-50 border-orange-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">🚂 Karnataka Railway Booking</h1>
-                  <p className="text-gray-600">Book train tickets across Karnataka with real IRCTC integration</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-gray-600">
-                    <div><strong>{karnatakaStations.length}</strong> Stations</div>
-                    <div><strong>{karnatakaTrains.length}</strong> Trains</div>
-                    <div className="text-green-600 font-medium">✓ IRCTC Integration</div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+         {/* Header with Karnataka Railway Info */}
+<Card className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] border border-blue-900 shadow-md backdrop-blur-sm rounded-xl">
+  <CardContent className="p-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-white mb-1 tracking-wide">
+          🚂 NammaTrain <span className="text-blue-400">AI</span>
+        </h1>
+        <p className="text-gray-300 text-sm">
+          Book train tickets across Karnataka with real&nbsp;
+          <span className="text-green-400 font-semibold">IRCTC</span> integration
+        </p>
+      </div>
+      <div className="text-right text-sm text-gray-300 space-y-1">
+        <div>
+          <span className="text-blue-400 font-bold">{karnatakaStations.length}</span> Stations
+        </div>
+        <div>
+          <span className="text-blue-400 font-bold">{karnatakaTrains.length}</span> Trains
+        </div>
+        <div className="text-green-400 font-semibold">✓ IRCTC Integration</div>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
 
           {/* Progress Indicator */}
           <div className="flex items-center justify-center space-x-4 mb-6">
@@ -501,7 +514,7 @@ export function EnhancedTrainBooking() {
 
           {/* Quick Routes */}
           {(popularRoutes.length > 0 || recentSearches.length > 0) && (
-            <Card>
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-sm">
                   <Bookmark className="h-4 w-4" />
@@ -552,7 +565,7 @@ export function EnhancedTrainBooking() {
           )}
 
           {/* Station Selection */}
-          <Card>
+          <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-blue-600" />
@@ -564,186 +577,210 @@ export function EnhancedTrainBooking() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* From Station */}
-                <div className="relative">
-                  <Label htmlFor="from-station">From Station</Label>
-                  <div className="relative">
-                    <Input
-                      id="from-station"
-                      type="text"
-                      placeholder="Type to search departure station..."
-                      value={fromSearch}
-                      onChange={(e) => handleFromSearchChange(e.target.value)}
-                      onFocus={() => {
-                        if (filteredFromStations.length > 0) {
-                          setShowFromDropdown(true)
-                        }
-                      }}
-                      className={`pr-10 ${fromStation ? 'border-green-500 bg-green-50' : ''}`}
-                    />
-                    {fromStation ? (
-                      <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
-                    ) : (
-                      <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    )}
-                  </div>
-                  
-                  {showFromDropdown && filteredFromStations.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                      {filteredFromStations.map((station) => (
-                        <div
-                          key={station.code}
-                          className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
-                          onClick={() => selectFromStation(station)}
-                        >
-                          <div className="font-medium text-gray-900">
-                            {station.name} <span className="text-blue-600">({station.code})</span>
-                          </div>
-                          <div className="text-sm text-gray-500">{station.city}, {station.district}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {showFromDropdown && fromSearch.length > 0 && filteredFromStations.length === 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                      <div className="px-4 py-3 text-gray-500 text-center">
-                        No stations found matching "{fromSearch}"
-                      </div>
-                    </div>
-                  )}
-                  
-                  {showFromDropdown && (
-                    <div 
-                      className="fixed inset-0 z-40" 
-                      onClick={() => setShowFromDropdown(false)}
-                    />
-                  )}
-                </div>
+              {/* From Station */}
+<div className="space-y-1 relative">
+  <Label htmlFor="from-station" className="text-sm text-gray-300">
+    From Station
+  </Label>
+  <div className="relative">
+    <Input
+      id="from-station"
+      type="text"
+      placeholder="Type to search departure station..."
+      value={fromSearch}
+      onChange={(e) => handleFromSearchChange(e.target.value)}
+      onFocus={() => {
+        if (filteredFromStations.length > 0) {
+          setShowFromDropdown(true)
+        }
+      }}
+      className={`pr-10 bg-gray-900 text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500 ${
+        fromStation ? 'border-green-500 bg-green-900 text-green-100' : ''
+      }`}
+    />
+    {fromStation ? (
+      <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-400" />
+    ) : (
+      <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+    )}
+  </div>
 
-                {/* Swap Button */}
-                <div className="flex items-end justify-center md:col-span-2 md:-my-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={swapStations}
-                    disabled={!fromStation || !toStation}
-                    className="bg-white hover:bg-gray-50"
-                  >
-                    <Route className="h-4 w-4 mr-1" />
-                    Swap
-                  </Button>
-                </div>
+  {showFromDropdown && filteredFromStations.length > 0 && (
+    <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+      {filteredFromStations.map((station) => (
+        <div
+          key={station.code}
+          className="px-4 py-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-b-0 transition-colors text-white"
+          onClick={() => selectFromStation(station)}
+        >
+          <div className="font-medium text-white">
+            {station.name} <span className="text-blue-400">({station.code})</span>
+          </div>
+          <div className="text-sm text-gray-400">{station.city}, {station.district}</div>
+        </div>
+      ))}
+    </div>
+  )}
 
-                {/* To Station */}
-                <div className="relative md:-mt-8">
-                  <Label htmlFor="to-station">To Station</Label>
-                  <div className="relative">
-                    <Input
-                      id="to-station"
-                      type="text"
-                      placeholder="Type to search destination station..."
-                      value={toSearch}
-                      onChange={(e) => handleToSearchChange(e.target.value)}
-                      onFocus={() => {
-                        if (filteredToStations.length > 0) {
-                          setShowToDropdown(true)
-                        }
-                      }}
-                      className={`pr-10 ${toStation ? 'border-green-500 bg-green-50' : ''}`}
-                    />
-                    {toStation ? (
-                      <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
-                    ) : (
-                      <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    )}
-                  </div>
-                  
-                  {showToDropdown && filteredToStations.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                      {filteredToStations.map((station) => (
-                        <div
-                          key={station.code}
-                          className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
-                          onClick={() => selectToStation(station)}
-                        >
-                          <div className="font-medium text-gray-900">
-                            {station.name} <span className="text-blue-600">({station.code})</span>
-                          </div>
-                          <div className="text-sm text-gray-500">{station.city}, {station.district}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {showToDropdown && toSearch.length > 0 && filteredToStations.length === 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                      <div className="px-4 py-3 text-gray-500 text-center">
-                        No stations found matching "{toSearch}"
-                      </div>
-                    </div>
-                  )}
-                  
-                  {showToDropdown && (
-                    <div 
-                      className="fixed inset-0 z-40" 
-                      onClick={() => setShowToDropdown(false)}
-                    />
-                  )}
-                </div>
+  {showFromDropdown && fromSearch.length > 0 && filteredFromStations.length === 0 && (
+    <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg">
+      <div className="px-4 py-3 text-gray-400 text-center">
+        No stations found matching "{fromSearch}"
+      </div>
+    </div>
+  )}
+
+  {showFromDropdown && (
+    <div 
+      className="fixed inset-0 z-40" 
+      onClick={() => setShowFromDropdown(false)}
+    />
+  )}
+</div>
+
+
+{/* Swap Button */}
+<div className="flex items-end justify-center md:col-span-2 md:-my-2">
+  <Button
+    type="button"
+    variant="ghost"
+    size="sm"
+    onClick={swapStations}
+    disabled={!fromStation || !toStation}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
+      ${
+        fromStation && toStation
+          ? 'bg-blue-600 text-white hover:bg-blue-700'
+          : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+      }`}
+  >
+    <Route className="h-4 w-4" />
+    Swap
+  </Button>
+</div>
+
+
+               {/* To Station */}
+<div className="space-y-1 relative md:-mt-8">
+  <Label htmlFor="to-station" className="text-sm text-gray-300">
+    To Station
+  </Label>
+  <div className="relative">
+    <Input
+      id="to-station"
+      type="text"
+      placeholder="Type to search destination station..."
+      value={toSearch}
+      onChange={(e) => handleToSearchChange(e.target.value)}
+      onFocus={() => {
+        if (filteredToStations.length > 0) {
+          setShowToDropdown(true)
+        }
+      }}
+      className={`pr-10 bg-gray-900 text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500 ${
+        toStation ? 'border-green-500 bg-green-900 text-green-100' : ''
+      }`}
+    />
+    {toStation ? (
+      <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-400" />
+    ) : (
+      <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+    )}
+  </div>
+
+  {showToDropdown && filteredToStations.length > 0 && (
+    <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+      {filteredToStations.map((station) => (
+        <div
+          key={station.code}
+          className="px-4 py-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-b-0 transition-colors text-white"
+          onClick={() => selectToStation(station)}
+        >
+          <div className="font-medium text-white">
+            {station.name} <span className="text-blue-400">({station.code})</span>
+          </div>
+          <div className="text-sm text-gray-400">{station.city}, {station.district}</div>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {showToDropdown && toSearch.length > 0 && filteredToStations.length === 0 && (
+    <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg">
+      <div className="px-4 py-3 text-gray-400 text-center">
+        No stations found matching "{toSearch}"
+      </div>
+    </div>
+  )}
+
+  {showToDropdown && (
+    <div 
+      className="fixed inset-0 z-40" 
+      onClick={() => setShowToDropdown(false)}
+    />
+  )}
+</div>
               </div>
 
-              {/* Travel Date */}
-              <div>
-                <Label>Travel Date</Label>
-                <div className="flex gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="flex-1 justify-start text-left font-normal bg-white">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {travelDate ? format(travelDate, "PPP") : "Select travel date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <CalendarComponent
-                        mode="single"
-                        selected={travelDate}
-                        onSelect={setTravelDate}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowQuickDates(!showQuickDates)}
-                  >
-                    Quick
-                  </Button>
-                </div>
-                
-                {showQuickDates && (
-                  <div className="mt-2 flex gap-2 flex-wrap">
-                    {getQuickDates().map((quickDate, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setTravelDate(quickDate.date)
-                          setShowQuickDates(false)
-                        }}
-                        className="text-xs"
-                      >
-                        {quickDate.label}
-                      </Button>
-                    ))}
-                  </div>
-                )}
-              </div>
+{/* Travel Date */}
+<div>
+  <Label className="text-sm text-gray-300">Travel Date</Label>
+  <div className="flex gap-2 mt-1">
+    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          onClick={() => setCalendarOpen(true)}
+          className="flex-1 justify-start text-left font-normal bg-gray-800 text-gray-100 hover:bg-gray-700 border border-gray-600"
+        >
+          <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+          {travelDate ? format(travelDate, "PPP") : "Select travel date"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0 bg-gray-900 border border-gray-700 text-white rounded-lg shadow-lg">
+        <CalendarComponent
+          mode="single"
+          selected={travelDate}
+          onSelect={(date) => {
+            setTravelDate(date);
+            setCalendarOpen(false); // Auto-close on date select
+          }}
+          disabled={(date) => date < new Date()}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
+
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => setShowQuickDates(!showQuickDates)}
+      className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-100"
+    >
+      Quick
+    </Button>
+  </div>
+
+  {showQuickDates && (
+    <div className="mt-3 flex gap-2 flex-wrap">
+      {getQuickDates().map((quickDate, index) => (
+        <Button
+          key={index}
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setTravelDate(quickDate.date);
+            setShowQuickDates(false); // Auto-close quick list
+          }}
+          className="text-xs bg-gray-700 hover:bg-blue-600 hover:text-white border border-gray-600 text-gray-200"
+        >
+          {quickDate.label}
+        </Button>
+      ))}
+    </div>
+  )}
+</div>
+
 
               <Button 
                 onClick={handleTrainSearch} 
@@ -766,142 +803,137 @@ export function EnhancedTrainBooking() {
           )}
 
           {/* Train Results */}
-          {showTrainResults && availableTrains.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrainIcon className="h-5 w-5 text-green-600" />
-                  Available Trains ({availableTrains.length} found)
-                </CardTitle>
-                <CardDescription>
-                  Route: {getStationName(fromStation)} → {getStationName(toStation)} on {travelDate ? format(travelDate, "PPP") : ""}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {availableTrains.map((train) => (
-                  <div
-                    key={train.trainNumber}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                      selectedTrain?.trainNumber === train.trainNumber 
-                        ? "border-blue-500 bg-blue-50 shadow-md ring-2 ring-blue-200" 
-                        : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
-                    }`}
-                    onClick={() => handleTrainSelect(train)}
-                  >
-                    {selectedTrain?.trainNumber === train.trainNumber && (
-                      <div className="mb-3 p-2 bg-blue-100 rounded text-center">
-                        <p className="text-sm text-blue-800 font-medium">
-                          ✓ Train Selected - Choose class below to continue
-                        </p>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-semibold text-lg text-blue-900">
-                          {train.trainName} ({train.trainNumber})
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          {getRouteDisplay(train)}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {train.departureTime} - {train.arrivalTime}
-                          </span>
-                          <span>{train.duration}</span>
-                          <span>{train.distance} km</span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <Badge variant={train.status === "Active" ? "default" : "secondary"}>
-                          {train.status}
-                        </Badge>
-                        <p className="text-xs text-gray-500 mt-1">{train.type}</p>
-                        <p className="text-xs text-gray-500">{train.frequency}</p>
-                      </div>
-                    </div>
+{showTrainResults && availableTrains.length > 0 && (
+  <div className="mt-6 bg-[#1e293b] rounded-xl shadow-lg border border-blue-700 p-6">
+    {/* Header */}
+    <div className="flex flex-col mb-4">
+      <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <TrainIcon className="h-6 w-6 text-blue-400" />
+        Available Trains ({availableTrains.length} found)
+      </h2>
+      <p className="text-sm text-gray-300">
+        Route: {getStationName(fromStation)} → {getStationName(toStation)} on{" "}
+        {travelDate ? format(travelDate, "PPP") : ""}
+      </p>
+    </div>
 
-                    {/* Available Classes */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                      {train.classes.map((trainClass) => (
-                        <div
-                          key={trainClass.class}
-                          className="p-2 bg-gray-50 rounded border text-xs"
-                        >
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="font-medium">{trainClass.class}</p>
-                              <p className="text-gray-600">{trainClass.className}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-medium flex items-center">
-                                <IndianRupee className="h-3 w-3" />
-                                {trainClass.currentPrice}
-                              </p>
-                              <Badge 
-                                className={`text-xs ${
-                                  trainClass.status === "AVAILABLE" ? "bg-green-100 text-green-800" :
-                                  trainClass.status === "RAC" ? "bg-yellow-100 text-yellow-800" :
-                                  "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {trainClass.status}
-                              </Badge>
-                            </div>
-                          </div>
-                          <p className="text-gray-500 mt-1">
-                            {trainClass.availableSeats} / {trainClass.totalSeats} available
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-
-                    {selectedTrain?.trainNumber === train.trainNumber && (
-                      <div className="mt-4 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                          <Label className="text-sm font-semibold text-blue-900">
-                            Step 2: Select Class for Booking
-                          </Label>
-                        </div>
-                        <p className="text-xs text-blue-700 mb-3">Choose your travel class to proceed with booking</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {train.classes.filter(c => c.status !== "NOT_AVAILABLE").map((trainClass) => (
-                            <Button
-                              key={trainClass.class}
-                              variant={selectedClass === trainClass.class ? "default" : "outline"}
-                              size="sm"
-                              className={`h-auto p-3 text-left justify-start ${
-                                selectedClass === trainClass.class ? "bg-blue-600 text-white" : "hover:bg-blue-50"
-                              }`}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleClassSelect(trainClass.class)
-                              }}
-                              disabled={trainClass.availableSeats === 0}
-                            >
-                              <div className="w-full">
-                                <div className="font-medium">{trainClass.class} - ₹{trainClass.currentPrice}</div>
-                                <div className="text-xs opacity-80">{trainClass.className}</div>
-                                <div className="text-xs opacity-80">{trainClass.availableSeats} seats available</div>
-                              </div>
-                            </Button>
-                          ))}
-                        </div>
-                        {selectedClass && (
-                          <div className="mt-3 p-2 bg-green-100 rounded text-center">
-                            <p className="text-sm text-green-800 font-medium">
-                              ✓ {getSelectedClassInfo()?.className} selected - Proceed to booking form below
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+    {/* Train List */}
+    <div className="space-y-4">
+      {availableTrains.map((train) => (
+        <div
+          key={train.trainNumber}
+          className={`p-4 rounded-lg transition-all duration-300 cursor-pointer ${
+            selectedTrain?.trainNumber === train.trainNumber
+              ? "bg-gradient-to-r from-blue-900 to-blue-800 border-2 border-blue-500 shadow-xl"
+              : "bg-[#0f172a] border border-gray-700 hover:border-blue-600 hover:shadow-lg"
+          }`}
+          onClick={() => handleTrainSelect(train)}
+        >
+          {/* Selected Notice */}
+          {selectedTrain?.trainNumber === train.trainNumber && (
+            <div className="mb-3 p-2 bg-blue-100 rounded text-center">
+              <p className="text-sm text-blue-800 font-medium">
+                ✓ Train Selected - Choose class below to continue
+              </p>
+            </div>
           )}
+
+          {/* Train Info */}
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <h3 className="font-semibold text-lg text-white">
+                {train.trainName} ({train.trainNumber})
+              </h3>
+              <p className="text-gray-400 text-sm">{getRouteDisplay(train)}</p>
+              <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {train.departureTime} - {train.arrivalTime}
+                </span>
+                <span>{train.duration}</span>
+                <span>{train.distance} km</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <Badge
+                className={`${
+                  train.status === "Active"
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-500 text-white"
+                }`}
+              >
+                {train.status}
+              </Badge>
+              <p className="text-xs text-gray-400 mt-1">{train.type}</p>
+              <p className="text-xs text-gray-400">{train.frequency}</p>
+            </div>
+          </div>
+
+          {/* Available Classes */}
+          {selectedTrain?.trainNumber === train.trainNumber && (
+            <div className="mt-4">
+              <h4 className="text-blue-300 mb-2 text-sm font-semibold">
+                Step 2: Select Class for Booking
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {train.classes
+                  .filter((c) => c.status !== "NOT_AVAILABLE")
+                  .map((trainClass) => (
+                    <Button
+                      key={trainClass.class}
+                      variant={
+                        selectedClass === trainClass.class
+                          ? "default"
+                          : "outline"
+                      }
+                      size="sm"
+                      className={`h-auto p-3 text-left justify-start ${
+                        selectedClass === trainClass.class
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-blue-50"
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClassSelect(trainClass.class);
+
+                        // Scroll to booking form after selection
+                        setTimeout(() => {
+                          document
+                            .getElementById("bookingForm")
+                            ?.scrollIntoView({ behavior: "smooth" });
+                        }, 200);
+                      }}
+                      disabled={trainClass.availableSeats === 0}
+                    >
+                      <div className="w-full">
+                        <div className="font-medium">
+                          {trainClass.class} - ₹{trainClass.currentPrice}
+                        </div>
+                        <div className="text-xs opacity-80">
+                          {trainClass.className}
+                        </div>
+                        <div className="text-xs opacity-80">
+                          {trainClass.availableSeats} seats available
+                        </div>
+                      </div>
+                    </Button>
+                  ))}
+              </div>
+              {selectedClass && (
+                <div className="mt-3 p-2 bg-green-100 rounded text-center">
+                  <p className="text-sm text-green-800 font-medium">
+                    ✓ {getSelectedClassInfo()?.className} selected - Proceed to
+                    booking form below
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
           {/* Enhanced Booking Form */}
           {selectedTrain && selectedClass && (
