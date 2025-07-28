@@ -11,7 +11,6 @@ import { Separator } from "@/components/ui/separator"
 import { 
   Search, 
   Ticket, 
-  MapPin, 
   Users, 
   CalendarDays, 
   Info, 
@@ -25,7 +24,6 @@ import {
   Share2,
   Eye,
   EyeOff,
-  Navigation,
   IndianRupee,
   Phone,
   Mail,
@@ -35,48 +33,78 @@ import {
   Zap
 } from "lucide-react"
 
-interface PNRStatus {
-  pnr: string
-  trainNumber: string
-  trainName: string
-  fromStation: string
-  toStation: string
-  fromStationName: string
-  toStationName: string
-  doj: string
-  class: string
-  quota: string
-  passengers: Array<{
-    name: string
-    age: number
-    gender: string
-    bookingStatus: string
-    currentStatus: string
-    coach?: string
-    berth?: string
-    seatType?: string
-    waitlistPosition?: number
-  }>
-  chartPrepared: boolean
-  status: "CONFIRMED" | "WAITLISTED" | "RAC" | "CANCELLED" | "PARTIALLY_CONFIRMED"
-  currentStatusMessage: string
-  departureTime: string
-  arrivalTime: string
-  distance: string
-  duration: string
-  boardingStation?: string
-  reservationUpto?: string
-  lastUpdated: string
-  bookingDate: string
-  totalFare: number
-  ticketType: "E-TICKET" | "I-TICKET" | "COUNTER"
-  platform?: string
-  trainDelay?: number
-  coachPosition?: string
-  foodAvailable?: boolean
-  acAvailable?: boolean
+// --- MOCK DATA FOR DEMO ---
+const mockPnrData: { [key: string]: any } = {
+  "2345678901": {
+    pnr: "2345678901",
+    trainNumber: "12628",
+    trainName: "Karnataka Express",
+    fromStation: "SBC",
+    toStation: "NDLS",
+    fromStationName: "KSR Bengaluru City Junction",
+    toStationName: "New Delhi",
+    doj: "2025-01-25",
+    class: "3A",
+    quota: "GN",
+    passengers: [
+      { name: "John Doe", age: 35, gender: "Male", bookingStatus: "CNF / B1 / 23 / LB", currentStatus: "CNF", coach: "B1", berth: "23", seatType: "Lower Berth" },
+      { name: "Jane Doe", age: 32, gender: "Female", bookingStatus: "CNF / B1 / 24 / UB", currentStatus: "CNF", coach: "B1", berth: "24", seatType: "Upper Berth" },
+    ],
+    chartPrepared: true,
+    status: "CONFIRMED",
+    currentStatusMessage: "Chart Prepared. All passengers confirmed with berth allocation.",
+    departureTime: "20:15",
+    arrivalTime: "06:00+1",
+    distance: "2077 km",
+    duration: "33h 45m",
+    boardingStation: "SBC",
+    reservationUpto: "NDLS",
+    lastUpdated: new Date().toISOString(),
+    bookingDate: "2025-01-15T10:30:00.000Z",
+    totalFare: 4250,
+    ticketType: "E-TICKET",
+    platform: "1",
+    trainDelay: 0,
+    coachPosition: "Front",
+    foodAvailable: true,
+    acAvailable: true
+  },
+  "1234567890": {
+    pnr: "1234567890",
+    trainNumber: "16022",
+    trainName: "Kaveri Express",
+    fromStation: "MYS",
+    toStation: "SBC",
+    fromStationName: "Mysuru Junction",
+    toStationName: "KSR Bengaluru City Junction",
+    doj: "2025-01-26",
+    class: "SL",
+    quota: "GN",
+    passengers: [
+      { name: "Alice Smith", age: 28, gender: "Female", bookingStatus: "RAC / S5 / 45", currentStatus: "RAC", coach: "S5", berth: "45", seatType: "Side Lower", waitlistPosition: 1 },
+    ],
+    chartPrepared: false,
+    status: "RAC",
+    currentStatusMessage: "RAC 1. Chart not prepared yet. High chances of confirmation.",
+    departureTime: "06:30",
+    arrivalTime: "09:45",
+    distance: "139 km",
+    duration: "3h 15m",
+    boardingStation: "MYS",
+    reservationUpto: "SBC",
+    lastUpdated: new Date().toISOString(),
+    bookingDate: "2025-01-20T14:20:00.000Z",
+    totalFare: 185,
+    ticketType: "E-TICKET",
+    platform: "3",
+    trainDelay: 5,
+    coachPosition: "Middle",
+    foodAvailable: false,
+    acAvailable: false
+  }
 }
 
+<<<<<<< HEAD
 const mockPnrData: { [key: string]: PNRStatus } = {
   "2345678901": {
     pnr: "2345678901",
@@ -341,6 +369,12 @@ const mockPnrData: { [key: string]: PNRStatus } = {
     foodAvailable: true,
     acAvailable: true
   }
+=======
+// --- USE MOCK DATA IN DEV ---
+async function fetchPNRStatus(pnr: string) {
+  await new Promise(res => setTimeout(res, 500))
+  return { data: mockPnrData[pnr] }
+>>>>>>> 151333a (Enhance PNR Status Card with mock data and auto demo display)
 }
 
 export function PNRStatusCard() {
@@ -353,7 +387,6 @@ export function PNRStatusCard() {
   const [autoRefresh, setAutoRefresh] = useState(false)
   const [showAdvancedInfo, setShowAdvancedInfo] = useState(false)
 
-  // Auto-refresh functionality
   useEffect(() => {
     if (autoRefresh && pnrStatus && pnrStatus.status !== "CONFIRMED") {
       const interval = setInterval(() => {
@@ -378,6 +411,7 @@ export function PNRStatusCard() {
     }
 
     try {
+<<<<<<< HEAD
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, isAutoRefresh ? 500 : 1500))
 
@@ -387,6 +421,13 @@ export function PNRStatusCard() {
         // Simulate slight changes for auto-refresh
         const updatedResult = {
           ...result,
+=======
+      const data = await fetchPNRStatus(pnr)
+      if (data && data.data) {
+        setPnrStatus({
+          ...data.data,
+          pnr: pnr,
+>>>>>>> 151333a (Enhance PNR Status Card with mock data and auto demo display)
           lastUpdated: new Date().toISOString(),
           trainDelay: isAutoRefresh ? 
             Math.max(0, (result.trainDelay || 0) + Math.floor((Math.random() - 0.5) * 10)) : 
@@ -541,21 +582,7 @@ Status: ${pnrStatus?.status}
               <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("1234567890")}>
                 1234567890 <Badge variant="secondary" className="ml-1">RAC</Badge>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("9876543210")}>
-                9876543210 <Badge variant="secondary" className="ml-1">WL</Badge>
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("1111111111")}>
-                1111111111 <Badge variant="secondary" className="ml-1">CNF</Badge>
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("2222222222")}>
-                2222222222 <Badge variant="secondary" className="ml-1">CNF</Badge>
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("3333333333")}>
-                3333333333 <Badge variant="secondary" className="ml-1">RAC</Badge>
-              </Button>
             </div>
-
-            {/* Recently Checked */}
             {lastChecked.length > 0 && (
               <div className="flex flex-wrap gap-2 text-sm">
                 <span className="font-medium text-gray-700 flex items-center gap-1">
@@ -786,7 +813,7 @@ Status: ${pnrStatus?.status}
                 Passenger Details ({pnrStatus.passengers.length})
               </h4>
               <div className="space-y-3">
-                {pnrStatus.passengers.map((pax, index) => (
+                {pnrStatus.passengers.map((pax: any, index: number) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
@@ -836,7 +863,7 @@ Status: ${pnrStatus?.status}
                   <Zap className="h-4 w-4" />
                   Confirmation Probability
                 </h4>
-                {pnrStatus.passengers.map((pax, index) => {
+                {pnrStatus.passengers.map((pax: any, index: number) => {
                   const probability = getConfirmationProbability(pax.currentStatus, pax.waitlistPosition)
                   return (
                     <div key={index} className="space-y-2">
