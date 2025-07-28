@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { create } from 'zustand'
 
 interface TrainLocation {
@@ -346,3 +347,95 @@ export const trainAPI = {
 
 // Export types for use in other components
 export type { TrainLocation, TrainDataStore }
+=======
+"use client"
+import { useState, useEffect } from "react"
+import { searchTrains, TrainSchedule } from "@/data/karnataka-trains"
+
+export function LiveTrainMap() {
+  const [search, setSearch] = useState("")
+  const [trains, setTrains] = useState<TrainSchedule[]>([])
+
+  useEffect(() => {
+    setTrains(searchTrains(""))
+  }, [])
+
+  // Accurate local filtering
+  const filteredTrains = trains.filter(train => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return (
+      train.trainName.toLowerCase().includes(q) ||
+      train.trainNumber.includes(q) ||
+      train.fromName.toLowerCase().includes(q) ||
+      train.toName.toLowerCase().includes(q) ||
+      train.type.toLowerCase().includes(q)
+    )
+  }).slice(0, 90) // Show up to 90 trains
+
+  return (
+    <div className="w-full max-w-5xl mx-auto px-2">
+      <div className="mb-6 flex flex-col sm:flex-row items-center gap-4">
+        <input
+          type="text"
+          className="w-full sm:w-96 px-4 py-2 border border-blue-400 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+          placeholder="Search by train name, number, station, or type..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+      </div>
+      {filteredTrains.length === 0 ? (
+        <div className="text-center text-gray-500 py-12">
+          <span className="text-lg font-semibold">No trains found for your search.</span>
+          <br />
+          <span>Try another train name, number, station or route.</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredTrains.map(train => (
+            <div
+              key={`${train.trainNumber}-${train.fromName}-${train.departureTime}`}
+              className="bg-white rounded-xl shadow-lg p-5 border border-blue-100 hover:shadow-xl transition-shadow flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-lg font-bold text-blue-900">{train.trainName}</span>
+                <span className="text-xs text-blue-600 font-mono bg-blue-50 px-2 py-1 rounded">{train.trainNumber}</span>
+              </div>
+              <div className="mb-2 text-base text-gray-700 font-medium flex flex-wrap items-center">
+                <span>{train.fromName}</span>
+                <span className="mx-2 text-blue-400">→</span>
+                <span>{train.toName}</span>
+              </div>
+              <div className="mb-2 text-sm text-gray-600 flex flex-wrap items-center">
+                <span className="font-semibold">Departure:</span> <span className="ml-1">{train.departureTime}</span>
+                <span className="mx-2">|</span>
+                <span className="font-semibold">Arrival:</span> <span className="ml-1">{train.arrivalTime}</span>
+              </div>
+              <div className="mb-2 text-sm text-gray-600 flex flex-wrap items-center">
+                <span className="font-semibold">Type:</span> <span className="ml-1">{train.type}</span>
+                <span className="mx-2">|</span>
+                <span className="font-semibold">Days:</span> <span className="ml-1">{train.runningDays.join(", ")}</span>
+              </div>
+              <div className="mb-2 text-sm text-gray-600">
+                <span className="font-semibold">Classes:</span>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {train.classes.map(cls => (
+                    <span key={cls.class} className={`px-2 py-1 rounded text-xs font-semibold border ${cls.status === "AVAILABLE" ? "bg-green-50 text-green-700 border-green-200" : "bg-yellow-50 text-yellow-700 border-yellow-200"}`}>
+                      {cls.className} ({cls.class}) <span className="font-normal">{cls.status}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="text-xs text-gray-400 mt-2 flex flex-wrap items-center">
+                <span className="font-semibold">Distance:</span> <span className="ml-1">{train.distance} km</span>
+                <span className="mx-2">|</span>
+                <span className="font-semibold">Duration:</span> <span className="ml-1">{train.duration}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+>>>>>>> 63125f1 (Improve Live Train Map component)
