@@ -3,17 +3,18 @@ import { Button } from "@/components/ui/button"
 import { Train, Shield, Users, BarChart3, MapPin, AlertTriangle, Clock, Zap, Search, CreditCard } from "lucide-react"
 import Link from "next/link"
 
+
 export default function HomePage() {
   return (
-     <div className="min-h-screen pt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="min-h-screen pt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Header */}
-<header className={`fixed top-0 left-0 w-full z-50 transition-shadow backdrop-blur bg-gray-900/90 border-b border-gray-800`}>
+      <header className="fixed top-0 left-0 w-full z-50 transition-shadow backdrop-blur bg-gray-900/90 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Train className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NamaTrain AI </h1>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NamaTrain AI</h1>
                 <p className="text-gray-300">Live Train Tracking & Booking System</p>
               </div>
             </div>
@@ -47,6 +48,10 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">AI-POWERED RAILWAY SAFETY AND SMART TICKETING SYSTEM FOR COLLISION PREVENTION AND PASSENGER PROTECTION</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
           </p>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">
+            AI-POWERED RAILWAY SAFETY AND SMART TICKETING SYSTEM FOR COLLISION PREVENTION AND PASSENGER PROTECTION
+          </h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"></p>
           <div className="flex justify-center space-x-4 flex-wrap gap-4">
             <Link href="/user">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
@@ -71,6 +76,7 @@ export default function HomePage() {
       </section>
 
       {/* Quick Search Section */}
+      {/* Quick Railway Services Section */}
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h3 className="text-2xl font-bold text-white-900 mb-8">Quick Railway Services</h3>
@@ -121,7 +127,6 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
-
             <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -135,13 +140,12 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
-
             <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Search className="h-6 w-6 text-purple-600 mr-2" />
                   PNR Status
-                </CardTitle>              
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300">
@@ -149,7 +153,6 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
-
             <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -163,7 +166,6 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
-
             <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -177,7 +179,6 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
-
             <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
               <CardHeader>
                 <CardTitle className="flex items-center">
