@@ -79,7 +79,7 @@ export default function HomePage() {
               <CardContent className="p-6 text-center">
                 <Search className="h-8 w-8 text-blue-600 mx-auto mb-4" />
                 <h4 className="font-semibold mb-2">PNR Status</h4>
-                <p className="text-gray-600 text-sm mb-4">Check your ticket status instantly</p>
+                <p className="text-blue-300 text-sm mb-4">Check ticket status instantly</p>
                 <Button size="sm" variant="outline">Check Now</Button>
               </CardContent>
             </Card>
@@ -87,7 +87,7 @@ export default function HomePage() {
               <CardContent className="p-6 text-center">
                 <MapPin className="h-8 w-8 text-green-600 mx-auto mb-4" />
                 <h4 className="font-semibold mb-2">Live Tracking</h4>
-                <p className="text-gray-600 text-sm mb-4">Track any train in real-time</p>
+                <p className="text-green-300 text-sm mb-4">Track any train in real-time</p>
                 <Button size="sm" variant="outline">Track Train</Button>
               </CardContent>
             </Card>
@@ -95,7 +95,7 @@ export default function HomePage() {
               <CardContent className="p-6 text-center">
                 <Train className="h-8 w-8 text-purple-600 mx-auto mb-4" />
                 <h4 className="font-semibold mb-2">Find Trains</h4>
-                <p className="text-gray-600 text-sm mb-4">Search trains between stations</p>
+                <p className="text-purple-300 text-sm mb-4">Search trains between stations</p>
                 <Button size="sm" variant="outline">Find Trains</Button>
               </CardContent>
             </Card>
@@ -116,7 +116,7 @@ export default function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-gray-300">
                   Real-time GPS tracking of Karnataka Express, Kaveri Express, and all major trains with live status updates and delay notifications.
                 </p>
               </CardContent>
@@ -130,7 +130,7 @@ export default function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-gray-300">
                   Easy online booking for all Karnataka routes including SBC-NDLS, MYS-MAS, and popular destinations with seat selection.
                 </p>
               </CardContent>
@@ -144,7 +144,7 @@ export default function HomePage() {
                 </CardTitle>              
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-gray-300">
                   Instant PNR status checking with detailed journey information, seat allocation, and boarding station details.
                 </p>
               </CardContent>
@@ -158,7 +158,7 @@ export default function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-gray-300">
                   Comprehensive analytics on train performance, passenger flow, and operational efficiency across Karnataka network.
                 </p>
               </CardContent>
@@ -172,7 +172,7 @@ export default function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-gray-300">
                   Intelligent delay prediction and automatic notifications to keep passengers informed about schedule changes.
                 </p>
               </CardContent>
@@ -186,7 +186,7 @@ export default function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-gray-300">
                   Advanced safety monitoring with emergency response systems and real-time alerts for passenger safety.
                 </p>
               </CardContent>
@@ -202,23 +202,23 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-4xl font-bold text-blue-600 mb-2">200+</div>
-              <div className="text-gray-600">Active Trains</div>
-              <div className="text-sm text-gray-500 mt-1">Daily Operations</div>
+              <div className="text-gray-300">Active Trains</div>
+              <div className="text-sm text-blue-500 mt-1">Daily Operations</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-green-600 mb-2">450+</div>
-              <div className="text-gray-600">Railway Stations</div>
-              <div className="text-sm text-gray-500 mt-1">Across Karnataka</div>
+              <div className="text-gray-300">Railway Stations</div>
+              <div className="text-sm text-green-500 mt-1">Across Karnataka</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-purple-600 mb-2">2M+</div>
-              <div className="text-gray-600">Monthly Passengers</div>
-              <div className="text-sm text-gray-500 mt-1">Served</div>
+              <div className="text-gray-300">Monthly Passengers</div>
+              <div className="text-sm text-purple-500 mt-1">Served</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-orange-600 mb-2">24/7</div>
-              <div className="text-gray-600">Live Tracking</div>
-              <div className="text-sm text-gray-500 mt-1">Real-time Updates</div>
+              <div className="text-gray-300">Live Tracking</div>
+              <div className="text-sm text-orange-500 mt-1">Real-time Updates</div>
             </div>
           </div>
         </div>
@@ -231,9 +231,9 @@ export default function HomePage() {
             <div>
               <div className="flex items-center mb-4">
                 <Train className="h-6 w-6 mr-2" />
-                <span className="text-lg font-semibold">Karnataka Railway Network</span>
+                <span className="text-lg font-semibold">NammaTrain AI</span>
               </div>
-              <p className="text-gray-400">
+              <p className="text-yellow-400">
                 Complete railway management system for Karnataka with live tracking, booking, and passenger services.
               </p>
             </div>
@@ -265,7 +265,7 @@ export default function HomePage() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-100">
             <p>&copy; 2024 Karnataka Railway Network. All rights reserved. | Powered by Indian Railways</p>
           </div>
         </div>
