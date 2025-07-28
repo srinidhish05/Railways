@@ -525,7 +525,7 @@ export function EnhancedTrainBooking() {
                 <div className="space-y-3">
                   {recentSearches.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-500 mb-2">Recent Searches</p>
+                      <p className="text-xs text-green-400 mb-2">Recent Searches</p>
                       <div className="flex gap-2 flex-wrap">
                         {recentSearches.map((route, index) => (
                           <Button
@@ -543,7 +543,7 @@ export function EnhancedTrainBooking() {
                   )}
                   
                   <div>
-                    <p className="text-xs text-gray-500 mb-2">Popular Routes</p>
+                    <p className="text-xs text-red-400 mb-2">Popular Routes</p>
                     <div className="flex gap-2 flex-wrap">
                       {popularRoutes.filter(r => r.popular).map((route, index) => (
                         <Button
@@ -572,7 +572,7 @@ export function EnhancedTrainBooking() {
                 Search Trains - All Karnataka Routes
               </CardTitle>
               <CardDescription>
-                Choose from {karnatakaStations.length} railway stations across Karnataka
+                <p className="text-yellow-400">Choose from {karnatakaStations.length} railway stations across Karnataka</p>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -824,15 +824,15 @@ export function EnhancedTrainBooking() {
           key={train.trainNumber}
           className={`p-4 rounded-lg transition-all duration-300 cursor-pointer ${
             selectedTrain?.trainNumber === train.trainNumber
-              ? "bg-gradient-to-r from-blue-900 to-blue-800 border-2 border-blue-500 shadow-xl"
+              ? "bg-gradient-to-r from-red-900 to-blue-800 border-2 border-blue-500 shadow-xl"
               : "bg-[#0f172a] border border-gray-700 hover:border-blue-600 hover:shadow-lg"
           }`}
           onClick={() => handleTrainSelect(train)}
         >
           {/* Selected Notice */}
           {selectedTrain?.trainNumber === train.trainNumber && (
-            <div className="mb-3 p-2 bg-blue-100 rounded text-center">
-              <p className="text-sm text-blue-800 font-medium">
+            <div className="mb-3 p-2 bg-green-100 rounded text-center">
+              <p className="text-sm text-green-800 font-medium">
                 ✓ Train Selected - Choose class below to continue
               </p>
             </div>
@@ -844,8 +844,8 @@ export function EnhancedTrainBooking() {
               <h3 className="font-semibold text-lg text-white">
                 {train.trainName} ({train.trainNumber})
               </h3>
-              <p className="text-gray-400 text-sm">{getRouteDisplay(train)}</p>
-              <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
+              <p className="text-green-400 text-sm">{getRouteDisplay(train)}</p>
+              <div className="flex items-center gap-4 text-sm text-gray-200 mt-1">
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {train.departureTime} - {train.arrivalTime}
@@ -864,15 +864,15 @@ export function EnhancedTrainBooking() {
               >
                 {train.status}
               </Badge>
-              <p className="text-xs text-gray-400 mt-1">{train.type}</p>
-              <p className="text-xs text-gray-400">{train.frequency}</p>
+              <p className="text-xs text-yellow-200 mt-1">{train.type}</p>
+              <p className="text-xs text-orange-600">{train.frequency}</p>
             </div>
           </div>
 
           {/* Available Classes */}
           {selectedTrain?.trainNumber === train.trainNumber && (
             <div className="mt-4">
-              <h4 className="text-blue-300 mb-2 text-sm font-semibold">
+              <h4 className="text-yellow-300 mb-2 text-sm font-semibold">
                 Step 2: Select Class for Booking
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -889,7 +889,7 @@ export function EnhancedTrainBooking() {
                       size="sm"
                       className={`h-auto p-3 text-left justify-start ${
                         selectedClass === trainClass.class
-                          ? "bg-blue-600 text-white"
+                          ? "bg-blue-600 text-gray"
                           : "hover:bg-blue-50"
                       }`}
                       onClick={(e) => {
