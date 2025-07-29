@@ -355,6 +355,26 @@ async function calculateEnhancedTrainPosition(trainNumber: string) {
     heading: recentPositions[0].heading || 0
   }
 
+  // Safety monitoring logic
+  let collisionRisk = 'Low'
+  let safetyStatus = 'Safe'
+  const safetyAlerts: string[] = []
+  // If speed > 60 and more than 2 positions in last 10 min, high risk
+  if (calculatedPosition.speed > 60 && recentPositions.length > 2) {
+    collisionRisk = 'High'
+    safetyStatus = 'Critical'
+    safetyAlerts.push('High collision risk: train moving at high speed')
+  } else if (calculatedPosition.speed > 40 && recentPositions.length > 2) {
+    collisionRisk = 'Medium'
+    safetyStatus = 'Warning'
+    safetyAlerts.push('Medium collision risk: train moving quickly')
+  }
+  // If latest position is older than 5 min, add delay alert
+  if (Date.now() - calculatedPosition.timestamp > 300000) {
+    safetyStatus = 'Warning'
+    safetyAlerts.push('Delay critical: train position not updated in last 5 minutes')
+  }
+
   return {
     trainNumber,
     trainName: KARNATAKA_TRAINS[trainNumber],
@@ -365,7 +385,10 @@ async function calculateEnhancedTrainPosition(trainNumber: string) {
     lastUpdated: Date.now(),
     confidence: Math.min(recentPositions.length * 15, 100),
     dataAge: Date.now() - recentPositions[0].timestamp,
-    source: 'Karnataka Railway GPS Network'
+    source: 'Karnataka Railway GPS Network',
+    collisionRisk,
+    safetyStatus,
+    safetyAlerts
   }
 }
 
