@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   // Create a ReadableStream for SSE
   const stream = new ReadableStream({
     async start(controller) {
-      // Initial data
+      // Initial data with safety monitoring
       const initialTrains: TrainStatus[] = [
         {
           id: "1",
@@ -54,8 +54,37 @@ export async function GET(request: NextRequest) {
         },
       ]
 
+      // Add safety monitoring fields
+      const enhancedTrains = initialTrains.map(train => {
+        let collisionRisk = 'Low'
+        let safetyStatus = 'Safe'
+        const safetyAlerts: string[] = []
+        if (train.speed > 80) {
+          collisionRisk = 'High'
+          safetyStatus = 'Critical'
+          safetyAlerts.push('High speed, monitor for collision risk')
+        } else if (train.speed > 60) {
+          collisionRisk = 'Medium'
+          safetyStatus = 'Warning'
+          safetyAlerts.push('Medium speed, monitor for safety')
+        }
+        if (train.delay > 20) {
+          safetyStatus = 'Warning'
+          safetyAlerts.push('Delayed, possible passenger distress')
+        }
+        if (train.occupancy > 80) {
+          safetyAlerts.push('High occupancy, monitor for crowding and safety')
+        }
+        return {
+          ...train,
+          collisionRisk,
+          safetyStatus,
+          safetyAlerts
+        }
+      })
+
       // Send initial data
-      const message = `data: ${JSON.stringify({ trains: initialTrains })}\n\n`
+      const message = `data: ${JSON.stringify({ trains: enhancedTrains })}\n\n`
       controller.enqueue(encoder.encode(message))
 
       // In a real implementation, you would:
