@@ -183,7 +183,7 @@ export function TrainDashboard() {
     const connectionInterval = setInterval(() => {
       if (Math.random() > 0.95) {
         const types: ("websocket" | "polling" | "offline")[] = ["websocket", "polling", "offline"]
-        const randomType = types[Math.floor(Math.random() * types.length)]
+        const randomType = types[Math.floor(Math.random() * types.length)] ?? "websocket"
         
         if (randomType === "offline") {
           setIsConnected(false)
