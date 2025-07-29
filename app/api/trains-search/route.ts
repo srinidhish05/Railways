@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         total: train ? 1 : 0,
         returned: train ? 1 : 0,
         query: { trainNumber },
-        trains: train ? [train] : [],
+        trains: train ? [addSafetyFields(train)] : [],
         timestamp: new Date().toISOString(),
         message: train ? "Train found" : "Train number not found in Karnataka network"
       })
@@ -54,21 +54,23 @@ export async function GET(request: Request) {
     if (from && to) {
       trains = searchTrainsBetweenStations(from, to)
       searchType = "route"
-      
+      const safeClassType = class_type ?? undefined;
       return NextResponse.json({
         success: true,
         searchType,
         total: karnatakaTrains.length,
         returned: trains.length,
         route: `${from.toUpperCase()} → ${to.toUpperCase()}`,
-        query: { from, to, date, class: class_type },
-        trains: trains.map(train => ({
-          ...train,
-          // Add journey details for route searches
-          estimatedJourneyTime: calculateJourneyTime(train, from, to),
-          availableClasses: getAvailableClasses(train),
-          fareEstimate: calculateFareEstimate(train, from, to, class_type)
-        })),
+        query: { from, to, date, class: safeClassType },
+        trains: trains.map(train => {
+          const t = {
+            ...train,
+            estimatedJourneyTime: calculateJourneyTime(train, from, to),
+            availableClasses: getAvailableClasses(train),
+            fareEstimate: calculateFareEstimate(train, from, to, safeClassType)
+          };
+          return addSafetyFields(t);
+        }),
         timestamp: new Date().toISOString(),
         message: trains.length > 0 
           ? `Found ${trains.length} trains on this route` 
@@ -91,9 +93,9 @@ export async function GET(request: Request) {
     // Filter by class availability
     if (class_type) {
       trains = trains.filter(train => 
-        train.classes && train.classes.some(cls => 
-          cls.toLowerCase() === class_type.toLowerCase()
-        )
+        Array.isArray(train.classes) && train.classes.some((cls: string) => {
+          return cls.toLowerCase() === class_type.toLowerCase();
+        })
       )
     }
     
@@ -103,27 +105,29 @@ export async function GET(request: Request) {
       trains = trains.slice(0, limitNum)
     }
     
+    const safeQuery = query ?? undefined;
+    const safeType = type ?? undefined;
     return NextResponse.json({
       success: true,
       searchType,
       total: karnatakaTrains.length,
       returned: trains.length,
       filters: { 
-        query, 
-        type, 
-        class: class_type, 
+        query: safeQuery, 
+        type: safeType, 
+        class: class_type ?? undefined, 
         date,
         limit: limitNum 
       },
-      trains: trains.map(train => ({
-        ...train,
-        // Add search relevance score for query searches
-        ...(query && { 
-          relevanceScore: calculateRelevanceScore(train, query) 
-        })
-      })),
+      trains: trains.map(train => {
+        const t = {
+          ...train,
+          ...(safeQuery && { relevanceScore: calculateRelevanceScore(train, safeQuery) })
+        };
+        return addSafetyFields(t);
+      }),
       timestamp: new Date().toISOString(),
-      suggestions: trains.length === 0 ? generateSearchSuggestions(query, type) : null
+      suggestions: trains.length === 0 ? generateSearchSuggestions(safeQuery, safeType) : null
     })
     
   } catch (error) {
@@ -158,6 +162,33 @@ function checkSearchRateLimit(clientIP: string): boolean {
 }
 
 // Helper functions
+// Add safety/collision monitoring fields to train object
+function addSafetyFields(train: any) {
+  let collisionRisk = "low";
+  let safetyStatus = "safe";
+  let safetyAlerts: string[] = [];
+  if (train.speed && train.occupancy && train.speed > 80 && train.occupancy > 90) {
+    collisionRisk = "medium";
+    safetyStatus = "caution";
+    safetyAlerts.push("High speed and occupancy detected. Monitor for safety.");
+  }
+  if (train.delay && train.delay > 10) {
+    safetyAlerts.push("Significant delay. Check for operational issues.");
+  }
+  if (train.status && (train.status === "stopped" || train.status === "delayed" || train.status === "on-time")) {
+    collisionRisk = "low";
+    safetyStatus = "safe";
+  }
+  if (train.temperature && train.temperature > 32) {
+    safetyAlerts.push("High temperature in coaches. Monitor passenger comfort.");
+  }
+  return {
+    ...train,
+    collisionRisk,
+    safetyStatus,
+    safetyAlerts
+  };
+}
 function calculateJourneyTime(train: any, from: string, to: string): string {
   // Mock calculation - in production, this would use actual station timings
   const baseTime = Math.floor(Math.random() * 8) + 4 // 4-12 hours
@@ -178,10 +209,11 @@ function calculateFareEstimate(train: any, from: string, to: string, classType?:
     "CC": Math.floor(Math.random() * 400) + 300
   }
   
-  if (classType && baseFares[classType.toUpperCase()]) {
+  const classKey = classType ? classType.toUpperCase() : undefined;
+  if (classKey && Object.prototype.hasOwnProperty.call(baseFares, classKey)) {
     return {
-      class: classType.toUpperCase(),
-      fare: baseFares[classType.toUpperCase()],
+      class: classKey,
+      fare: baseFares[classKey as keyof typeof baseFares],
       currency: "INR"
     }
   }
@@ -214,8 +246,8 @@ function calculateRelevanceScore(train: any, query: string): number {
   const queryWords = lowerQuery.split(' ')
   const nameWords = trainName.split(' ')
   
-  queryWords.forEach(qWord => {
-    nameWords.forEach(nWord => {
+  queryWords.forEach((qWord: string) => {
+    nameWords.forEach((nWord: string) => {
       if (nWord.includes(qWord)) score += 30
     })
   })
