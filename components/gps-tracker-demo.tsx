@@ -159,9 +159,12 @@ export function GPSTrackerDemo() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div
+      className="space-y-6 max-w-6xl mx-auto p-4 bg-gradient-to-br from-blue-100/60 via-white/80 to-green-100/60 rounded-2xl shadow-xl backdrop-blur-md border border-gray-200"
+      aria-label="GPS Tracker Demo"
+    >
       {/* Header */}
-      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
+      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200 backdrop-blur-md shadow-md">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -188,7 +191,7 @@ export function GPSTrackerDemo() {
       </Card>
 
       <Tabs defaultValue="tracker" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4 backdrop-blur-md">
           <TabsTrigger value="tracker">GPS Tracker</TabsTrigger>
           <TabsTrigger value="position">Live Position</TabsTrigger>
           <TabsTrigger value="nearby">Nearby Trains</TabsTrigger>
@@ -197,7 +200,7 @@ export function GPSTrackerDemo() {
 
         <TabsContent value="tracker" className="space-y-6">
           {/* Main Tracker Interface */}
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
@@ -245,7 +248,8 @@ export function GPSTrackerDemo() {
                 <Button 
                   onClick={startTracking} 
                   disabled={isTracking || !trainNumber} 
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 focus:ring-2 focus:ring-blue-400"
+                  aria-label="Start GPS Tracking"
                 >
                   <Play className="h-4 w-4" />
                   {isTracking ? "Tracking Active" : "Start Tracking"}
@@ -254,7 +258,8 @@ export function GPSTrackerDemo() {
                   onClick={stopTracking}
                   disabled={!isTracking}
                   variant="outline"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 focus:ring-2 focus:ring-blue-400"
+                  aria-label="Stop GPS Tracking"
                 >
                   <Square className="h-4 w-4" />
                   Stop Tracking
@@ -284,7 +289,7 @@ export function GPSTrackerDemo() {
               )}
 
               {error && (
-                <Alert variant="destructive">
+                <Alert variant="destructive" role="alert">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
@@ -295,7 +300,7 @@ export function GPSTrackerDemo() {
         <TabsContent value="position" className="space-y-6">
           {/* Current Device Position */}
           {currentPosition ? (
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Smartphone className="h-5 w-5" />
@@ -372,14 +377,14 @@ export function GPSTrackerDemo() {
               </CardContent>
             </Card>
           ) : isTracking ? (
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
               <CardContent className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
                 <p className="text-gray-600">Acquiring GPS signal...</p>
               </CardContent>
             </Card>
           ) : (
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
               <CardContent className="text-center py-8">
                 <MapPin className="h-16 w-16 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600">Start tracking to see your position</p>
@@ -389,7 +394,7 @@ export function GPSTrackerDemo() {
 
           {/* Live Train Position */}
           {liveTrainPosition && (
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
@@ -439,7 +444,7 @@ export function GPSTrackerDemo() {
 
         <TabsContent value="nearby" className="space-y-6">
           {/* Nearby Trains */}
-          <Card>
+            <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
@@ -490,7 +495,7 @@ export function GPSTrackerDemo() {
 
         <TabsContent value="settings" className="space-y-6">
           {/* Settings */}
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
@@ -555,7 +560,7 @@ export function GPSTrackerDemo() {
           </Card>
 
           {/* Technical Info */}
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Info className="h-5 w-5" />
