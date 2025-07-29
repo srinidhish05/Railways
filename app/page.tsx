@@ -13,7 +13,7 @@ export default function HomePage() {
             <div className="flex items-center">
               <Train className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NamaTrain AI </h1>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NammaTrain AI </h1>
                 <p className="text-gray-300">Live Train Tracking & Booking System</p>
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function HomePage() {
           <h3 className="text-3xl font-bold text-center text-white-900 mb-12">Karnataka Railway Network Statistics</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-blue-600 mb-2">200+</div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">300+</div>
               <div className="text-gray-300">Active Trains</div>
               <div className="text-sm text-blue-500 mt-1">Daily Operations</div>
             </div>
@@ -211,7 +211,7 @@ export default function HomePage() {
               <div className="text-sm text-green-500 mt-1">Across Karnataka</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-purple-600 mb-2">2M+</div>
+              <div className="text-4xl font-bold text-purple-600 mb-2">10M+</div>
               <div className="text-gray-300">Monthly Passengers</div>
               <div className="text-sm text-purple-500 mt-1">Served</div>
             </div>
@@ -259,14 +259,14 @@ export default function HomePage() {
               <h4 className="text-lg font-semibold mb-4">Contact & Support</h4>
               <ul className="space-y-2 text-gray-400">
                 <li>Emergency: 112</li>
-                <li>Railway Helpline: 139</li>
+                <li>Railway Helpline: 9717639006</li>
                 <li>IRCTC Support: 14646</li>
-                <li>Email: help@karnatakarailway.in</li>
+                <li>Email: cco@sr.railnet.gov.in</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-100">
-            <p>&copy; 2024 Karnataka Railway Network. All rights reserved. | Powered by Indian Railways</p>
+            <p>&copy; 2025 NammaTrain AI. Licensed for educational and research purposes only.</p>
           </div>
         </div>
       </footer>
