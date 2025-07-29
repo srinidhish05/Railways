@@ -1,14 +1,35 @@
 // Railway system type definitions
 
 export interface PNRStatus {
-  pnrNumber: string
+  pnr: string
   trainNumber: string
   trainName: string
-  journeyDate: string
-  from: string
-  to: string
-  passengers: Passenger[]
-  currentStatus: 'CNF' | 'RAC' | 'WL' | 'PQWL' | 'RLWL'
+  fromStation: string
+  toStation: string
+  fromStationName: string
+  toStationName: string
+  doj: string
+  class: string
+  quota: string
+  passengers: any[]
+  chartPrepared: boolean
+  status: string
+  currentStatusMessage: string
+  departureTime: string
+  arrivalTime: string
+  distance: string
+  duration: string
+  boardingStation: string
+  reservationUpto: string
+  lastUpdated: string
+  bookingDate: string
+  totalFare: number
+  ticketType: string
+  platform: string
+  trainDelay: number
+  coachPosition: string
+  foodAvailable: boolean
+  acAvailable: boolean
 }
 
 export interface Passenger {
