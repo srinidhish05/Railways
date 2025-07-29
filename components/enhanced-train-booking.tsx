@@ -353,10 +353,13 @@ export function EnhancedTrainBooking() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto p-4">
+    <div
+      className="space-y-6 max-w-6xl mx-auto p-4 bg-gradient-to-br from-blue-950/70 via-gray-900/80 to-orange-900/60 rounded-2xl shadow-xl backdrop-blur-md border border-gray-800"
+      aria-label="Train Booking Form"
+    >
       {/* Booking Success Page */}
       {bookingStatus === "success" && bookedTicketDetails && (
-        <Card className="border-2 border-green-500 bg-green-50 dark:bg-gray-800 dark:border-green-600">
+        <Card className="border-2 border-green-500 bg-green-50 dark:bg-gray-800 dark:border-green-600 backdrop-blur-md shadow-lg">
           <CardHeader className="bg-green-500 text-white dark:bg-green-700">
             <CardTitle className="flex items-center gap-2 text-xl">
               <CheckCircle className="h-6 w-6" />
@@ -366,8 +369,8 @@ export function EnhancedTrainBooking() {
               You have been redirected to IRCTC for secure ticket booking and payment
             </CardDescription>
           </CardHeader>
-          <CardContent className="bg-white space-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <CardContent className="bg-white dark:bg-gray-900 space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
                 <TrainIcon className="h-4 w-4" />
                 Journey Details
@@ -434,7 +437,7 @@ export function EnhancedTrainBooking() {
               </div>
             </div>
 
-            <Alert className="border-orange-200 bg-orange-50">
+            <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950" role="alert">
               <Star className="h-4 w-4 text-orange-600" />
               <AlertDescription className="text-orange-800">
                 <strong>Next Steps:</strong> Complete your booking on IRCTC with your login credentials. If you don't have an IRCTC account, create one first using the link above.
@@ -448,7 +451,7 @@ export function EnhancedTrainBooking() {
       {bookingStatus !== "success" && (
         <>
          {/* Header with Karnataka Railway Info */}
-<Card className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] border border-blue-900 shadow-md backdrop-blur-sm rounded-xl">
+          <Card className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] border border-blue-900 shadow-md backdrop-blur-md rounded-xl">
   <CardContent className="p-6">
     <div className="flex items-center justify-between">
       <div>
@@ -514,7 +517,7 @@ export function EnhancedTrainBooking() {
 
           {/* Quick Routes */}
           {(popularRoutes.length > 0 || recentSearches.length > 0) && (
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
+            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition backdrop-blur-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-sm">
                   <Bookmark className="h-4 w-4" />
@@ -565,7 +568,7 @@ export function EnhancedTrainBooking() {
           )}
 
           {/* Station Selection */}
-          <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
+          <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition backdrop-blur-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-blue-600" />
@@ -594,9 +597,10 @@ export function EnhancedTrainBooking() {
           setShowFromDropdown(true)
         }
       }}
-      className={`pr-10 bg-gray-900 text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500 ${
+      className={`pr-10 bg-gray-900 text-white border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
         fromStation ? 'border-green-500 bg-green-900 text-green-100' : ''
       }`}
+      aria-label="From Station Search"
     />
     {fromStation ? (
       <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-400" />
@@ -677,9 +681,10 @@ export function EnhancedTrainBooking() {
           setShowToDropdown(true)
         }
       }}
-      className={`pr-10 bg-gray-900 text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500 ${
+      className={`pr-10 bg-gray-900 text-white border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
         toStation ? 'border-green-500 bg-green-900 text-green-100' : ''
       }`}
+      aria-label="To Station Search"
     />
     {toStation ? (
       <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-400" />
@@ -731,7 +736,8 @@ export function EnhancedTrainBooking() {
         <Button
           variant="ghost"
           onClick={() => setCalendarOpen(true)}
-          className="flex-1 justify-start text-left font-normal bg-gray-800 text-gray-100 hover:bg-gray-700 border border-gray-600"
+          className="flex-1 justify-start text-left font-normal bg-gray-800 text-gray-100 hover:bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-blue-400"
+          aria-label="Select travel date"
         >
           <Calendar className="mr-2 h-4 w-4 text-blue-500" />
           {travelDate ? format(travelDate, "PPP") : "Select travel date"}
@@ -755,7 +761,8 @@ export function EnhancedTrainBooking() {
       variant="ghost"
       size="sm"
       onClick={() => setShowQuickDates(!showQuickDates)}
-      className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-100"
+      className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-100 focus:ring-2 focus:ring-blue-400"
+      aria-label="Quick date select"
     >
       Quick
     </Button>
@@ -785,8 +792,9 @@ export function EnhancedTrainBooking() {
               <Button 
                 onClick={handleTrainSearch} 
                 disabled={isLoading || !fromStation || !toStation || !travelDate} 
-                className="w-full bg-blue-600 hover:bg-blue-700" 
+                className="w-full bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-400" 
                 size="lg"
+                aria-label="Search Trains"
               >
                 {isLoading ? "Searching..." : `Search Trains (${karnatakaTrains.length} Available)`}
                 <Search className="ml-2 h-4 w-4" />
@@ -796,7 +804,7 @@ export function EnhancedTrainBooking() {
 
           {/* Error Messages */}
           {errorMessage && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" role="alert">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
@@ -804,7 +812,7 @@ export function EnhancedTrainBooking() {
 
           {/* Train Results */}
 {showTrainResults && availableTrains.length > 0 && (
-  <div className="mt-6 bg-[#1e293b] rounded-xl shadow-lg border border-blue-700 p-6">
+  <div className="mt-6 bg-[#1e293b] rounded-xl shadow-lg border border-blue-700 p-6 backdrop-blur-md">
     {/* Header */}
     <div className="flex flex-col mb-4">
       <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -824,10 +832,11 @@ export function EnhancedTrainBooking() {
           key={train.trainNumber}
           className={`p-4 rounded-lg transition-all duration-300 cursor-pointer ${
             selectedTrain?.trainNumber === train.trainNumber
-              ? "bg-gradient-to-r from-red-900 to-blue-800 border-2 border-blue-500 shadow-xl"
-              : "bg-[#0f172a] border border-gray-700 hover:border-blue-600 hover:shadow-lg"
+              ? "bg-gradient-to-r from-red-900 to-blue-800 border-2 border-blue-500 shadow-xl backdrop-blur-md"
+              : "bg-[#0f172a] border border-gray-700 hover:border-blue-600 hover:shadow-lg backdrop-blur-md"
           }`}
           onClick={() => handleTrainSelect(train)}
+          aria-label={`Select train ${train.trainName} (${train.trainNumber})`}
         >
           {/* Selected Notice */}
           {selectedTrain?.trainNumber === train.trainNumber && (
@@ -887,7 +896,7 @@ export function EnhancedTrainBooking() {
                           : "outline"
                       }
                       size="sm"
-                      className={`h-auto p-3 text-left justify-start ${
+                      className={`h-auto p-3 text-left justify-start focus:ring-2 focus:ring-blue-400 ${
                         selectedClass === trainClass.class
                           ? "bg-blue-600 text-gray"
                           : "hover:bg-blue-50"
@@ -904,6 +913,7 @@ export function EnhancedTrainBooking() {
                         }, 200);
                       }}
                       disabled={trainClass.availableSeats === 0}
+                      aria-label={`Select class ${trainClass.className}`}
                     >
                       <div className="w-full">
                         <div className="font-medium">
@@ -937,8 +947,8 @@ export function EnhancedTrainBooking() {
 
           {/* Enhanced Booking Form */}
           {selectedTrain && selectedClass && (
-            <Card className="border-2 border-orange-200 bg-orange-50">
-              <CardHeader className="bg-orange-100">
+            <Card className="border-2 border-orange-200 bg-orange-50 backdrop-blur-md shadow-lg">
+              <CardHeader className="bg-orange-100 dark:bg-orange-950">
                 <CardTitle className="flex items-center gap-2 text-orange-800">
                   <ExternalLink className="h-5 w-5" />
                   Step 3: Real IRCTC Booking
@@ -948,9 +958,9 @@ export function EnhancedTrainBooking() {
                   ₹{getSelectedClassInfo()?.currentPrice} per passenger
                 </CardDescription>
               </CardHeader>
-              <CardContent className="bg-white">
-                <form onSubmit={handleBooking} className="space-y-4">
-                  <Alert className="border-blue-200 bg-blue-50">
+              <CardContent className="bg-white dark:bg-gray-900">
+                <form onSubmit={handleBooking} className="space-y-4" id="bookingForm">
+                  <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950" role="alert">
                     <ExternalLink className="h-4 w-4 text-blue-600" />
                     <AlertDescription className="text-blue-800">
                       <strong>Official IRCTC Booking:</strong> This will redirect you to the official IRCTC website for secure ticket booking and payment processing.
@@ -1142,9 +1152,10 @@ export function EnhancedTrainBooking() {
 
                   <Button
                     type="submit"
-                    className="w-full bg-orange-600 hover:bg-orange-700"
+                    className="w-full bg-orange-600 hover:bg-orange-700 focus:ring-2 focus:ring-orange-400"
                     size="lg"
                     disabled={!selectedTrain || isLoading || !getSelectedClassInfo() || !bookingData.passengerName || !bookingData.passengerEmail || !bookingData.passengerPhone}
+                    aria-label="Book Real Ticket on IRCTC"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Book Real Ticket on IRCTC - ₹{getSelectedClassInfo() ? getSelectedClassInfo()!.currentPrice * bookingData.seatCount : 0}
@@ -1156,14 +1167,14 @@ export function EnhancedTrainBooking() {
 
           {/* No Results */}
           {showTrainResults && availableTrains.length === 0 && !isLoading && (
-            <Card>
-              <CardContent className="text-center py-8">
-                <TrainIcon className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">No Trains Found</h3>
-                <p className="text-gray-500 mb-4">
+            <Card className="backdrop-blur-md shadow-lg">
+              <CardContent className="text-center py-8 dark:bg-gray-900">
+                <TrainIcon className="h-16 w-16 mx-auto mb-4 text-gray-400" aria-hidden="true" />
+                <h3 className="text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">No Trains Found</h3>
+                <p className="text-gray-500 dark:text-gray-300 mb-4">
                   No direct trains are available between the selected stations.
                 </p>
-                <div className="text-sm text-gray-600 max-w-md mx-auto">
+                <div className="text-sm text-gray-600 dark:text-gray-300 max-w-md mx-auto">
                   <p className="mb-2"><strong>Suggestions:</strong></p>
                   <ul className="list-disc list-inside space-y-1">
                     <li>Try different travel dates</li>
@@ -1176,6 +1187,7 @@ export function EnhancedTrainBooking() {
                   <Button 
                     onClick={() => window.open('https://www.irctc.co.in/', '_blank')}
                     variant="outline"
+                    aria-label="Open IRCTC Website"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Open IRCTC Website
@@ -1183,6 +1195,7 @@ export function EnhancedTrainBooking() {
                   <Button 
                     onClick={handleNewBooking}
                     variant="outline"
+                    aria-label="Try Different Route"
                   >
                     <Search className="h-4 w-4 mr-2" />
                     Try Different Route
