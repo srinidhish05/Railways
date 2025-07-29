@@ -332,7 +332,34 @@ export async function GET(request: Request, { params }: { params: { pnr: string 
     if (pnrData) {
       // Add real-time status updates for dynamic PNRs
       const updatedData = updateRealTimeStatus(pnrData)
-      
+
+      // Safety monitoring logic
+      let safetyStatus = 'Safe'
+      const safetyAlerts: string[] = []
+      if (updatedData.status === 'WAITLIST') {
+        safetyStatus = 'Warning'
+        safetyAlerts.push('High waitlist, confirmation not guaranteed')
+      }
+      if (updatedData.status === 'RAC') {
+        safetyStatus = 'Warning'
+        safetyAlerts.push('RAC, partial confirmation, check berth assignment')
+      }
+      if (updatedData.status === 'CANCELLED') {
+        safetyStatus = 'Critical'
+        safetyAlerts.push('Ticket cancelled, journey not permitted')
+      }
+      if (updatedData.status === 'PARTIALLY_CONFIRMED') {
+        safetyStatus = 'Warning'
+        safetyAlerts.push('Partial confirmation, some passengers not fully confirmed')
+      }
+      if (updatedData.class === 'SL' && updatedData.status === 'CONFIRMED') {
+        safetyAlerts.push('Sleeper class, monitor for overcrowding and safety')
+      }
+
+      // Attach safety fields
+      updatedData.safetyStatus = safetyStatus
+      updatedData.safetyAlerts = safetyAlerts
+
       return NextResponse.json({
         success: true,
         data: updatedData,
