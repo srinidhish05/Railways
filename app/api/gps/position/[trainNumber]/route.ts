@@ -157,11 +157,29 @@ function generateRealisticPosition(trainNumber: string, train: any) {
     Math.pow((toStation.lat - lat) * 111, 2) + 
     Math.pow((toStation.lng - lng) * 111 * Math.cos(lat * Math.PI / 180), 2)
   )
-  
+
   // Estimated arrival time
   const estimatedArrival = new Date(
     Date.now() + (distanceToNext / (speed || 50)) * 3600000 + (delayMinutes * 60000)
   )
+
+  // Safety monitoring logic
+  let collisionRisk = 'Low'
+  let safetyStatus = 'Safe'
+  const safetyAlerts: string[] = []
+  if (distanceToNext < 1 && speed > 60) {
+    collisionRisk = 'High'
+    safetyStatus = 'Critical'
+    safetyAlerts.push('High collision risk: train is close to next station at high speed')
+  } else if (distanceToNext < 2 && speed > 40) {
+    collisionRisk = 'Medium'
+    safetyStatus = 'Warning'
+    safetyAlerts.push('Medium collision risk: train approaching next station quickly')
+  }
+  if (isDelayed && delayMinutes > 30) {
+    safetyStatus = 'Warning'
+    safetyAlerts.push('Delay critical: train delayed more than 30 minutes')
+  }
 
   return {
     trainNumber,
@@ -208,6 +226,9 @@ function generateRealisticPosition(trainNumber: string, train: any) {
         name: KARNATAKA_STATIONS[route[route.length - 1]].name
       }
     },
+    collisionRisk,
+    safetyStatus,
+    safetyAlerts,
     realTimeData: {
       contributorCount: Math.floor(Math.random() * 20) + 5, // 5-25 GPS contributors
       lastUpdated: Date.now(),
