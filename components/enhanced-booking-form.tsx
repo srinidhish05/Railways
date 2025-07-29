@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -13,10 +13,10 @@ import { Search, CalendarIcon, MapPin, Clock, IndianRupee, Train, ArrowRight, Ex
 import { format } from "date-fns"
 
 // Real API configuration
-const RAPIDAPI_KEY = 'f65c271e00mshce64e8cb8563b11p128323jsn5857c27564f3'
+const RAPIDAPI_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY || 'f65c271e00mshce64e8cb8563b11p128323jsn5857c27564f3'
 
 // Enhanced API functions with error handling and caching
-const apiCache = new Map()
+const apiCache = new Map<string, any>()
 
 const searchTrainsBetweenStations = async (fromStation: string, toStation: string, date: string) => {
   const cacheKey = `${fromStation}-${toStation}-${date}`
@@ -108,7 +108,7 @@ const getFareInquiry = async (trainNumber: string, fromStation: string, toStatio
   }
 }
 
-const getAllStations = async () => {
+const getAllStations = async (): Promise<Station[]> => {
   try {
     const response = await fetch('https://irctc-api2.p.rapidapi.com/getAllStations', {
       headers: {
@@ -203,6 +203,8 @@ export function EnhancedBookingForm() {
   const [allStations, setAllStations] = useState<Station[]>(majorStations)
   const [stationSearchFrom, setStationSearchFrom] = useState("")
   const [stationSearchTo, setStationSearchTo] = useState("")
+  const [debouncedFrom, setDebouncedFrom] = useState("")
+  const [debouncedTo, setDebouncedTo] = useState("")
   const [loadingStations, setLoadingStations] = useState(false)
   const [sortBy, setSortBy] = useState<"departure" | "duration" | "price">("departure")
   const [classFilter, setClassFilter] = useState<string>("all")
@@ -214,7 +216,6 @@ export function EnhancedBookingForm() {
     if (saved) {
       setSavedSearches(JSON.parse(saved))
     }
-
     const loadStations = async () => {
       setLoadingStations(true)
       try {
@@ -228,9 +229,22 @@ export function EnhancedBookingForm() {
         setLoadingStations(false)
       }
     }
-    
     loadStations()
   }, [])
+
+  // Debounce station search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedFrom(stationSearchFrom)
+    }, 300)
+    return () => clearTimeout(handler)
+  }, [stationSearchFrom])
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedTo(stationSearchTo)
+    }, 300)
+    return () => clearTimeout(handler)
+  }, [stationSearchTo])
 
   // Filter and sort results
   useEffect(() => {
@@ -263,7 +277,7 @@ export function EnhancedBookingForm() {
   }, [searchResults, sortBy, classFilter])
 
   // Save search functionality
-  const saveCurrentSearch = () => {
+  const saveCurrentSearch = useCallback(() => {
     const searchData = {
       id: Date.now(),
       fromStation,
@@ -276,10 +290,10 @@ export function EnhancedBookingForm() {
     const updated = [searchData, ...savedSearches.slice(0, 9)] // Keep last 10
     setSavedSearches(updated)
     localStorage.setItem('savedTrainSearches', JSON.stringify(updated))
-  }
+  }, [fromStation, toStation, travelDate, searchType, savedSearches])
 
   // Enhanced route search with comprehensive error handling
-  const handleRouteSearch = async () => {
+  const handleRouteSearch = useCallback(async () => {
     if (!fromStation || !toStation || !travelDate) {
       setError("Please fill all required fields")
       return
@@ -399,10 +413,10 @@ export function EnhancedBookingForm() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [fromStation, toStation, travelDate, searchType, savedSearches, classFilter, sortBy])
 
   // Enhanced train search by number with validation
-  const handleTrainSearch = async () => {
+  const handleTrainSearch = useCallback(async () => {
     const trimmedSearch = trainSearch.trim()
     if (!trimmedSearch) {
       setError("Please enter train number or name")
@@ -457,9 +471,9 @@ export function EnhancedBookingForm() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [trainSearch, searchType, savedSearches])
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case "AVAILABLE":
         return "bg-green-500 text-white"
@@ -471,14 +485,14 @@ export function EnhancedBookingForm() {
       default:
         return "bg-gray-500 text-white"
     }
-  }
+  }, [])
 
-  const getStationName = (code: string) => {
+  const getStationName = useCallback((code: string) => {
     const station = allStations.find((s) => s.code === code)
     return station ? `${station.name} (${code})` : code
-  }
+  }, [allStations])
 
-  const handleBookNow = (train: TrainResult) => {
+  const handleBookNow = useCallback((train: TrainResult) => {
     const irctcUrl = `https://www.irctc.co.in/nget/train-search?trainNumber=${train.trainNumber}&fromStationCode=${train.from}&toStationCode=${train.to}`
     
     const confirmRedirect = window.confirm(
@@ -494,24 +508,27 @@ export function EnhancedBookingForm() {
     if (confirmRedirect) {
       window.open(irctcUrl, '_blank', 'noopener,noreferrer')
     }
-  }
+  }, [getStationName])
 
   const filteredFromStations = allStations.filter(station =>
-    station.name.toLowerCase().includes(stationSearchFrom.toLowerCase()) ||
-    station.code.toLowerCase().includes(stationSearchFrom.toLowerCase()) ||
-    station.city.toLowerCase().includes(stationSearchFrom.toLowerCase())
+    station.name.toLowerCase().includes(debouncedFrom.toLowerCase()) ||
+    station.code.toLowerCase().includes(debouncedFrom.toLowerCase()) ||
+    station.city.toLowerCase().includes(debouncedFrom.toLowerCase())
   )
 
   const filteredToStations = allStations.filter(station =>
-    station.name.toLowerCase().includes(stationSearchTo.toLowerCase()) ||
-    station.code.toLowerCase().includes(stationSearchTo.toLowerCase()) ||
-    station.city.toLowerCase().includes(stationSearchTo.toLowerCase())
+    station.name.toLowerCase().includes(debouncedTo.toLowerCase()) ||
+    station.code.toLowerCase().includes(debouncedTo.toLowerCase()) ||
+    station.city.toLowerCase().includes(debouncedTo.toLowerCase())
   )
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto p-4">
+    <div
+      className="space-y-6 max-w-6xl mx-auto p-4 bg-gradient-to-br from-blue-100/60 via-white/80 to-orange-100/60 rounded-2xl shadow-xl backdrop-blur-md border border-gray-200"
+      aria-label="Train Booking Form"
+    >
       {/* Enhanced Search Type Toggle */}
-      <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
+      <div className="flex gap-2 p-1 bg-gray-100 rounded-lg shadow-sm backdrop-blur-md">
         <Button
           variant={searchType === "route" ? "default" : "ghost"}
           onClick={() => setSearchType("route")}
@@ -532,7 +549,7 @@ export function EnhancedBookingForm() {
 
       {/* Saved Searches */}
       {savedSearches.length > 0 && (
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
               <Bookmark className="h-4 w-4" />
@@ -566,7 +583,7 @@ export function EnhancedBookingForm() {
 
       {/* Route Search Form */}
       {searchType === "route" && (
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-blue-600" />
@@ -679,7 +696,7 @@ export function EnhancedBookingForm() {
 
       {/* Train Search Form */}
       {searchType === "train" && (
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-md shadow-md border border-gray-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Train className="h-5 w-5 text-blue-600" />
@@ -717,7 +734,7 @@ export function EnhancedBookingForm() {
       )}
 
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" role="alert">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -725,6 +742,11 @@ export function EnhancedBookingForm() {
       {/* Search Results with Filters */}
       {searchResults.length > 0 && (
         <div className="space-y-4">
+          {isLoading && (
+            <div className="w-full flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-label="Loading search results" />
+            </div>
+          )}
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold">Live Search Results ({filteredResults.length} trains found)</h3>
@@ -766,7 +788,7 @@ export function EnhancedBookingForm() {
           </div>
 
           {filteredResults.map((train) => (
-            <Card key={train.trainNumber} className={`border-l-4 ${train.isKarnatakaRoute ? 'border-l-orange-500' : 'border-l-blue-500'} hover:shadow-lg transition-shadow`}>
+            <Card key={train.trainNumber} className={`border-l-4 ${train.isKarnatakaRoute ? 'border-l-orange-500' : 'border-l-blue-500'} hover:shadow-lg transition-shadow bg-white/80 backdrop-blur-md`}> 
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -823,7 +845,7 @@ export function EnhancedBookingForm() {
                       <span className="text-sm font-medium">Live Seat Availability & Pricing:</span>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                         {train.availableClasses.map((cls) => (
-                          <div key={cls.class} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors">
+                          <div key={cls.class} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors focus-within:ring-2 focus-within:ring-blue-400">
                             <div>
                               <p className="font-medium">{cls.class}</p>
                               <p className="text-sm text-gray-600">
@@ -849,8 +871,9 @@ export function EnhancedBookingForm() {
 
                   <Button 
                     onClick={() => handleBookNow(train)}
-                    className="w-full bg-orange-600 hover:bg-orange-700" 
+                    className="w-full bg-orange-600 hover:bg-orange-700 focus:ring-2 focus:ring-orange-400" 
                     size="lg"
+                    aria-label={`Book ${train.trainName} (${train.trainNumber}) on IRCTC`}
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Book Now on IRCTC - Official Booking
@@ -865,7 +888,7 @@ export function EnhancedBookingForm() {
       {/* Enhanced Empty State */}
       {searchResults.length === 0 && !isLoading && !error && (
         <div className="text-center py-12 text-gray-500">
-          <Train className="h-16 w-16 mx-auto mb-4 opacity-50" />
+          <Train className="h-16 w-16 mx-auto mb-4 opacity-50" aria-hidden="true" />
           <h3 className="text-lg font-medium mb-2">Search for Trains</h3>
           <p className="mb-4">Use real IRCTC data to find trains, check availability, and get live pricing</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm max-w-md mx-auto">
