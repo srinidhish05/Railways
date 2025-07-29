@@ -236,7 +236,7 @@ export function NotificationCenter() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="relative bg-transparent">
+        <Button variant="outline" size="sm" className="relative bg-transparent focus:ring-2 focus:ring-blue-400" aria-label="Open notifications">
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
             <Badge 
@@ -244,17 +244,31 @@ export function NotificationCenter() {
               className={`absolute -top-2 -right-2 h-5 w-5 p-0 text-xs ${
                 criticalCount > 0 ? "animate-pulse" : ""
               }`}
+              aria-label={criticalCount > 0 ? "Critical alerts" : "Unread notifications"}
             >
               {unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0" align="end">
-        <Card className="border-0 shadow-lg">
+      <PopoverContent
+        className="w-96 p-0"
+        align="end"
+        style={{
+          background: "linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)",
+          borderRadius: "1.5rem",
+          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.18)",
+        }}
+        aria-label="Notification Center"
+        role="region"
+      >
+        <Card className="border-0 shadow-lg bg-white/80 dark:bg-[#1e293b]/80 rounded-2xl">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="text-lg flex items-center gap-2 text-blue-900 dark:text-blue-200">
                 <Train className="h-5 w-5 text-blue-600" />
                 Railway Alerts
               </CardTitle>
@@ -263,11 +277,12 @@ export function NotificationCenter() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowSettings(!showSettings)}
+                  aria-label="Notification settings"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
                 {unreadCount > 0 && (
-                  <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                  <Button variant="ghost" size="sm" onClick={markAllAsRead} aria-label="Mark all as read">
                     Mark all read
                   </Button>
                 )}
@@ -276,7 +291,7 @@ export function NotificationCenter() {
 
             {/* Settings Panel */}
             {showSettings && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
+              <div className="mt-4 p-4 bg-gray-50 dark:bg-[#1e293b] rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm">Sound Alerts</Label>
                   <div className="flex items-center gap-2">
@@ -290,6 +305,7 @@ export function NotificationCenter() {
                       onCheckedChange={(checked) => 
                         setSettings(prev => ({ ...prev, soundEnabled: checked }))
                       }
+                      aria-label="Toggle sound alerts"
                     />
                   </div>
                 </div>
@@ -299,6 +315,7 @@ export function NotificationCenter() {
                     variant="outline" 
                     onClick={clearAllNotifications}
                     className="flex items-center gap-1"
+                    aria-label="Clear all notifications"
                   >
                     <Trash2 className="h-3 w-3" />
                     Clear All
@@ -314,6 +331,7 @@ export function NotificationCenter() {
                 variant={filterCategory === "all" ? "default" : "outline"}
                 onClick={() => setFilterCategory("all")}
                 className="whitespace-nowrap"
+                aria-label="Show all notifications"
               >
                 All ({notifications.length})
               </Button>
@@ -326,6 +344,7 @@ export function NotificationCenter() {
                     variant={filterCategory === category ? "default" : "outline"}
                     onClick={() => setFilterCategory(category)}
                     className="whitespace-nowrap flex items-center gap-1"
+                    aria-label={`Show ${category} notifications`}
                   >
                     {getCategoryIcon(category)}
                     {category} ({count})
@@ -338,7 +357,7 @@ export function NotificationCenter() {
           <CardContent className="p-0">
             <div className="max-h-96 overflow-y-auto">
               {filteredNotifications.length === 0 ? (
-                <div className="p-6 text-center text-gray-500">
+                <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                   <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p>No notifications</p>
                   {filterCategory !== "all" && (
@@ -347,6 +366,7 @@ export function NotificationCenter() {
                       variant="link" 
                       onClick={() => setFilterCategory("all")}
                       className="mt-2"
+                      aria-label="View all notifications"
                     >
                       View all notifications
                     </Button>
@@ -356,10 +376,13 @@ export function NotificationCenter() {
                 filteredNotifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer ${
+                    className={`p-4 border-b last:border-b-0 hover:bg-gray-50 dark:hover:bg-[#334155] cursor-pointer focus-within:ring-2 focus-within:ring-blue-400 ${
                       !notification.read ? getPriorityColor(notification.priority) : ""
                     } ${notification.priority === "critical" ? "border-l-4 border-l-red-500" : ""}`}
                     onClick={() => markAsRead(notification.id)}
+                    tabIndex={0}
+                    aria-label={`Notification: ${notification.title}`}
+                    role="article"
                   >
                     <div className="flex items-start gap-3">
                       {getIcon(notification)}
@@ -367,12 +390,12 @@ export function NotificationCenter() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <h4 className={`text-sm font-medium ${
-                              !notification.read ? "text-blue-900" : ""
+                              !notification.read ? "text-blue-900 dark:text-blue-200" : ""
                             }`}>
                               {notification.title}
                             </h4>
                             {notification.priority === "critical" && (
-                              <Badge variant="destructive" className="text-xs">
+                              <Badge variant="destructive" className="text-xs animate-pulse">
                                 CRITICAL
                               </Badge>
                             )}
@@ -390,15 +413,16 @@ export function NotificationCenter() {
                               e.stopPropagation()
                               removeNotification(notification.id)
                             }}
+                            aria-label="Remove notification"
                           >
                             <X className="h-3 w-3" />
                           </Button>
                         </div>
                         
-                        <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{notification.message}</p>
                         
                         {/* Railway-specific details */}
-                        <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                        <div className="flex gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
                           {notification.trainNumber && (
                             <div className="flex items-center gap-1">
                               <Train className="h-3 w-3" />
@@ -419,7 +443,7 @@ export function NotificationCenter() {
                           )}
                         </div>
                         
-                        <p className="text-xs text-gray-500 mt-2">{formatTime(notification.timestamp)}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{formatTime(notification.timestamp)}</p>
                       </div>
                     </div>
                   </div>
