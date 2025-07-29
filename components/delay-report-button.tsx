@@ -542,6 +542,7 @@ export function DelayReportButton({
   return (
     <>
       <Button
+        aria-label="Report train delay"
         onClick={() => setIsOpen(true)}
         className={`${currentTheme.buttonClass} text-white ${sizeClasses[size]} ${className} shadow-lg transition-all duration-200`}
         disabled={!isOnline}
@@ -553,11 +554,16 @@ export function DelayReportButton({
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
+          aria-modal="true"
+          role="dialog"
+          tabIndex={-1}
+        >
           <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
             <CardHeader className={`${currentTheme.cardClass} border-b border-orange-200`}>
               <div className="flex items-center justify-between">
-                <CardTitle className={`flex items-center gap-2 ${currentTheme.headerClass}`}>
+                <CardTitle className={`flex items-center gap-2 ${currentTheme.headerClass}`}> 
                   <AlertTriangle className="h-5 w-5" />
                   {theme === "karnataka" && <Zap className="h-4 w-4 text-yellow-600" />}
                   Report Train Delay
@@ -567,6 +573,7 @@ export function DelayReportButton({
                   size="sm" 
                   onClick={() => setIsOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
+                  aria-label="Close delay report modal"
                 >
                   ✕
                 </Button>
@@ -657,7 +664,7 @@ function DelayReportForm({
 
       {/* Error Message */}
       {errorMessage && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" role="alert">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
