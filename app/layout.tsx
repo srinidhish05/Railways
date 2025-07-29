@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { NotificationCenter } from "@/components/notification-center"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -122,17 +123,22 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="relative min-h-screen bg-background">
+            {/* Animated Hero Overlay */}
+            <div className="animated-overlay"></div>
             {/* Railway Network Status Bar */}
             <div className="h-1 bg-gradient-to-r from-blue-600 via-green-500 to-blue-600 animate-pulse" />
-            
+            {/* Notification Center in top right */}
+            <div className="absolute top-6 right-8 z-50">
+              <div className="flex justify-end">
+                <NotificationCenter />
+              </div>
+            </div>
             {/* Main Content */}
-            <main className="relative">
+            <main className="relative glass-card dashboard-shadow">
               {children}
             </main>
-            
             {/* Global Toast Notifications */}
             <Toaster />
-            
             {/* Service Worker Registration */}
             <script
               dangerouslySetInnerHTML={{
@@ -151,6 +157,22 @@ export default function RootLayout({
                 `
               }}
             />
+            <style>{`
+              .animated-overlay {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                z-index: 0;
+                opacity: 0.7;
+                background: radial-gradient(circle at 20% 40%, #38bdf8 0%, transparent 60%),
+                            radial-gradient(circle at 80% 60%, #6366f1 0%, transparent 60%);
+                animation: overlayFade 3s ease-in-out infinite alternate;
+              }
+              @keyframes overlayFade {
+                0% { opacity: 0.7; }
+                100% { opacity: 1; }
+              }
+            `}</style>
           </div>
         </ThemeProvider>
       </body>
