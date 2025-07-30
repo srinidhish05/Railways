@@ -45,27 +45,39 @@ export default function HomePage() {
           <p className="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">Collision prevention, passenger protection, and real-time train tracking for a safer, smarter railway experience.</p>
           <div className="flex justify-center space-x-4 flex-wrap gap-4 items-center">
             <Link href="/user">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 shadow-lg">
-                <Users className="h-5 w-5 mr-2" />
-                Track Trains
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Users className="h-5 w-5" />
+                <span>Track Trains</span>
               </Button>
             </Link>
             <Link href="/booking-test">
-              <Button size="lg" variant="outline" className="shadow-lg">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Book Tickets
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                <span>Book Tickets</span>
               </Button>
             </Link>
             <Link href="/smart-ticket-capping-demo">
-              <Button size="lg" variant="outline" className="shadow-lg">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Smart Ticket Capping
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                <span>Smart Ticket Capping</span>
               </Button>
             </Link>
             <Link href="/status-section">
-              <Button size="lg" variant="outline" className="shadow-lg">
-                <TrendingUp className="h-5 w-5 mr-2" />
-                Train Status
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Zap className="h-5 w-5" />
+                <span>Train Status</span>
+              </Button>
+            </Link>
+            <Link href="/pnr-status">
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Search className="h-5 w-5" />
+                <span>PNR Status</span>
+              </Button>
+            </Link>
+            <Link href="/find-trains">
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Train className="h-5 w-5" />
+                <span>Find Trains</span>
               </Button>
             </Link>
             <div className="ml-4"><SystemHealth /></div>
@@ -76,9 +88,10 @@ export default function HomePage() {
 
       {/* Quick Railway Services Section */}
       <section className="py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h3 className="text-2xl font-bold text-white mb-8">Quick Railway Services</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Row 1 */}
             <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl hover:shadow-2xl transition">
               <CardContent className="p-6 text-center">
                 <Search className="h-8 w-8 text-blue-500 mx-auto mb-4" />
@@ -101,6 +114,56 @@ export default function HomePage() {
                 <h4 className="font-semibold mb-2 text-white">Find Trains</h4>
                 <p className="text-purple-200 text-sm mb-4">Search trains between stations</p>
                 <Link href="/find-trains"><Button size="sm" variant="outline">Find Trains</Button></Link>
+              </CardContent>
+            </Card>
+            {/* Row 2 */}
+            <Card className="bg-white/10 backdrop-blur-lg border border-blue-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <Zap className="h-8 w-8 text-blue-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Delay Alerts</h4>
+                <p className="text-blue-200 text-sm mb-4">Get real-time delay notifications</p>
+                <Link href="/status-section"><Button size="sm" variant="outline">View Status</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <Shield className="h-8 w-8 text-green-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Safety Dashboard</h4>
+                <p className="text-green-200 text-sm mb-4">Monitor railway safety metrics</p>
+                <Link href="/safety-dashboard"><Button size="sm" variant="outline">View Safety</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <CreditCard className="h-8 w-8 text-purple-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Book Tickets</h4>
+                <p className="text-purple-200 text-sm mb-4">Reserve seats instantly</p>
+                <Link href="/booking-test"><Button size="sm" variant="outline">Book Now</Button></Link>
+              </CardContent>
+            </Card>
+            {/* Row 3 */}
+            <Card className="bg-white/10 backdrop-blur-lg border border-blue-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Analytics</h4>
+                <p className="text-blue-200 text-sm mb-4">View network analytics</p>
+                <Link href="/railway-demo"><Button size="sm" variant="outline">View Analytics</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Smart Ticket Capping</h4>
+                <p className="text-green-200 text-sm mb-4">Save on frequent travel</p>
+                <Link href="/smart-ticket-capping-demo"><Button size="sm" variant="outline">Learn More</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <Users className="h-8 w-8 text-purple-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Passenger Portal</h4>
+                <p className="text-purple-200 text-sm mb-4">Access your dashboard</p>
+                <Link href="/user"><Button size="sm" variant="outline">Go to Portal</Button></Link>
               </CardContent>
             </Card>
           </div>
