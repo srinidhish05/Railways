@@ -1,20 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Train, Shield, Users, BarChart3, MapPin, AlertTriangle, Clock, Zap, Search, CreditCard } from "lucide-react"
+import SystemHealth from "@/components/system-health"
+import { Train, Shield, Users, BarChart3, MapPin, AlertTriangle, Clock, Zap, Search, CreditCard, TrendingUp } from "lucide-react"
 import Link from "next/link"
+
 
 export default function HomePage() {
   return (
-     <div className="min-h-screen pt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="min-h-screen pt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+      <div className="absolute inset-0 animated-overlay"></div>
       {/* Header */}
-<header className={`fixed top-0 left-0 w-full z-50 transition-shadow backdrop-blur bg-gray-900/90 border-b border-gray-800`}>
+      <header className="fixed top-0 left-0 w-full z-50 transition-shadow backdrop-blur bg-gray-900/90 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Train className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NamaTrain AI </h1>
-                <p className="text-gray-300">Live Train Tracking & Booking System</p>
+                <h1 className="text-3xl font-extrabold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NamaTrain AI</h1>
+                <p className="text-gray-200 text-lg">Live Train Tracking & Booking System</p>
               </div>
             </div>
             <div className="flex space-x-4">
@@ -22,12 +25,6 @@ export default function HomePage() {
                 <Button variant="outline">
                   <Users className="h-4 w-4 mr-2" />
                   Passenger Portal
-                </Button>
-              </Link>
-              <Link href="/booking-test">
-                <Button variant="outline">
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Book Tickets
                 </Button>
               </Link>
               <Link href="/admin">
@@ -42,61 +39,131 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gray-900 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">AI-POWERED RAILWAY SAFETY AND SMART TICKETING SYSTEM FOR COLLISION PREVENTION AND PASSENGER PROTECTION</h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          </p>
-          <div className="flex justify-center space-x-4 flex-wrap gap-4">
+      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-24 relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h2 className="text-4xl font-extrabold mb-6 bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text drop-shadow-lg">AI-Powered Railway Safety & Smart Ticketing</h2>
+          <p className="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">Collision prevention, passenger protection, and real-time train tracking for a safer, smarter railway experience.</p>
+          <div className="flex justify-center space-x-4 flex-wrap gap-4 items-center">
             <Link href="/user">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                <Users className="h-5 w-5 mr-2" />
-                Track Trains
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Users className="h-5 w-5" />
+                <span>Track Trains</span>
               </Button>
             </Link>
             <Link href="/booking-test">
-              <Button size="lg" variant="outline">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Book Tickets
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                <span>Book Tickets</span>
               </Button>
             </Link>
-            <Link href="/admin">
-              <Button size="lg" variant="outline">
-                <BarChart3 className="h-5 w-5 mr-2" />
-                Admin Dashboard
+            <Link href="/smart-ticket-capping-demo">
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                <span>Smart Ticket Capping</span>
               </Button>
             </Link>
+            <Link href="/status-section">
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Zap className="h-5 w-5" />
+                <span>Train Status</span>
+              </Button>
+            </Link>
+            <Link href="/pnr-status">
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Search className="h-5 w-5" />
+                <span>PNR Status</span>
+              </Button>
+            </Link>
+            <Link href="/find-trains">
+              <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
+                <Train className="h-5 w-5" />
+                <span>Find Trains</span>
+              </Button>
+            </Link>
+            <div className="ml-4"><SystemHealth /></div>
           </div>
         </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-transparent pointer-events-none z-0" />
       </section>
 
-      {/* Quick Search Section */}
+      {/* Quick Railway Services Section */}
       <section className="py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-2xl font-bold text-white-900 mb-8">Quick Railway Services</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-2xl font-bold text-white mb-8">Quick Railway Services</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Row 1 */}
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl hover:shadow-2xl transition">
               <CardContent className="p-6 text-center">
-                <Search className="h-8 w-8 text-blue-600 mx-auto mb-4" />
-                <h4 className="font-semibold mb-2">PNR Status</h4>
-                <p className="text-blue-300 text-sm mb-4">Check ticket status instantly</p>
-                <Button size="sm" variant="outline">Check Now</Button>
+                <Search className="h-8 w-8 text-blue-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">PNR Status</h4>
+                <p className="text-blue-200 text-sm mb-4">Check ticket status instantly</p>
+                <Link href="/pnr-status"><Button size="sm" variant="outline">Check Now</Button></Link>
               </CardContent>
             </Card>
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl hover:shadow-2xl transition">
               <CardContent className="p-6 text-center">
-                <MapPin className="h-8 w-8 text-green-600 mx-auto mb-4" />
-                <h4 className="font-semibold mb-2">Live Tracking</h4>
-                <p className="text-green-300 text-sm mb-4">Track any train in real-time</p>
-                <Button size="sm" variant="outline">Track Train</Button>
+                <MapPin className="h-8 w-8 text-green-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Live Tracking</h4>
+                <p className="text-green-200 text-sm mb-4">Track any train in real-time</p>
+                <Link href="/trains"><Button size="sm" variant="outline">Track Train</Button></Link>
               </CardContent>
             </Card>
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl hover:shadow-2xl transition">
               <CardContent className="p-6 text-center">
-                <Train className="h-8 w-8 text-purple-600 mx-auto mb-4" />
-                <h4 className="font-semibold mb-2">Find Trains</h4>
-                <p className="text-purple-300 text-sm mb-4">Search trains between stations</p>
-                <Button size="sm" variant="outline">Find Trains</Button>
+                <Train className="h-8 w-8 text-purple-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Find Trains</h4>
+                <p className="text-purple-200 text-sm mb-4">Search trains between stations</p>
+                <Link href="/find-trains"><Button size="sm" variant="outline">Find Trains</Button></Link>
+              </CardContent>
+            </Card>
+            {/* Row 2 */}
+            <Card className="bg-white/10 backdrop-blur-lg border border-blue-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <Zap className="h-8 w-8 text-blue-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Delay Alerts</h4>
+                <p className="text-blue-200 text-sm mb-4">Get real-time delay notifications</p>
+                <Link href="/status-section"><Button size="sm" variant="outline">View Status</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <Shield className="h-8 w-8 text-green-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Safety Dashboard</h4>
+                <p className="text-green-200 text-sm mb-4">Monitor railway safety metrics</p>
+                <Link href="/safety-dashboard"><Button size="sm" variant="outline">View Safety</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <CreditCard className="h-8 w-8 text-purple-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Book Tickets</h4>
+                <p className="text-purple-200 text-sm mb-4">Reserve seats instantly</p>
+                <Link href="/booking-test"><Button size="sm" variant="outline">Book Now</Button></Link>
+              </CardContent>
+            </Card>
+            {/* Row 3 */}
+            <Card className="bg-white/10 backdrop-blur-lg border border-blue-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <BarChart3 className="h-8 w-8 text-blue-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Analytics</h4>
+                <p className="text-blue-200 text-sm mb-4">View network analytics</p>
+                <Link href="/railway-demo"><Button size="sm" variant="outline">View Analytics</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Smart Ticket Capping</h4>
+                <p className="text-green-200 text-sm mb-4">Save on frequent travel</p>
+                <Link href="/smart-ticket-capping-demo"><Button size="sm" variant="outline">Learn More</Button></Link>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl hover:shadow-2xl transition">
+              <CardContent className="p-6 text-center">
+                <Users className="h-8 w-8 text-purple-500 mx-auto mb-4" />
+                <h4 className="font-semibold mb-2 text-white">Passenger Portal</h4>
+                <p className="text-purple-200 text-sm mb-4">Access your dashboard</p>
+                <Link href="/user"><Button size="sm" variant="outline">Go to Portal</Button></Link>
               </CardContent>
             </Card>
           </div>
@@ -106,90 +173,49 @@ export default function HomePage() {
       {/* Features Grid */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-3xl font-bold text-center text-white-900 mb-12">System Features</h3>
+          <h3 className="text-3xl font-bold text-center text-white mb-12">System Features</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MapPin className="h-6 w-6 text-green-600 mr-2" />
-                  Live Train Tracking
-                </CardTitle>
+            <Card className="bg-white/10 backdrop-blur-lg border border-blue-500 shadow-xl">
+              <CardHeader className="flex flex-col items-center">
+                <AlertTriangle className="h-8 w-8 text-yellow-400 mb-2" />
+                <CardTitle className="text-white">Collision Prevention</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Real-time GPS tracking of Karnataka Express, Kaveri Express, and all major trains with live status updates and delay notifications.
-                </p>
-              </CardContent>
+              <CardContent className="text-gray-200 text-center">AI-powered algorithms monitor and prevent train collisions in real-time.</CardContent>
             </Card>
-
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CreditCard className="h-6 w-6 text-blue-600 mr-2" />
-                  Ticket Booking
-                </CardTitle>
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl">
+              <CardHeader className="flex flex-col items-center">
+                <Shield className="h-8 w-8 text-green-400 mb-2" />
+                <CardTitle className="text-white">Passenger Safety</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Easy online booking for all Karnataka routes including SBC-NDLS, MYS-MAS, and popular destinations with seat selection.
-                </p>
-              </CardContent>
+              <CardContent className="text-gray-200 text-center">Live alerts and monitoring for passenger protection and emergency response.</CardContent>
             </Card>
-
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Search className="h-6 w-6 text-purple-600 mr-2" />
-                  PNR Status
-                </CardTitle>              
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl">
+              <CardHeader className="flex flex-col items-center">
+                <Clock className="h-8 w-8 text-purple-400 mb-2" />
+                <CardTitle className="text-white">Delay Management</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Instant PNR status checking with detailed journey information, seat allocation, and boarding station details.
-                </p>
-              </CardContent>
+              <CardContent className="text-gray-200 text-center">Smart delay prediction and management for efficient travel planning.</CardContent>
             </Card>
-
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BarChart3 className="h-6 w-6 text-orange-600 mr-2" />
-                  Analytics Dashboard
-                </CardTitle>
+            <Card className="bg-white/10 backdrop-blur-lg border border-blue-500 shadow-xl">
+              <CardHeader className="flex flex-col items-center">
+                <Zap className="h-8 w-8 text-blue-400 mb-2" />
+                <CardTitle className="text-white">Real-Time Tracking</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Comprehensive analytics on train performance, passenger flow, and operational efficiency across Karnataka network.
-                </p>
-              </CardContent>
+              <CardContent className="text-gray-200 text-center">Track trains live across the Karnataka railway network.</CardContent>
             </Card>
-
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Clock className="h-6 w-6 text-red-600 mr-2" />
-                  Delay Management
-                </CardTitle>
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl">
+              <CardHeader className="flex flex-col items-center">
+                <BarChart3 className="h-8 w-8 text-green-400 mb-2" />
+                <CardTitle className="text-white">Analytics Dashboard</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Intelligent delay prediction and automatic notifications to keep passengers informed about schedule changes.
-                </p>
-              </CardContent>
+              <CardContent className="text-gray-200 text-center">Comprehensive analytics for network health and performance.</CardContent>
             </Card>
-
-            <Card className="bg-gray-800 text-gray-100 border border-gray-700 shadow-md hover:shadow-lg transition">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <AlertTriangle className="h-6 w-6 text-yellow-600 mr-2" />
-                  Safety Monitoring
-                </CardTitle>
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl">
+              <CardHeader className="flex flex-col items-center">
+                <Users className="h-8 w-8 text-purple-400 mb-2" />
+                <CardTitle className="text-white">Smart Ticketing</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Advanced safety monitoring with emergency response systems and real-time alerts for passenger safety.
-                </p>
-              </CardContent>
+              <CardContent className="text-gray-200 text-center">AI-driven ticket capping and booking for cost-effective travel.</CardContent>
             </Card>
           </div>
         </div>
@@ -198,28 +224,32 @@ export default function HomePage() {
       {/* Stats Section */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-3xl font-bold text-center text-white-900 mb-12">Karnataka Railway Network Statistics</h3>
+          <h3 className="text-3xl font-bold text-center text-white mb-12">Karnataka Railway Network Statistics</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-blue-600 mb-2">200+</div>
-              <div className="text-gray-300">Active Trains</div>
-              <div className="text-sm text-blue-500 mt-1">Daily Operations</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-green-600 mb-2">450+</div>
-              <div className="text-gray-300">Railway Stations</div>
-              <div className="text-sm text-green-500 mt-1">Across Karnataka</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-purple-600 mb-2">2M+</div>
-              <div className="text-gray-300">Monthly Passengers</div>
-              <div className="text-sm text-purple-500 mt-1">Served</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-orange-600 mb-2">24/7</div>
-              <div className="text-gray-300">Live Tracking</div>
-              <div className="text-sm text-orange-500 mt-1">Real-time Updates</div>
-            </div>
+            <Card className="bg-white/10 backdrop-blur-lg border border-blue-500 shadow-xl">
+              <CardContent className="py-8">
+                <h4 className="text-4xl font-extrabold text-blue-400 mb-2">120+</h4>
+                <p className="text-gray-200">Active Trains</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-green-500 shadow-xl">
+              <CardContent className="py-8">
+                <h4 className="text-4xl font-extrabold text-green-400 mb-2">300+</h4>
+                <p className="text-gray-200">Stations</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-purple-500 shadow-xl">
+              <CardContent className="py-8">
+                <h4 className="text-4xl font-extrabold text-purple-400 mb-2">150K+</h4>
+                <p className="text-gray-200">Daily Passengers</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/10 backdrop-blur-lg border border-yellow-500 shadow-xl">
+              <CardContent className="py-8">
+                <h4 className="text-4xl font-extrabold text-yellow-400 mb-2">99.9%</h4>
+                <p className="text-gray-200">Safety Record</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -229,39 +259,28 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center mb-4">
-                <Train className="h-6 w-6 mr-2" />
-                <span className="text-lg font-semibold">NammaTrain AI</span>
-              </div>
-              <p className="text-yellow-400">
-                Complete railway management system for Karnataka with live tracking, booking, and passenger services.
-              </p>
+              <h4 className="font-bold mb-4 text-purple-400">About</h4>
+              <p className="text-gray-300 text-sm">NamaTrain AI is a next-gen railway management system for Karnataka, focused on safety, smart ticketing, and real-time tracking.</p>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4">Services</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/user" className="hover:text-white">Live Train Tracking</Link></li>
-                <li><Link href="/booking-test" className="hover:text-white">Ticket Booking</Link></li>
-                <li><a href="#" className="hover:text-white">PNR Status</a></li>
-                <li><a href="#" className="hover:text-white">Route Planning</a></li>
+              <h4 className="font-bold mb-4 text-blue-400">Quick Links</h4>
+              <ul className="text-gray-300 text-sm space-y-2">
+                <li><Link href="/user">Passenger Portal</Link></li>
+                <li><Link href="/booking-test">Book Tickets</Link></li>
+                <li><Link href="/admin">Admin Dashboard</Link></li>
+                <li><Link href="/smart-ticket-capping-demo">Smart Ticket Capping Demo</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/user" className="hover:text-white">Passenger Portal</Link></li>
-                <li><Link href="/admin" className="hover:text-white">Admin Dashboard</Link></li>
-                <li><a href="#" className="hover:text-white">Station Directory</a></li>
-                <li><a href="#" className="hover:text-white">Train Schedule</a></li>
-              </ul>
+              <h4 className="font-bold mb-4 text-green-400">Contact</h4>
+              <p className="text-gray-300 text-sm">Email: support@namatrain.ai<br />Phone: +91-12345-67890</p>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4">Contact & Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>Emergency: 112</li>
-                <li>Railway Helpline: 139</li>
-                <li>IRCTC Support: 14646</li>
-                <li>Email: help@karnatakarailway.in</li>
+              <h4 className="font-bold mb-4 text-yellow-400">Follow Us</h4>
+              <ul className="text-gray-300 text-sm space-y-2">
+                <li><a href="#">Twitter</a></li>
+                <li><a href="#">Facebook</a></li>
+                <li><a href="#">Instagram</a></li>
               </ul>
             </div>
           </div>
@@ -270,6 +289,22 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+      <style>{`
+        .animated-overlay {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0.7;
+          background: radial-gradient(circle at 20% 40%, #38bdf8 0%, transparent 60%),
+                      radial-gradient(circle at 80% 60%, #6366f1 0%, transparent 60%);
+          animation: overlayFade 3s ease-in-out infinite alternate;
+        }
+        @keyframes overlayFade {
+          0% { opacity: 0.7; }
+          100% { opacity: 1; }
+        }
+      `}</style>
     </div>
   )
 }

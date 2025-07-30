@@ -116,6 +116,45 @@ body {
     background-color: hsl(var(--railway-primary));
     color: hsl(var(--primary-foreground));
   }
+  /* Glassmorphism utility for cards and overlays */
+  .glass-card {
+    background: rgba(255,255,255,0.75);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255,255,255,0.18);
+  }
+
+  /* Modern shadow utility for dashboard cards */
+  .dashboard-shadow {
+    box-shadow: 0 4px 24px 0 rgba(56,189,248,0.12), 0 1.5px 6px 0 rgba(59,130,246,0.08);
+  }
+
+  /* Animated overlay utility for hero sections */
+  .animated-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.7;
+    background: radial-gradient(circle at 20% 40%, #38bdf8 0%, transparent 60%),
+                radial-gradient(circle at 80% 60%, #6366f1 0%, transparent 60%);
+    animation: overlayFade 3s ease-in-out infinite alternate;
+  }
+  @keyframes overlayFade {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+
+  /* Utility for animated gradient text */
+  .animated-gradient-text {
+    background: linear-gradient(90deg, #38bdf8, #fbbf24, #6366f1);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient 3s ease-in-out infinite alternate;
+  }
   
   .railway-secondary {
     background-color: hsl(var(--railway-secondary));

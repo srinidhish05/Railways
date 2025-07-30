@@ -20,11 +20,30 @@ export async function GET(request: Request) {
       stations = stations.slice(0, limitNum)
     }
     
+    // Add safety monitoring fields
+    const enhancedStations = stations.map(station => {
+      let safetyStatus = 'Safe'
+      const safetyAlerts: string[] = []
+      if (station.zone === 'SWR' && station.code === 'SBC') {
+        safetyStatus = 'Warning'
+        safetyAlerts.push('Major junction, monitor for crowding and safety')
+      }
+      if (station.code === 'MAQ') {
+        safetyStatus = 'Critical'
+        safetyAlerts.push('Maintenance ongoing, restricted access')
+      }
+      return {
+        ...station,
+        safetyStatus,
+        safetyAlerts
+      }
+    })
+
     return NextResponse.json({
       success: true,
       total: karnatakaStations.length,
-      returned: stations.length,
-      stations
+      returned: enhancedStations.length,
+      stations: enhancedStations
     })
     
   } catch (error) {

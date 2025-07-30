@@ -543,10 +543,38 @@ export async function GET(request: Request) {
     // Sort by departure time
     availableTrains.sort((a, b) => a.departureTime.localeCompare(b.departureTime))
 
+    // Add safety monitoring fields
+    const enhancedTrains = availableTrains.map(train => {
+      let safetyStatus = 'Safe'
+      let collisionRisk = 'Low'
+      const safetyAlerts: string[] = []
+      // High waiting list or superfast train = warning/critical
+      const maxWaitingList = Math.max(...Object.values(train.classes).map((c: any) => c.waitingList || 0))
+      if (train.type === 'Superfast' && train.distance > 500) {
+        collisionRisk = 'Medium'
+        safetyStatus = 'Warning'
+        safetyAlerts.push('Superfast train, monitor for collision risk')
+      }
+      if (maxWaitingList > 50) {
+        safetyStatus = 'Warning'
+        safetyAlerts.push('High waiting list, possible overcrowding risk')
+      }
+      if (maxWaitingList > 100) {
+        safetyStatus = 'Critical'
+        safetyAlerts.push('Critical waiting list, urgent attention needed')
+      }
+      return {
+        ...train,
+        safetyStatus,
+        collisionRisk,
+        safetyAlerts
+      }
+    })
+
     return NextResponse.json({
       success: true,
-      trains: availableTrains,
-      count: availableTrains.length,
+      trains: enhancedTrains,
+      count: enhancedTrains.length,
       searchDetails: {
         from: `${from} - ${fromStation.name}`,
         to: `${to} - ${toStation.name}`,
@@ -601,13 +629,17 @@ function findConnectingTrains(from: string, to: string) {
 }
 
 function timeToMinutes(time: string): number {
-  const [hours, minutes] = time.split(':').map(Number)
+  const [hoursStr, minutesStr] = time.split(':')
+  const hours = Number(hoursStr) || 0
+  const minutes = Number(minutesStr) || 0
   return hours * 60 + minutes
 }
 
 function calculateTotalTravelTime(time1: string, time2: string, layover: number): string {
   const parseTime = (time: string) => {
-    const [hours, minutes] = time.match(/(\d+)h (\d+)m/)?.slice(1).map(Number) || [0, 0]
+    const match = time.match(/(\d+)h (\d+)m/)
+    const hours = match ? Number(match[1]) : 0
+    const minutes = match ? Number(match[2]) : 0
     return hours * 60 + minutes
   }
 

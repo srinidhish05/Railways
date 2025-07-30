@@ -453,19 +453,20 @@ export function EmergencyResponseModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen} aria-modal="true">
       <DialogTrigger asChild>
         <Button 
           size="sm" 
           variant="destructive" 
           className={`animate-pulse ${currentTheme.buttonClass} shadow-lg`}
+          aria-label="Open emergency response modal"
         >
           <Siren className="h-4 w-4 mr-1 animate-spin" />
           {theme === "karnataka" && <Star className="h-3 w-3 mr-1" />}
           Emergency Response
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto backdrop-blur-md">
         <DialogHeader>
           <DialogTitle className={`flex items-center gap-2 ${currentTheme.headerClass}`}>
             {getSeverityIcon(alert.severity)}
@@ -647,7 +648,7 @@ export function EmergencyResponseModal({
         )}
 
         {errorMessage && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" role="alert">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>

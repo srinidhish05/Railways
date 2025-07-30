@@ -379,17 +379,44 @@ export async function GET(request: Request) {
     }
 
     // Update real-time data with slight variations
-    const updatedTrains = trains.map(train => ({
-      ...train,
-      lastUpdated: new Date().toISOString(),
-      // Add slight realistic variations for running trains
-      ...(train.status === "running" && {
-        latitude: train.latitude + (Math.random() - 0.5) * 0.001,
-        longitude: train.longitude + (Math.random() - 0.5) * 0.001,
-        speed: Math.max(0, train.speed + (Math.random() - 0.5) * 5),
-        temperature: Math.max(18, Math.min(35, train.temperature + (Math.random() - 0.5) * 2))
-      })
-    }))
+    const updatedTrains = trains.map(train => {
+      // Safety/collision logic
+      let collisionRisk = "low";
+      let safetyStatus = "safe";
+      let safetyAlerts: string[] = [];
+      if (train.speed > 80 && train.occupancy > 90) {
+        collisionRisk = "medium";
+        safetyStatus = "caution";
+        safetyAlerts.push("High speed and occupancy detected. Monitor for safety.");
+      }
+      if (train.delay > 10) {
+        safetyAlerts.push("Significant delay. Check for operational issues.");
+      }
+      // Fix: Use correct status values as per TrainStatus type
+      if (train.status === "stopped" || train.status === "delayed" || train.status === "on-time") {
+        collisionRisk = "low";
+        safetyStatus = "safe";
+      }
+      if (train.temperature > 32) {
+        safetyAlerts.push("High temperature in coaches. Monitor passenger comfort.");
+      }
+      return {
+        ...train,
+        lastUpdated: new Date().toISOString(),
+        // Apply variations for trains that are on-time or delayed
+        ...(train.status === "on-time" || train.status === "delayed"
+          ? {
+              latitude: train.latitude + (Math.random() - 0.5) * 0.001,
+              longitude: train.longitude + (Math.random() - 0.5) * 0.001,
+              speed: Math.max(0, train.speed + (Math.random() - 0.5) * 5),
+              temperature: Math.max(18, Math.min(35, train.temperature + (Math.random() - 0.5) * 2))
+            }
+          : {}),
+        collisionRisk,
+        safetyStatus,
+        safetyAlerts
+      };
+    });
 
     return NextResponse.json({
       success: true,

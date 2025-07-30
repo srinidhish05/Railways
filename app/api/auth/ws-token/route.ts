@@ -64,10 +64,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate WebSocket-specific token
+    const wsPermissions = getWebSocketPermissions(userPayload.role)
     const wsTokenPayload: TokenPayload = {
       userId: userPayload.userId || userPayload.id,
       role: userPayload.role,
-      permissions: getWebSocketPermissions(userPayload.role),
+      permissions: wsPermissions,
       division: userPayload.division || 'Karnataka',
       timestamp: Date.now()
     }
@@ -81,12 +82,20 @@ export async function POST(request: NextRequest) {
     // Log token generation for audit
     console.log(`WebSocket token generated for user: ${wsTokenPayload.userId}, role: ${wsTokenPayload.role}`)
 
+    // Safety features for admin (expand as needed)
+    const safetyFeatures = wsTokenPayload.role === 'admin'
+      ? ['Collision Prevention', 'Safety Monitoring', 'Delay Management', 'Emergency Response']
+      : []
+
+    // TODO: Integrate real-time alert triggers here for collision/safety events
+
     return NextResponse.json({
       token: wsToken,
       expiresIn: WS_TOKEN_EXPIRY,
       permissions: wsTokenPayload.permissions,
       division: wsTokenPayload.division,
-      connectionUrl: getWebSocketUrl(wsTokenPayload.role)
+      connectionUrl: getWebSocketUrl(wsTokenPayload.role),
+      safetyFeatures
     })
 
   } catch (error) {
@@ -135,7 +144,9 @@ function getWebSocketPermissions(role: string): string[] {
       'system-status',
       'emergency-broadcast',
       'all-trains-data',
-      'passenger-analytics'
+      'passenger-analytics',
+      'collision-prevention',
+      'safety-monitoring'
     ],
     operator: [
       'train-tracking',
@@ -157,7 +168,7 @@ function getWebSocketPermissions(role: string): string[] {
     ]
   }
 
-  return permissions[role] || permissions['user']
+  return permissions[role] || permissions['user'] || ['train-status', 'delay-notifications', 'pnr-updates']
 }
 
 // Get appropriate WebSocket URL based on role
@@ -171,7 +182,7 @@ function getWebSocketUrl(role: string): string {
     user: `${baseUrl}/user-stream`
   }
 
-  return urlMap[role] || urlMap['user']
+  return urlMap[role] || urlMap['user'] || 'ws://localhost:3001/user-stream'
 }
 
 // Optional: GET endpoint to verify token validity

@@ -41,47 +41,55 @@ export function SmartTicketCappingDemo() {
       trainNumber: '12628',
       trainName: 'Karnataka Express',
       reservedCoaches: [
-        { coachType: 'reserved', totalSeats: 72, bookedSeats: 65, maxCapacity: 72 },
-        { coachType: 'reserved', totalSeats: 72, bookedSeats: 72, maxCapacity: 72 }
+        { coachType: 'reserved', coachId: 'A1', totalSeats: 72, bookedSeats: 65, maxCapacity: 72 },
+        { coachType: 'reserved', coachId: 'B1', totalSeats: 72, bookedSeats: 72, maxCapacity: 72 }
       ],
       generalCoaches: [
-        { coachType: 'general', totalSeats: 100, bookedSeats: 95, allowedOverbooking: 50, maxCapacity: 150 }
+        { coachType: 'general', coachId: 'GS1', totalSeats: 100, bookedSeats: 95, allowedOverbooking: 50, maxCapacity: 150 }
       ],
       totalCapacity: 244,
       currentOccupancy: 232,
-      safetyStatus: 'NEARLY_FULL'
+      safetyStatus: 'NEARLY_FULL',
+      lastUpdated: Date.now(),
+      route: 'Bangalore City → New Delhi'
     },
     {
       trainNumber: '16209',
       trainName: 'Mysore Express',
       reservedCoaches: [
-        { coachType: 'reserved', totalSeats: 72, bookedSeats: 72, maxCapacity: 72 }
+        { coachType: 'reserved', coachId: 'A1', totalSeats: 72, bookedSeats: 72, maxCapacity: 72 }
       ],
       generalCoaches: [
-        { coachType: 'general', totalSeats: 100, bookedSeats: 140, allowedOverbooking: 50, maxCapacity: 150 }
+        { coachType: 'general', coachId: 'GS1', totalSeats: 100, bookedSeats: 140, allowedOverbooking: 50, maxCapacity: 150 }
       ],
       totalCapacity: 172,
       currentOccupancy: 212,
-      safetyStatus: 'OVERCAPACITY'
+      safetyStatus: 'OVERCAPACITY',
+      lastUpdated: Date.now(),
+      route: 'Mysore → Bangalore City'
     },
     {
       trainNumber: '12975',
       trainName: 'Jaipur Express',
       reservedCoaches: [
-        { coachType: 'reserved', totalSeats: 72, bookedSeats: 45, maxCapacity: 72 }
+        { coachType: 'reserved', coachId: 'A1', totalSeats: 72, bookedSeats: 45, maxCapacity: 72 }
       ],
       generalCoaches: [
-        { coachType: 'general', totalSeats: 100, bookedSeats: 60, allowedOverbooking: 50, maxCapacity: 150 }
+        { coachType: 'general', coachId: 'GS1', totalSeats: 100, bookedSeats: 60, allowedOverbooking: 50, maxCapacity: 150 }
       ],
       totalCapacity: 172,
       currentOccupancy: 105,
-      safetyStatus: 'SAFE'
+      safetyStatus: 'SAFE',
+      lastUpdated: Date.now(),
+      route: 'Jaipur → Bangalore City'
     }
   ]
 
   useEffect(() => {
     if (sampleTrains.length > 0) {
-      setSelectedTrain(sampleTrains[0])
+      setSelectedTrain(sampleTrains[0] ?? null)
+    } else {
+      setSelectedTrain(null)
     }
   }, [])
 
@@ -118,9 +126,19 @@ export function SmartTicketCappingDemo() {
       if (result.success) {
         // Update train capacity (simulation)
         const updatedTrain = { ...selectedTrain }
-        if (ticketType === 'reserved') {
+        if (
+          ticketType === 'reserved' &&
+          Array.isArray(updatedTrain.reservedCoaches) &&
+          updatedTrain.reservedCoaches.length > 0 &&
+          updatedTrain.reservedCoaches[0]
+        ) {
           updatedTrain.reservedCoaches[0].bookedSeats += requestedTickets
-        } else {
+        } else if (
+          ticketType === 'general' &&
+          Array.isArray(updatedTrain.generalCoaches) &&
+          updatedTrain.generalCoaches.length > 0 &&
+          updatedTrain.generalCoaches[0]
+        ) {
           updatedTrain.generalCoaches[0].bookedSeats += requestedTickets
         }
         updatedTrain.currentOccupancy += requestedTickets
@@ -143,12 +161,10 @@ export function SmartTicketCappingDemo() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-2xl text-blue-800">
             <Shield className="h-8 w-8" />
-            Smart Ticket Capping & Controlled Overbooking System
+            Railway Smart Ticket Capping System
           </CardTitle>
           <CardDescription className="text-blue-700">
-            Intelligent capacity management preventing overcrowding while ensuring safe travel
-            <br />
-            <strong>Team Feature by Srinidhi</strong> • 4-Member Railway Safety Project
+            Advanced capacity management for safe, efficient, and comfortable train travel. Prevents overcrowding and ensures fair ticketing for all passengers.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -158,7 +174,7 @@ export function SmartTicketCappingDemo() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Train className="h-5 w-5" />
-            Real-Time Train Capacity Monitor
+            Real-Time Train Capacity Dashboard
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -176,24 +192,21 @@ export function SmartTicketCappingDemo() {
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div>
-                      <h3 className="font-semibold">{train.trainName}</h3>
-                      <p className="text-sm text-gray-600">{train.trainNumber}</p>
+                      <h3 className="font-semibold text-lg">{train.trainName}</h3>
+                      <p className="text-xs text-gray-500">Train No: {train.trainNumber}</p>
                     </div>
-                    
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Occupancy</span>
-                        <span className="text-sm font-medium">
-                          {train.currentOccupancy}/{train.totalCapacity}
+                        <span className="text-xs">Occupancy</span>
+                        <span className="text-xs font-medium">
+                          {train.currentOccupancy} / {train.totalCapacity}
                         </span>
                       </div>
                       <Progress value={getOccupancyPercentage(train)} className="h-2" />
                     </div>
-                    
-                    <Badge className={`w-full justify-center ${getSafetyStatusColor(train.safetyStatus)}`}>
-                      {getSafetyIcon(train.safetyStatus)}
+                    <div className={`w-full text-center py-1 rounded font-semibold ${getSafetyStatusColor(train.safetyStatus)}`}>
                       {train.safetyStatus.replace('_', ' ')}
-                    </Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -206,9 +219,9 @@ export function SmartTicketCappingDemo() {
       {selectedTrain && (
         <Tabs defaultValue="booking" className="space-y-4">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="booking">Smart Booking</TabsTrigger>
-            <TabsTrigger value="capacity">Capacity Analysis</TabsTrigger>
-            <TabsTrigger value="safety">Safety Report</TabsTrigger>
+            <TabsTrigger value="booking">Book Tickets</TabsTrigger>
+            <TabsTrigger value="capacity">Capacity Details</TabsTrigger>
+            <TabsTrigger value="safety">Safety Overview</TabsTrigger>
           </TabsList>
 
           <TabsContent value="booking">
@@ -216,10 +229,18 @@ export function SmartTicketCappingDemo() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Ticket className="h-5 w-5" />
-                  Book Tickets - {selectedTrain.trainName}
+                  Ticket Booking - {selectedTrain.trainName}
                 </CardTitle>
                 <CardDescription>
-                  {getBookingStatus(selectedTrain, requestedTickets)}
+                  {(() => {
+                    try {
+                      return selectedTrain && typeof selectedTrain === 'object'
+                        ? getBookingStatus(selectedTrain, requestedTickets)
+                        : "No train selected."
+                    } catch (e) {
+                      return "Booking status is currently unavailable. Please try again later or select a different train.";
+                    }
+                  })()}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -353,7 +374,7 @@ export function SmartTicketCappingDemo() {
               </CardHeader>
               <CardContent>
                 <pre className="bg-gray-50 p-4 rounded-lg text-sm whitespace-pre-wrap font-mono">
-                  {SmartTicketCappingSystem.generateSafetyReport(selectedTrain)}
+                  {selectedTrain ? SmartTicketCappingSystem.generateSafetyReport(selectedTrain) : "No train selected."}
                 </pre>
               </CardContent>
             </Card>
@@ -364,36 +385,33 @@ export function SmartTicketCappingDemo() {
       {/* System Features */}
       <Card className="border-green-200 bg-green-50">
         <CardHeader>
-          <CardTitle className="text-green-800">🚀 Project Implementation Features</CardTitle>
+          <CardTitle className="text-green-800">System Features & Implementation</CardTitle>
         </CardHeader>
         <CardContent className="text-green-700">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <h4 className="font-semibold mb-2">✅ Reserved Coach Management</h4>
+              <h4 className="font-semibold mb-2">Reserved Coach Management</h4>
               <ul className="text-sm space-y-1">
-                <li>• Hard cap at 72 seats per coach</li>
-                <li>• Prevents overbooking completely</li>
-                <li>• Real-time availability tracking</li>
-                <li>• Integration with IRCTC systems</li>
+                <li>Hard cap at 72 seats per coach</li>
+                <li>Prevents overbooking completely</li>
+                <li>Real-time seat availability tracking</li>
+                <li>Integration with IRCTC systems</li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-2">🎯 General Coach Smart Capping</h4>
+              <h4 className="font-semibold mb-2">General Coach Smart Capping</h4>
               <ul className="text-sm space-y-1">
-                <li>• Base capacity: 100 passengers</li>
-                <li>• Controlled overbooking: +50 max</li>
-                <li>• Safety warnings at 95% capacity</li>
-                <li>• UTS/Station counter integration</li>
+                <li>Base capacity: 100 passengers</li>
+                <li>Controlled overbooking: up to 50 extra</li>
+                <li>Safety warnings at 95% capacity</li>
+                <li>UTS/Station counter integration</li>
               </ul>
             </div>
           </div>
-          
           <div className="mt-4 p-3 bg-white rounded border border-green-300">
-            <h4 className="font-semibold text-green-800 mb-2">🔬 Technical Implementation</h4>
+            <h4 className="font-semibold text-green-800 mb-2">Technical Implementation</h4>
             <p className="text-sm">
-              <strong>Future Integration:</strong> This system can be integrated with Indian Railways ticketing 
-              infrastructure (UTS & IRCTC) to control both reserved and general seat availability dynamically, 
-              ensuring safe and efficient travel during peak hours.
+              <strong>Future Integration:</strong> This system is designed for seamless integration with Indian Railways ticketing infrastructure (UTS & IRCTC), enabling dynamic control of reserved and general seat availability for safe and efficient travel during peak hours.
             </p>
           </div>
         </CardContent>

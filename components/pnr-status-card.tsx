@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import type { PNRStatus } from "../types/railway"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -11,7 +12,6 @@ import { Separator } from "@/components/ui/separator"
 import { 
   Search, 
   Ticket, 
-  MapPin, 
   Users, 
   CalendarDays, 
   Info, 
@@ -25,7 +25,6 @@ import {
   Share2,
   Eye,
   EyeOff,
-  Navigation,
   IndianRupee,
   Phone,
   Mail,
@@ -35,49 +34,8 @@ import {
   Zap
 } from "lucide-react"
 
-interface PNRStatus {
-  pnr: string
-  trainNumber: string
-  trainName: string
-  fromStation: string
-  toStation: string
-  fromStationName: string
-  toStationName: string
-  doj: string
-  class: string
-  quota: string
-  passengers: Array<{
-    name: string
-    age: number
-    gender: string
-    bookingStatus: string
-    currentStatus: string
-    coach?: string
-    berth?: string
-    seatType?: string
-    waitlistPosition?: number
-  }>
-  chartPrepared: boolean
-  status: "CONFIRMED" | "WAITLISTED" | "RAC" | "CANCELLED" | "PARTIALLY_CONFIRMED"
-  currentStatusMessage: string
-  departureTime: string
-  arrivalTime: string
-  distance: string
-  duration: string
-  boardingStation?: string
-  reservationUpto?: string
-  lastUpdated: string
-  bookingDate: string
-  totalFare: number
-  ticketType: "E-TICKET" | "I-TICKET" | "COUNTER"
-  platform?: string
-  trainDelay?: number
-  coachPosition?: string
-  foodAvailable?: boolean
-  acAvailable?: boolean
-}
-
-const mockPnrData: { [key: string]: PNRStatus } = {
+// --- MOCK DATA FOR DEMO ---
+const mockPnrData: { [key: string]: any } = {
   "2345678901": {
     pnr: "2345678901",
     trainNumber: "12628",
@@ -90,26 +48,8 @@ const mockPnrData: { [key: string]: PNRStatus } = {
     class: "3A",
     quota: "GN",
     passengers: [
-      { 
-        name: "John Doe", 
-        age: 35, 
-        gender: "Male",
-        bookingStatus: "CNF / B1 / 23 / LB", 
-        currentStatus: "CNF", 
-        coach: "B1", 
-        berth: "23",
-        seatType: "Lower Berth"
-      },
-      { 
-        name: "Jane Doe", 
-        age: 32, 
-        gender: "Female",
-        bookingStatus: "CNF / B1 / 24 / UB", 
-        currentStatus: "CNF", 
-        coach: "B1", 
-        berth: "24",
-        seatType: "Upper Berth"
-      },
+      { name: "John Doe", age: 35, gender: "Male", bookingStatus: "CNF / B1 / 23 / LB", currentStatus: "CNF", coach: "B1", berth: "23", seatType: "Lower Berth" },
+      { name: "Jane Doe", age: 32, gender: "Female", bookingStatus: "CNF / B1 / 24 / UB", currentStatus: "CNF", coach: "B1", berth: "24", seatType: "Upper Berth" },
     ],
     chartPrepared: true,
     status: "CONFIRMED",
@@ -142,17 +82,7 @@ const mockPnrData: { [key: string]: PNRStatus } = {
     class: "SL",
     quota: "GN",
     passengers: [
-      { 
-        name: "Alice Smith", 
-        age: 28, 
-        gender: "Female",
-        bookingStatus: "RAC / S5 / 45", 
-        currentStatus: "RAC", 
-        coach: "S5", 
-        berth: "45",
-        seatType: "Side Lower",
-        waitlistPosition: 1
-      },
+      { name: "Alice Smith", age: 28, gender: "Female", bookingStatus: "RAC / S5 / 45", currentStatus: "RAC", coach: "S5", berth: "45", seatType: "Side Lower", waitlistPosition: 1 },
     ],
     chartPrepared: false,
     status: "RAC",
@@ -172,175 +102,13 @@ const mockPnrData: { [key: string]: PNRStatus } = {
     coachPosition: "Middle",
     foodAvailable: false,
     acAvailable: false
-  },
-  "9876543210": {
-    pnr: "9876543210",
-    trainNumber: "16515",
-    trainName: "Yesvantpur Karwar Express",
-    fromStation: "YPR",
-    toStation: "KAWR",
-    fromStationName: "Yesvantpur Junction",
-    toStationName: "Karwar",
-    doj: "2025-01-27",
-    class: "2S",
-    quota: "GN",
-    passengers: [
-      { 
-        name: "Bob Wilson", 
-        age: 45, 
-        gender: "Male",
-        bookingStatus: "WL / 15", 
-        currentStatus: "WL", 
-        waitlistPosition: 8
-      },
-    ],
-    chartPrepared: false,
-    status: "WAITLISTED",
-    currentStatusMessage: "Waitlist 8. Chart not prepared. Low chances of confirmation.",
-    departureTime: "22:30",
-    arrivalTime: "08:15+1",
-    distance: "485 km",
-    duration: "9h 45m",
-    boardingStation: "YPR",
-    reservationUpto: "KAWR",
-    lastUpdated: new Date().toISOString(),
-    bookingDate: "2025-01-18T16:45:00.000Z",
-    totalFare: 125,
-    ticketType: "E-TICKET",
-    platform: "2",
-    trainDelay: 15,
-    coachPosition: "Rear",
-    foodAvailable: true,
-    acAvailable: false
-  },
-  // Additional Karnataka trains
-  "1111111111": {
-    pnr: "1111111111",
-    trainNumber: "16526",
-    trainName: "Island Express",
-    fromStation: "SBC",
-    toStation: "CAPE",
-    fromStationName: "KSR Bengaluru City Junction",
-    toStationName: "Kanyakumari",
-    doj: "2025-01-28",
-    class: "2A",
-    quota: "GN",
-    passengers: [
-      { 
-        name: "Priya Sharma", 
-        age: 30, 
-        gender: "Female",
-        bookingStatus: "CNF / A1 / 12 / LB", 
-        currentStatus: "CNF", 
-        coach: "A1", 
-        berth: "12",
-        seatType: "Lower Berth"
-      },
-    ],
-    chartPrepared: true,
-    status: "CONFIRMED",
-    currentStatusMessage: "Confirmed. Chart prepared with AC coach allocation.",
-    departureTime: "15:30",
-    arrivalTime: "04:45+2",
-    distance: "1189 km",
-    duration: "37h 15m",
-    boardingStation: "SBC",
-    reservationUpto: "CAPE",
-    lastUpdated: new Date().toISOString(),
-    bookingDate: "2025-01-10T09:15:00.000Z",
-    totalFare: 2850,
-    ticketType: "E-TICKET",
-    platform: "4",
-    trainDelay: 0,
-    coachPosition: "Front",
-    foodAvailable: true,
-    acAvailable: true
-  },
-  "2222222222": {
-    pnr: "2222222222",
-    trainNumber: "16535",
-    trainName: "Gol Gumbaz Express",
-    fromStation: "UBL",
-    toStation: "SBC",
-    fromStationName: "Hubballi Junction",
-    toStationName: "KSR Bengaluru City Junction",
-    doj: "2025-01-29",
-    class: "CC",
-    quota: "GN",
-    passengers: [
-      { 
-        name: "Rajesh Kumar", 
-        age: 42, 
-        gender: "Male",
-        bookingStatus: "CNF / C1 / 35", 
-        currentStatus: "CNF", 
-        coach: "C1", 
-        berth: "35",
-        seatType: "Chair Car"
-      },
-    ],
-    chartPrepared: true,
-    status: "CONFIRMED",
-    currentStatusMessage: "Confirmed in Chair Car. Chart prepared.",
-    departureTime: "05:45",
-    arrivalTime: "13:20",
-    distance: "485 km",
-    duration: "7h 35m",
-    boardingStation: "UBL",
-    reservationUpto: "SBC",
-    lastUpdated: new Date().toISOString(),
-    bookingDate: "2025-01-12T11:30:00.000Z",
-    totalFare: 320,
-    ticketType: "E-TICKET",
-    platform: "2",
-    trainDelay: 10,
-    coachPosition: "Middle",
-    foodAvailable: false,
-    acAvailable: true
-  },
-  "3333333333": {
-    pnr: "3333333333",
-    trainNumber: "17309",
-    trainName: "Mysuru Varanasi Express",
-    fromStation: "MYS",
-    toStation: "BSB",
-    fromStationName: "Mysuru Junction",
-    toStationName: "Varanasi Junction",
-    doj: "2025-01-30",
-    class: "3A",
-    quota: "TQ",
-    passengers: [
-      { 
-        name: "Anita Reddy", 
-        age: 38, 
-        gender: "Female",
-        bookingStatus: "RAC / B2 / 18", 
-        currentStatus: "RAC", 
-        coach: "B2", 
-        berth: "18",
-        seatType: "Side Lower",
-        waitlistPosition: 3
-      },
-    ],
-    chartPrepared: false,
-    status: "RAC",
-    currentStatusMessage: "RAC 3. Chart preparation pending. Good chances of confirmation.",
-    departureTime: "17:15",
-    arrivalTime: "08:30+2",
-    distance: "1856 km",
-    duration: "39h 15m",
-    boardingStation: "MYS",
-    reservationUpto: "BSB",
-    lastUpdated: new Date().toISOString(),
-    bookingDate: "2025-01-08T14:45:00.000Z",
-    totalFare: 3620,
-    ticketType: "E-TICKET",
-    platform: "1",
-    trainDelay: 25,
-    coachPosition: "Middle",
-    foodAvailable: true,
-    acAvailable: true
   }
+}
+
+// --- USE MOCK DATA IN DEV ---
+async function fetchPNRStatus(pnr: string) {
+  await new Promise(res => setTimeout(res, 500))
+  return { data: mockPnrData[pnr] }
 }
 
 export function PNRStatusCard() {
@@ -353,15 +121,14 @@ export function PNRStatusCard() {
   const [autoRefresh, setAutoRefresh] = useState(false)
   const [showAdvancedInfo, setShowAdvancedInfo] = useState(false)
 
-  // Auto-refresh functionality
   useEffect(() => {
     if (autoRefresh && pnrStatus && pnrStatus.status !== "CONFIRMED") {
       const interval = setInterval(() => {
         handlePnrCheck(pnrStatus.pnr, true)
       }, 30000) // Refresh every 30 seconds
-
       return () => clearInterval(interval)
     }
+    return undefined
   }, [autoRefresh, pnrStatus])
 
   const handlePnrCheck = async (pnr: string, isAutoRefresh = false) => {
@@ -370,30 +137,22 @@ export function PNRStatusCard() {
       setPnrStatus(null)
       return
     }
-
     if (!isAutoRefresh) {
       setIsLoading(true)
       setError("")
       setPnrStatus(null)
     }
-
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, isAutoRefresh ? 500 : 1500))
-
-      const result = mockPnrData[pnr]
-
-      if (result) {
-        // Simulate slight changes for auto-refresh
-        const updatedResult = {
-          ...result,
+      const data = await fetchPNRStatus(pnr)
+      if (data && data.data) {
+        setPnrStatus({
+          ...data.data,
+          pnr: pnr,
           lastUpdated: new Date().toISOString(),
           trainDelay: isAutoRefresh ? 
-            Math.max(0, (result.trainDelay || 0) + Math.floor((Math.random() - 0.5) * 10)) : 
-            result.trainDelay
-        }
-        setPnrStatus(updatedResult)
-        
+            Math.max(0, (data.data.trainDelay || 0) + Math.floor((Math.random() - 0.5) * 10)) : 
+            data.data.trainDelay
+        })
         // Add to recently checked list
         if (!isAutoRefresh) {
           setLastChecked(prev => {
@@ -457,7 +216,6 @@ To: ${pnrStatus?.toStationName}
 Date: ${pnrStatus?.doj}
 Status: ${pnrStatus?.status}
     `.trim()
-    
     const blob = new Blob([ticketData], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -465,24 +223,6 @@ Status: ${pnrStatus?.status}
     a.download = `ticket-${pnrStatus?.pnr}.txt`
     a.click()
     URL.revokeObjectURL(url)
-  }
-
-  const shareTicket = async () => {
-    if (navigator.share && pnrStatus) {
-      try {
-        await navigator.share({
-          title: `Train Ticket - ${pnrStatus.trainName}`,
-          text: `PNR: ${pnrStatus.pnr}\nTrain: ${pnrStatus.trainName}\nStatus: ${pnrStatus.status}`,
-        })
-      } catch (err) {
-        console.log('Error sharing:', err)
-      }
-    } else {
-      // Fallback: copy to clipboard
-      const shareText = `PNR: ${pnrStatus?.pnr}\nTrain: ${pnrStatus?.trainName}\nStatus: ${pnrStatus?.status}`
-      navigator.clipboard.writeText(shareText)
-      alert('Ticket details copied to clipboard!')
-    }
   }
 
   return (
@@ -530,32 +270,28 @@ Status: ${pnrStatus?.status}
 
           {/* Sample PNRs */}
           <div className="space-y-3">
-            <div className="flex flex-wrap gap-2 text-sm">
-              <span className="font-medium text-gray-700 flex items-center gap-1">
-                <Star className="h-4 w-4" />
+            <div className="bg-blue-50/80 border border-blue-200 rounded-lg p-3 flex flex-wrap gap-3 items-center text-sm shadow-sm">
+              <span className="font-semibold text-blue-800 flex items-center gap-2">
+                <Star className="h-4 w-4 text-yellow-500" />
                 Sample PNRs:
               </span>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("2345678901")}>
-                2345678901 <Badge variant="secondary" className="ml-1">CNF</Badge>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={() => handleSamplePnrClick("2345678901")}
+                className="font-mono bg-white text-blue-700 border-blue-300 hover:bg-blue-100 focus:ring-2 focus:ring-blue-400"
+              >
+                2345678901 <Badge variant="secondary" className="ml-1 bg-green-100 text-green-700">CNF</Badge>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("1234567890")}>
-                1234567890 <Badge variant="secondary" className="ml-1">RAC</Badge>
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("9876543210")}>
-                9876543210 <Badge variant="secondary" className="ml-1">WL</Badge>
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("1111111111")}>
-                1111111111 <Badge variant="secondary" className="ml-1">CNF</Badge>
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("2222222222")}>
-                2222222222 <Badge variant="secondary" className="ml-1">CNF</Badge>
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSamplePnrClick("3333333333")}>
-                3333333333 <Badge variant="secondary" className="ml-1">RAC</Badge>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={() => handleSamplePnrClick("1234567890")}
+                className="font-mono bg-white text-blue-700 border-blue-300 hover:bg-blue-100 focus:ring-2 focus:ring-blue-400"
+              >
+                1234567890 <Badge variant="secondary" className="ml-1 bg-yellow-100 text-yellow-700">RAC</Badge>
               </Button>
             </div>
-
-            {/* Recently Checked */}
             {lastChecked.length > 0 && (
               <div className="flex flex-wrap gap-2 text-sm">
                 <span className="font-medium text-gray-700 flex items-center gap-1">
@@ -603,16 +339,10 @@ Status: ${pnrStatus?.status}
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  <Badge variant="outline" className="text-xs">
-                    {pnrStatus.ticketType}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    Class: {pnrStatus.class}
-                  </Badge>
+                  <Badge variant="outline" className="text-xs">{pnrStatus.ticketType}</Badge>
+                  <Badge variant="outline" className="text-xs">Class: {pnrStatus.class}</Badge>
                   {pnrStatus.platform && (
-                    <Badge variant="outline" className="text-xs">
-                      Platform: {pnrStatus.platform}
-                    </Badge>
+                    <Badge variant="outline" className="text-xs">Platform: {pnrStatus.platform}</Badge>
                   )}
                 </div>
               </div>
@@ -635,9 +365,7 @@ Status: ${pnrStatus?.status}
                   </Badge>
                 </div>
                 {pnrStatus.trainDelay && pnrStatus.trainDelay > 0 && (
-                  <Badge variant="destructive" className="text-xs">
-                    Delayed by {pnrStatus.trainDelay} min
-                  </Badge>
+                  <Badge variant="destructive" className="text-xs">Delayed by {pnrStatus.trainDelay} min</Badge>
                 )}
               </div>
             </div>
@@ -745,78 +473,19 @@ Status: ${pnrStatus?.status}
                     <span className="text-gray-600">Total Fare:</span>
                     <span className="font-medium">₹{pnrStatus.totalFare}</span>
                   </div>
-                  {pnrStatus.platform && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Platform:</span>
-                      <span className="font-medium">{pnrStatus.platform}</span>
-                    </div>
-                  )}
                 </div>
-              </div>
-            </div>
-
-            {/* Amenities Section */}
-            {showAdvancedInfo && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-white rounded-lg border">
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${pnrStatus.foodAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <span className="text-sm">Food Available</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${pnrStatus.acAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <span className="text-sm">AC Available</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${pnrStatus.chartPrepared ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                  <span className="text-sm">Chart Status</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${(pnrStatus.trainDelay || 0) <= 5 ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <span className="text-sm">On Time</span>
-                </div>
-              </div>
-            )}
-
-            <Separator />
-
-            {/* Passenger Details */}
-            <div className="space-y-4">
-              <h4 className="font-semibold text-gray-800 flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Passenger Details ({pnrStatus.passengers.length})
-              </h4>
-              <div className="space-y-3">
-                {pnrStatus.passengers.map((pax, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
-                  >
-                    <div className="space-y-1">
-                      <p className="font-medium">
-                        {showSensitiveInfo ? pax.name : `${pax.name.split(' ')[0]} ****`}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {pax.age} years, {pax.gender}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Booking: {pax.bookingStatus}
-                      </p>
-                      {pax.seatType && (
-                        <p className="text-xs text-blue-600 font-medium">{pax.seatType}</p>
-                      )}
-                    </div>
-                    <div className="text-right space-y-1">
-                      <Badge
-                        className={`${
-                          pax.currentStatus === "CNF"
-                            ? "bg-green-500"
-                            : pax.currentStatus === "RAC"
-                              ? "bg-yellow-500"
-                              : "bg-orange-500"
-                        } text-white`}
-                      >
-                        {pax.currentStatus}
-                      </Badge>
+                {/* Passenger Details */}
+                <div className="space-y-2 mt-4">
+                  <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Passengers
+                  </h4>
+                  {pnrStatus.passengers.map((pax: any, index: number) => (
+                    <div key={index} className="p-2 border rounded-lg bg-gray-50 mb-2">
+                      <div className="flex justify-between">
+                        <span className="font-medium">{showSensitiveInfo ? pax.name : `Passenger ${index + 1}`}</span>
+                        <Badge>{pax.currentStatus}</Badge>
+                      </div>
                       {pax.coach && pax.berth && (
                         <p className="text-sm font-medium">{pax.coach} / {pax.berth}</p>
                       )}
@@ -824,8 +493,8 @@ Status: ${pnrStatus?.status}
                         <p className="text-xs text-gray-500">WL {pax.waitlistPosition}</p>
                       )}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -836,7 +505,7 @@ Status: ${pnrStatus?.status}
                   <Zap className="h-4 w-4" />
                   Confirmation Probability
                 </h4>
-                {pnrStatus.passengers.map((pax, index) => {
+                {pnrStatus.passengers.map((pax: any, index: number) => {
                   const probability = getConfirmationProbability(pax.currentStatus, pax.waitlistPosition)
                   return (
                     <div key={index} className="space-y-2">
@@ -910,10 +579,6 @@ Status: ${pnrStatus?.status}
                 Download
               </Button>
 
-              <Button variant="outline" size="sm" onClick={shareTicket}>
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
 
               <Button variant="outline" size="sm">
                 <Phone className="h-4 w-4 mr-2" />
@@ -939,27 +604,43 @@ Status: ${pnrStatus?.status}
           </div>
         )}
 
-        {/* Help Section */}
-        <Card className="p-4 bg-gray-50">
-          <div className="text-sm text-gray-600">
-            <h4 className="font-medium mb-2">Need Help?</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span>Call: 139 (Railway Enquiry)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span>Email: support@irctc.co.in</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span>Help: Indian Railways FAQ</span>
+        {/* Help Section - Modernized with hover/focus reveal */}
+        <div className="relative flex justify-end mt-8">
+          <div className="group">
+            <Button
+              variant="outline"
+              size="sm"
+              className="font-semibold text-blue-700 border-blue-300 bg-white shadow-sm hover:bg-blue-50 focus:bg-blue-100 transition"
+              tabIndex={0}
+            >
+              <Info className="h-4 w-4 mr-2" /> Need Help?
+            </Button>
+            <div
+              className="absolute right-0 z-10 mt-2 w-80 p-4 bg-white rounded-xl shadow-xl border border-blue-100 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-300"
+              role="dialog"
+              aria-label="Help Information"
+            >
+              <h4 className="font-bold text-blue-700 mb-3 flex items-center gap-2">
+                <Info className="h-4 w-4" /> Railway Helpdesk
+              </h4>
+              <div className="grid grid-cols-1 gap-3">
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-green-600" />
+                  <span className="font-medium">Call: <span className="underline">139</span> <span className="text-xs text-gray-500">(Railway Enquiry)</span></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium">Email: <span className="underline">support@irctc.co.in</span></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-purple-600" />
+                  <span className="font-medium">Help: <span className="underline">Indian Railways FAQ</span></span>
+                </div>
               </div>
             </div>
           </div>
-        </Card>
+        </div>
       </CardContent>
     </Card>
-  )
+  );
 }

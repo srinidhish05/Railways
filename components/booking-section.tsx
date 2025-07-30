@@ -278,6 +278,7 @@ export function BookingSection() {
   const [errorMessage, setErrorMessage] = useState("")
   const [displayCount, setDisplayCount] = useState(50)
   const [showKarnatakaOnly, setShowKarnatakaOnly] = useState(false)
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
 
   // Load comprehensive train database
   useEffect(() => {
@@ -316,6 +317,16 @@ export function BookingSection() {
     
     loadDatabase()
   }, [])
+
+  // Debounced search input
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+    if (searchTimeout) clearTimeout(searchTimeout)
+    const timeout = setTimeout(() => {
+      if (e.target.value.length >= 2) handleAdvancedSearch()
+    }, 500)
+    setSearchTimeout(timeout)
+  }
 
   // Advanced search with multiple APIs
   const handleAdvancedSearch = async () => {
@@ -530,12 +541,14 @@ export function BookingSection() {
         <CardContent className="space-y-4">
           <div className="flex gap-2">
             <Input
+              aria-label="Search trains"
               placeholder="Search by train name, number, route, or type (e.g., 'Karnataka Express', '12627', 'Bangalore Mumbai', 'Rajdhani')"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchInput}
               onKeyPress={(e) => e.key === 'Enter' && handleAdvancedSearch()}
+              className="focus:ring-2 focus:ring-blue-500"
             />
-            <Button onClick={handleAdvancedSearch} disabled={isLoading || isLoadingDatabase}>
+            <Button aria-label="Search trains" onClick={handleAdvancedSearch} disabled={isLoading || isLoadingDatabase} className="focus:ring-2 focus:ring-blue-500">
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -578,7 +591,7 @@ export function BookingSection() {
 
       {/* Error Messages */}
       {errorMessage && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" role="alert">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
@@ -598,10 +611,10 @@ export function BookingSection() {
           </CardHeader>
           <CardContent className="space-y-3 max-h-96 overflow-y-auto">
             {isLoadingDatabase ? (
-              <div className="text-center py-8">
-                <Train className="h-8 w-8 mx-auto mb-2 animate-pulse text-orange-600" />
-                <p className="text-gray-600">Loading comprehensive train database...</p>
-                <p className="text-sm text-gray-500">🌟 This includes all major Indian trains with Karnataka priority</p>
+              <div className="space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-20 bg-blue-100 rounded-lg animate-pulse" />
+                ))}
               </div>
             ) : filteredTrains.length > 0 ? (
               filteredTrains.map((train, index) => (
@@ -609,10 +622,13 @@ export function BookingSection() {
                   key={`${train.train_number}-${index}`}
                   className={`p-3 border rounded-lg cursor-pointer transition-all ${
                     selectedTrain?.train_number === train.train_number 
-                      ? "border-blue-500 bg-blue-50 shadow-md" 
-                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                      ? "border-blue-500 bg-blue-50 shadow-md backdrop-blur-md" 
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm backdrop-blur-sm"
                   } ${isKarnatakaRoute(train) ? 'ring-1 ring-orange-200' : ''}`}
                   onClick={() => handleTrainSelect(train)}
+                  tabIndex={0}
+                  aria-label={`Select train ${train.train_name} (${train.train_number})`}
+                  onKeyDown={e => { if (e.key === 'Enter') handleTrainSelect(train) }}
                 >
                   <div className="flex justify-between items-start mb-1">
                     <div className="flex-1">
@@ -681,6 +697,7 @@ export function BookingSection() {
                               e.stopPropagation()
                               setSelectedClass(classInfo.code)
                             }}
+                            aria-label={`Select class ${classInfo.name}`}
                           >
                             <span className="font-bold">{classInfo.code}</span>
                           </Button>
