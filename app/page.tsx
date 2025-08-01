@@ -41,8 +41,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-24 relative">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h2 className="text-4xl font-extrabold mb-6 bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text drop-shadow-lg">AI-Powered Railway Safety & Smart Ticketing</h2>
-          <p className="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">Collision prevention, passenger protection, and real-time train tracking for a safer, smarter railway experience.</p>
+          <h2 className="text-2xl font-extrabold mb-6 bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text drop-shadow-lg">AI-POWERED RAILWAY SAFETY AND SMART TICKETING SYSTEM FOR COLLISION PREVENTION AND PASSENGER PROTECTION</h2>
           <div className="flex justify-center space-x-4 flex-wrap gap-4 items-center">
             <Link href="/user">
               <Button size="lg" variant="outline" className="shadow-lg flex items-center justify-center gap-2">
