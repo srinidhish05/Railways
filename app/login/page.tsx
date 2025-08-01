@@ -13,20 +13,17 @@ export default function LoginPage() {
         <svg className="w-20 h-20 mb-6 text-blue-500 animate-bounce" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 7.5v-1A4.5 4.5 0 0 0 12 2.5a4.5 4.5 0 0 0-4.5 4.5v1m13 4.5v5A4.5 4.5 0 0 1 16 21.5H8A4.5 4.5 0 0 1 3.5 17V12a4.5 4.5 0 0 1 4.5-4.5h8A4.5 4.5 0 0 1 20.5 12z" />
         </svg>
-        <h1 className="text-4xl font-extrabold mb-3 text-blue-700 text-center drop-shadow-lg animate-pulse">Login Required</h1>
+        <h1 className="text-4xl font-extrabold mb-3 text-blue-700 text-center drop-shadow-lg animate-pulse">Admin Login</h1>
         <p className="text-gray-600 mb-6 text-center text-lg">
-          You must be logged in to access the <span className="font-bold text-blue-600">admin dashboard</span>.<br />
-          Please contact the administrator if you believe this is a mistake.
+          Please log in to access the <span className="font-bold text-blue-600">admin dashboard</span>.
         </p>
-        <div className="animate-pulse text-blue-500 font-semibold text-center mb-2">
-          This is a demo login page.<br />Authentication coming soon!
-        </div>
-        <button
-          className="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-blue-400"
-          disabled
-        >
-          Login (Demo Only)
-        </button>
+        <form method="post" action="/api/auth/callback/credentials" className="w-full max-w-xs mx-auto space-y-4">
+          <input type="text" name="username" placeholder="Username" required className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input type="password" name="password" placeholder="Password" required className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <button type="submit" className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
+            Login
+          </button>
+        </form>
       </div>
       <style>{`
         @keyframes fade-in {

@@ -101,8 +101,8 @@ export default function FindTrainsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] flex items-center justify-center px-2 py-8">
-      <div className="w-full max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] flex items-center justify-center w-full px-0 py-8">
+      <div className="w-full">
         <div className="bg-[#1e293b] rounded-2xl shadow-2xl p-8 border border-[#334155] animate-fade-in">
           <h1 className="text-4xl font-extrabold text-center mb-4 tracking-tight drop-shadow-lg animate-pulse">
             <span className="text-[#38bdf8]">Find Karnataka Trains</span>

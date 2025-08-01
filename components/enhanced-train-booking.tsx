@@ -532,7 +532,7 @@ export function EnhancedTrainBooking() {
                       <div className="flex gap-2 flex-wrap">
                         {recentSearches.map((route, index) => (
                           <Button
-                            key={index}
+                            key={`${route.from}-${route.to}-${index}`}
                             variant="outline"
                             size="sm"
                             onClick={() => selectQuickRoute(route)}
@@ -550,7 +550,7 @@ export function EnhancedTrainBooking() {
                     <div className="flex gap-2 flex-wrap">
                       {popularRoutes.filter(r => r.popular).map((route, index) => (
                         <Button
-                          key={index}
+                          key={`${route.from}-${route.to}-${index}`}
                           variant="outline"
                           size="sm"
                           onClick={() => selectQuickRoute(route)}
@@ -613,7 +613,7 @@ export function EnhancedTrainBooking() {
     <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
       {filteredFromStations.map((station) => (
         <div
-          key={station.code}
+          key={`from-${station.code}`}
           className="px-4 py-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-b-0 transition-colors text-white"
           onClick={() => selectFromStation(station)}
         >
@@ -697,7 +697,7 @@ export function EnhancedTrainBooking() {
     <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
       {filteredToStations.map((station) => (
         <div
-          key={station.code}
+          key={`to-${station.code}`}
           className="px-4 py-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700 last:border-b-0 transition-colors text-white"
           onClick={() => selectToStation(station)}
         >
@@ -772,7 +772,7 @@ export function EnhancedTrainBooking() {
     <div className="mt-3 flex gap-2 flex-wrap">
       {getQuickDates().map((quickDate, index) => (
         <Button
-          key={index}
+          key={`${quickDate.label}-${quickDate.date}`}
           variant="ghost"
           size="sm"
           onClick={() => {
@@ -829,7 +829,7 @@ export function EnhancedTrainBooking() {
     <div className="space-y-4">
       {availableTrains.map((train) => (
         <div
-          key={train.trainNumber}
+          key={`${train.trainNumber}-${train.departureTime}`}
           className={`p-4 rounded-lg transition-all duration-300 cursor-pointer ${
             selectedTrain?.trainNumber === train.trainNumber
               ? "bg-gradient-to-r from-red-900 to-blue-800 border-2 border-blue-500 shadow-xl backdrop-blur-md"
@@ -887,9 +887,9 @@ export function EnhancedTrainBooking() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {train.classes
                   .filter((c) => c.status !== "NOT_AVAILABLE")
-                  .map((trainClass) => (
+                  .map((trainClass, idx) => (
                     <Button
-                      key={trainClass.class}
+                      key={`${train.trainNumber}-${trainClass.class}-${idx}`}
                       variant={
                         selectedClass === trainClass.class
                           ? "default"
@@ -1024,7 +1024,7 @@ export function EnhancedTrainBooking() {
                       </SelectTrigger>
                       <SelectContent>
                         {[1, 2, 3, 4, 5, 6].map((count) => (
-                          <SelectItem key={count} value={count.toString()}>
+                          <SelectItem key={`passenger-count-${count}`} value={count.toString()}>
                             {count} {count === 1 ? "Passenger" : "Passengers"}
                           </SelectItem>
                         ))}

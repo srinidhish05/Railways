@@ -141,10 +141,195 @@ const mockTrainData: TrainData[] = [
     passengerCount: 756,
     coaches: 16,
     position: { latitude: 15.2691, longitude: 76.3877 }
+  },
+  {
+    id: "KA_12079",
+    name: "Jan Shatabdi Express",
+    trainNumber: "12079",
+    currentStation: "Mangaluru Central",
+    nextStation: "Bantwal (BNTL)",
+    status: "on-time",
+    speed: 95,
+    delay: 0,
+    occupancy: 77,
+    temperature: 25.1,
+    humidity: 60,
+    signalStrength: 80,
+    batteryLevel: 90,
+    route: "Mangaluru → Bengaluru",
+    estimatedArrival: "13:10",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 1020,
+    coaches: 18,
+    position: { latitude: 12.9141, longitude: 74.8560 }
+  },
+  {
+    id: "KA_17325",
+    name: "Vishwamanava Express",
+    trainNumber: "17325",
+    currentStation: "Mysuru Jn (MYS)",
+    nextStation: "Mandya (MYA)",
+    status: "on-time",
+    speed: 60,
+    delay: 0,
+    occupancy: 81,
+    temperature: 24.8,
+    humidity: 66,
+    signalStrength: 75,
+    batteryLevel: 85,
+    route: "Mysuru → Bengaluru",
+    estimatedArrival: "11:30",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 800,
+    coaches: 14,
+    position: { latitude: 12.2958, longitude: 76.6394 }
+  },
+  {
+    id: "KA_16536",
+    name: "Gol Gumbaz Express",
+    trainNumber: "16536",
+    currentStation: "Vijayapura",
+    nextStation: "Bagalkot (BGK)",
+    status: "delayed",
+    speed: 55,
+    delay: 12,
+    occupancy: 74,
+    temperature: 26.2,
+    humidity: 70,
+    signalStrength: 70,
+    batteryLevel: 87,
+    route: "Vijayapura → Bengaluru",
+    estimatedArrival: "18:45",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 950,
+    coaches: 20,
+    position: { latitude: 16.8302, longitude: 75.7100 }
+  },
+  {
+    id: "KA_12785",
+    name: "Kochuveli Express",
+    trainNumber: "12785",
+    currentStation: "Hubballi Jn (UBL)",
+    nextStation: "Dharwad (DWR)",
+    status: "boarding",
+    speed: 10,
+    delay: 0,
+    occupancy: 69,
+    temperature: 23.9,
+    humidity: 63,
+    signalStrength: 88,
+    batteryLevel: 93,
+    route: "Hubballi → Kochuveli",
+    estimatedArrival: "20:00",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 1100,
+    coaches: 22,
+    position: { latitude: 15.3647, longitude: 75.1240 }
+  },
+  {
+    id: "KA_16595",
+    name: "Panchaganga Express",
+    trainNumber: "16595",
+    currentStation: "Mangaluru Jn (MAJN)",
+    nextStation: "Udupi (UD)",
+    status: "departed",
+    speed: 80,
+    delay: 5,
+    occupancy: 85,
+    temperature: 26.5,
+    humidity: 68,
+    signalStrength: 82,
+    batteryLevel: 89,
+    route: "Mangaluru → Kolhapur",
+    estimatedArrival: "22:30",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 900,
+    coaches: 19,
+    position: { latitude: 13.3176, longitude: 74.7937 }
+  },
+  {
+    id: "KA_16217",
+    name: "Chamundi Express",
+    trainNumber: "16217",
+    currentStation: "Mysuru Jn (MYS)",
+    nextStation: "Mandya (MYA)",
+    status: "on-time",
+    speed: 70,
+    delay: 0,
+    occupancy: 79,
+    temperature: 25.7,
+    humidity: 62,
+    signalStrength: 90,
+    batteryLevel: 96,
+    route: "Mysuru → Bengaluru",
+    estimatedArrival: "17:15",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 850,
+    coaches: 15,
+    position: { latitude: 12.2958, longitude: 76.6394 }
+  },
+  {
+    id: "KA_16021",
+    name: "Kaveri Express",
+    trainNumber: "16021",
+    currentStation: "Chennai Central",
+    nextStation: "Mysuru Junction",
+    status: "delayed",
+    speed: 48,
+    delay: 10,
+    occupancy: 92,
+    temperature: 26.2,
+    humidity: 70,
+    signalStrength: 74,
+    batteryLevel: 86,
+    route: "Chennai → Mysuru",
+    estimatedArrival: "07:30+1",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 900,
+    coaches: 18,
+    position: { latitude: 13.0827, longitude: 80.2707 }
+  },
+  {
+    id: "KA_17326",
+    name: "Vishwamanava Express",
+    trainNumber: "17326",
+    currentStation: "KSR Bengaluru City Junction",
+    nextStation: "Mysuru Junction",
+    status: "on-time",
+    speed: 60,
+    delay: 0,
+    occupancy: 81,
+    temperature: 24.8,
+    humidity: 66,
+    signalStrength: 75,
+    batteryLevel: 85,
+    route: "Bengaluru → Mysuru",
+    estimatedArrival: "11:30",
+    lastUpdated: new Date().toISOString(),
+    passengerCount: 800,
+    coaches: 14,
+    position: { latitude: 12.9716, longitude: 77.5946 }
   }
 ]
 
 export function TrainDashboard() {
+  // Helper to get badge color variant for train status
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "on-time":
+        return "secondary"
+      case "delayed":
+        return "destructive"
+      case "stopped":
+        return "destructive"
+      case "boarding":
+        return "outline"
+      case "departed":
+        return "default"
+      default:
+        return "outline"
+    }
+  }
   const [trains, setTrains] = useState<TrainData[]>(mockTrainData)
   const [isConnected, setIsConnected] = useState(true)
   const [connectionType, setConnectionType] = useState<"websocket" | "polling" | "offline">("websocket")
@@ -170,56 +355,13 @@ export function TrainDashboard() {
           signalStrength: Math.max(20, Math.min(100, train.signalStrength + (Math.random() - 0.5) * 15)),
           batteryLevel: Math.max(60, Math.min(100, train.batteryLevel - Math.random() * 0.5)),
           lastUpdated: new Date().toISOString()
-        }))
+  }
+        ))
       )
       setLastUpdate(new Date())
     }, 5000)
-
     return () => clearInterval(interval)
   }, [autoRefresh])
-
-  // Simulate connection changes
-  useEffect(() => {
-    const connectionInterval = setInterval(() => {
-      if (Math.random() > 0.95) {
-        const types: ("websocket" | "polling" | "offline")[] = ["websocket", "polling", "offline"]
-        const randomType = types[Math.floor(Math.random() * types.length)] ?? "websocket"
-        
-        if (randomType === "offline") {
-          setIsConnected(false)
-          setConnectionType("offline")
-        } else {
-          setIsConnected(true)
-          setConnectionType(randomType)
-        }
-
-        // Auto-recover after 10 seconds
-        setTimeout(() => {
-          setIsConnected(true)
-          setConnectionType("websocket")
-        }, 10000)
-      }
-    }, 30000)
-
-    return () => clearInterval(connectionInterval)
-  }, [])
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "on-time":
-        return "default"
-      case "delayed":
-        return "secondary"
-      case "stopped":
-        return "destructive"
-      case "boarding":
-        return "outline"
-      case "departed":
-        return "default"
-      default:
-        return "outline"
-    }
-  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -290,7 +432,7 @@ export function TrainDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 w-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -408,7 +550,7 @@ export function TrainDashboard() {
       </Card>
 
       {/* Train Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
         {filteredTrains.map((train) => (
           <Card key={train.id} className="relative overflow-hidden hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
@@ -422,6 +564,7 @@ export function TrainDashboard() {
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <Badge variant={getStatusColor(train.status)} className="flex items-center gap-1">
+                    {getStatusIcon(train.status)}
                     {getStatusIcon(train.status)}
                     {train.status}
                   </Badge>
