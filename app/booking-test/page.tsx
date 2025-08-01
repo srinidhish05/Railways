@@ -2,8 +2,8 @@ import { EnhancedTrainBooking } from "@/components/enhanced-train-booking"
 
 export default function BookingTestPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] text-white px-4 py-8 flex items-center justify-center">
-      <div className="w-full max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] text-white w-full px-0 py-8 flex items-center justify-center">
+      <div className="w-full">
         <div className="bg-[#1e293b] rounded-2xl shadow-xl p-8 border border-[#334155] animate-fade-in">
           <h1 className="text-4xl font-extrabold text-center mb-6 tracking-tight drop-shadow-lg animate-pulse">
             <span className="text-[#38bdf8]">Karnataka Railway</span> <span className="text-[#fbbf24]">Booking System</span>
