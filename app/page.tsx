@@ -16,7 +16,7 @@ export default function HomePage() {
             <div className="flex items-center">
               <Train className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <h1 className="text-3xl font-extrabold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NamaTrain AI</h1>
+                <h1 className="text-3xl font-extrabold bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">NammaTrain AI</h1>
                 <p className="text-gray-200 text-lg">Live Train Tracking & Booking System</p>
               </div>
             </div>
@@ -273,19 +273,19 @@ export default function HomePage() {
             </div>
             <div>
               <h4 className="font-bold mb-4 text-green-400">Contact</h4>
-              <p className="text-gray-300 text-sm">Email: support@namatrain.ai<br />Phone: +91-12345-67890</p>
+              <p className="text-gray-300 text-sm">Email: cc@sr.railnet.gov,in<br />Phone: +91 9717639006</p>
             </div>
             <div>
               <h4 className="font-bold mb-4 text-yellow-400">Follow Us</h4>
               <ul className="text-gray-300 text-sm space-y-2">
-                <li><a href="#">Twitter</a></li>
+                <li><a href="#">X</a></li>
                 <li><a href="#">Facebook</a></li>
                 <li><a href="#">Instagram</a></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-100">
-            <p>&copy; 2024 Karnataka Railway Network. All rights reserved. | Powered by Indian Railways</p>
+            <p>&copy;  NammaTrain AI. Licensed for educational and research purpose only</p>
           </div>
         </div>
       </footer>
